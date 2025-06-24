@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Agreement;
 use Illuminate\Http\Request;
 
-class AgreementController extends Controller
+class AiConversationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +26,7 @@ class AgreementController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Agreement $agreement)
+    public function show(string $id)
     {
         //
     }
@@ -35,7 +34,7 @@ class AgreementController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Agreement $agreement)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -43,7 +42,7 @@ class AgreementController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Agreement $agreement)
+    public function destroy(string $id)
     {
         //
     }

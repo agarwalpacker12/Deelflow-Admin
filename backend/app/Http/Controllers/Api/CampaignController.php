@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Offer;
 use Illuminate\Http\Request;
 
-class OfferController extends Controller
+class CampaignController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +26,7 @@ class OfferController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Offer $offer)
+    public function show(string $id)
     {
         //
     }
@@ -35,7 +34,7 @@ class OfferController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Offer $offer)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -43,7 +42,7 @@ class OfferController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Offer $offer)
+    public function destroy(string $id)
     {
         //
     }
