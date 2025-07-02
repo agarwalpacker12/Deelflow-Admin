@@ -101,6 +101,54 @@ Accept: application/json
     }
     ```
 
+### Get Current User
+
+*   **Description:** Retrieves the authenticated user's profile information.
+*   **Method:** GET
+*   **Endpoint:** `/api/user`
+*   **Headers:** `Authorization: Bearer {token}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "User retrieved successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440000",
+            "email": "user@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "company_name": "Real Estate Ventures LLC",
+            "phone": "+1234567890",
+            "role": "wholesaler",
+            "level": 1,
+            "points": 0,
+            "subscription_tier": "starter",
+            "subscription_status": "active",
+            "is_verified": false,
+            "is_active": true,
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
+
+### Logout User
+
+*   **Description:** Logs out the authenticated user and invalidates the token.
+*   **Method:** POST
+*   **Endpoint:** `/api/logout`
+*   **Headers:** `Authorization: Bearer {token}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "User logged out successfully"
+    }
+    ```
+
 ## Leads API
 
 ### List Leads
@@ -183,6 +231,81 @@ Accept: application/json
         "mortgage_balance": 180000.00,
         "asking_price": 220000.00,
         "preferred_contact_method": "phone"
+    }
+    ```
+
+### Get Lead
+
+*   **Description:** Retrieves a specific lead by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/leads/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Lead retrieved successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440001",
+            "user_id": 1,
+            "first_name": "Jane",
+            "last_name": "Smith",
+            "email": "jane.smith@example.com",
+            "phone": "+1987654321",
+            "property_address": "123 Main St",
+            "property_city": "Austin",
+            "property_state": "TX",
+            "property_zip": "78701",
+            "property_type": "single_family",
+            "ai_score": 85,
+            "motivation_score": 90,
+            "urgency_score": 75,
+            "financial_score": 80,
+            "source": "website_form",
+            "estimated_value": 250000.00,
+            "mortgage_balance": 180000.00,
+            "asking_price": 220000.00,
+            "status": "qualified",
+            "preferred_contact_method": "phone",
+            "next_action": "Schedule property visit",
+            "next_action_date": "2025-06-28",
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
+
+### Update Lead
+
+*   **Description:** Updates an existing lead.
+*   **Method:** PUT
+*   **Endpoint:** `/api/leads/{id}`
+*   **Request:**
+
+    ```json
+    {
+        "first_name": "Jane",
+        "last_name": "Smith",
+        "email": "jane.smith@example.com",
+        "phone": "+1987654321",
+        "status": "qualified",
+        "next_action": "Schedule property visit",
+        "next_action_date": "2025-06-28"
+    }
+    ```
+
+### Delete Lead
+
+*   **Description:** Deletes a specific lead.
+*   **Method:** DELETE
+*   **Endpoint:** `/api/leads/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Lead deleted successfully"
     }
     ```
 
@@ -303,6 +426,88 @@ Accept: application/json
         "assignment_fee": 15000.00,
         "description": "Beautiful single-family home with great potential",
         "seller_notes": "Motivated seller, quick closing preferred"
+    }
+    ```
+
+### Get Property
+
+*   **Description:** Retrieves a specific property by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/properties/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Property retrieved successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440002",
+            "user_id": 1,
+            "address": "456 Oak Avenue",
+            "unit": "Unit A",
+            "city": "Austin",
+            "state": "TX",
+            "zip": "78702",
+            "county": "Travis",
+            "property_type": "single_family",
+            "bedrooms": 3,
+            "bathrooms": 2.5,
+            "square_feet": 1800,
+            "lot_size": 0.25,
+            "year_built": 1995,
+            "purchase_price": 180000.00,
+            "arv": 250000.00,
+            "repair_estimate": 25000.00,
+            "holding_costs": 5000.00,
+            "profit_potential": 40000.00,
+            "ai_score": 92,
+            "transaction_type": "assignment",
+            "assignment_fee": 15000.00,
+            "status": "active",
+            "view_count": 45,
+            "save_count": 8,
+            "inquiry_count": 3,
+            "images": [
+                "https://example.com/images/property1_1.jpg",
+                "https://example.com/images/property1_2.jpg"
+            ],
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
+
+### Update Property
+
+*   **Description:** Updates an existing property.
+*   **Method:** PUT
+*   **Endpoint:** `/api/properties/{id}`
+*   **Request:**
+
+    ```json
+    {
+        "address": "456 Oak Avenue",
+        "city": "Austin",
+        "state": "TX",
+        "zip": "78702",
+        "purchase_price": 185000.00,
+        "arv": 260000.00,
+        "status": "active"
+    }
+    ```
+
+### Delete Property
+
+*   **Description:** Deletes a specific property.
+*   **Method:** DELETE
+*   **Endpoint:** `/api/properties/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Property deleted successfully"
     }
     ```
 
@@ -446,6 +651,75 @@ Accept: application/json
     }
     ```
 
+### Get Deal
+
+*   **Description:** Retrieves a specific deal by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/deals/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal retrieved successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440003",
+            "property_id": 1,
+            "lead_id": 1,
+            "wholesaler_id": 1,
+            "buyer_id": 2,
+            "seller_id": 3,
+            "deal_type": "assignment",
+            "purchase_price": 180000.00,
+            "sale_price": 195000.00,
+            "assignment_fee": 15000.00,
+            "contract_date": "2025-06-26",
+            "closing_date": "2025-07-15",
+            "inspection_period": 10,
+            "earnest_money": 5000.00,
+            "status": "active",
+            "contract_terms": {
+                "financing_contingency": true,
+                "inspection_contingency": true,
+                "appraisal_contingency": false
+            },
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
+
+### Update Deal
+
+*   **Description:** Updates an existing deal.
+*   **Method:** PUT
+*   **Endpoint:** `/api/deals/{id}`
+*   **Request:**
+
+    ```json
+    {
+        "purchase_price": 185000.00,
+        "sale_price": 200000.00,
+        "closing_date": "2025-07-20",
+        "status": "pending"
+    }
+    ```
+
+### Delete Deal
+
+*   **Description:** Deletes a specific deal.
+*   **Method:** DELETE
+*   **Endpoint:** `/api/deals/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal deleted successfully"
+    }
+    ```
+
 ## Deal Milestones API
 
 ### List Deal Milestones
@@ -477,6 +751,102 @@ Accept: application/json
 *   **Description:** Marks a milestone as completed.
 *   **Method:** PATCH
 *   **Endpoint:** `/api/deal-milestones/{milestone}/complete`
+
+### List All Deal Milestones
+
+*   **Description:** Retrieves all deal milestones with filtering options.
+*   **Method:** GET
+*   **Endpoint:** `/api/deal-milestones`
+*   **Query Parameters:**
+    - `deal_id`: Filter by specific deal
+    - `milestone_type`: Filter by milestone type
+    - `is_critical`: Filter by critical milestones
+    - `completed`: Filter by completion status
+
+### Get Deal Milestone
+
+*   **Description:** Retrieves a specific deal milestone by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/deal-milestones/{id}`
+
+### Update Deal Milestone
+
+*   **Description:** Updates an existing deal milestone.
+*   **Method:** PUT
+*   **Endpoint:** `/api/deal-milestones/{id}`
+*   **Request:**
+
+    ```json
+    {
+        "title": "Updated Property Inspection",
+        "description": "Updated description",
+        "due_date": "2025-07-05",
+        "is_critical": false
+    }
+    ```
+
+### Delete Deal Milestone
+
+*   **Description:** Deletes a specific deal milestone.
+*   **Method:** DELETE
+*   **Endpoint:** `/api/deal-milestones/{id}`
+
+## Property Saves API (Complete)
+
+### List Saved Properties
+
+*   **Description:** Retrieves user's saved properties with pagination.
+*   **Method:** GET
+*   **Endpoint:** `/api/property-saves`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Saved properties retrieved successfully",
+        "data": [
+            {
+                "id": 1,
+                "user_id": 1,
+                "property_id": 1,
+                "property": {
+                    "id": 1,
+                    "address": "456 Oak Avenue",
+                    "city": "Austin",
+                    "state": "TX",
+                    "purchase_price": 180000.00,
+                    "arv": 250000.00
+                },
+                "saved_at": "2025-06-26T20:00:00.000000Z"
+            }
+        ]
+    }
+    ```
+
+### Save Property
+
+*   **Description:** Adds a property to user's saved/favorites list.
+*   **Method:** POST
+*   **Endpoint:** `/api/property-saves`
+*   **Request:**
+
+    ```json
+    {
+        "property_id": 1
+    }
+    ```
+
+### Get Saved Property
+
+*   **Description:** Retrieves a specific saved property by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/property-saves/{id}`
+
+### Remove Saved Property
+
+*   **Description:** Removes a property from user's saved list.
+*   **Method:** DELETE
+*   **Endpoint:** `/api/property-saves/{id}`
 
 ## AI Conversations API
 
@@ -540,6 +910,35 @@ Accept: application/json
         "external_id": "twilio_call_123"
     }
     ```
+
+### Get AI Conversation
+
+*   **Description:** Retrieves a specific AI conversation by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/ai-conversations/{id}`
+
+### Update AI Conversation
+
+*   **Description:** Updates an existing AI conversation.
+*   **Method:** PUT
+*   **Endpoint:** `/api/ai-conversations/{id}`
+*   **Request:**
+
+    ```json
+    {
+        "sentiment_score": 80,
+        "urgency_score": 85,
+        "status": "completed",
+        "outcome": "qualified_lead",
+        "next_steps": "Schedule property visit"
+    }
+    ```
+
+### Delete AI Conversation
+
+*   **Description:** Deletes a specific AI conversation.
+*   **Method:** DELETE
+*   **Endpoint:** `/api/ai-conversations/{id}`
 
 ## Campaigns API
 
@@ -610,6 +1009,39 @@ Accept: application/json
     }
     ```
 
+### Get Campaign
+
+*   **Description:** Retrieves a specific campaign by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/campaigns/{id}`
+
+### Update Campaign
+
+*   **Description:** Updates an existing campaign.
+*   **Method:** PUT
+*   **Endpoint:** `/api/campaigns/{id}`
+*   **Request:**
+
+    ```json
+    {
+        "name": "Updated Campaign Name",
+        "status": "paused",
+        "budget": 1500.00
+    }
+    ```
+
+### Delete Campaign
+
+*   **Description:** Deletes a specific campaign.
+*   **Method:** DELETE
+*   **Endpoint:** `/api/campaigns/{id}`
+
+### Get Campaign Recipients
+
+*   **Description:** Retrieves recipients for a specific campaign.
+*   **Method:** GET
+*   **Endpoint:** `/api/campaigns/{id}/recipients`
+
 ## Campaign Recipients API
 
 ### List Campaign Recipients
@@ -631,6 +1063,47 @@ Accept: application/json
         "lead_ids": [1, 2, 3, 4, 5]
     }
     ```
+
+### List All Campaign Recipients
+
+*   **Description:** Retrieves all campaign recipients with filtering options.
+*   **Method:** GET
+*   **Endpoint:** `/api/campaign-recipients`
+*   **Query Parameters:**
+    - `campaign_id`: Filter by specific campaign
+    - `sent`: Filter by sent status
+    - `opened`: Filter by opened status
+    - `clicked`: Filter by clicked status
+    - `responded`: Filter by responded status
+
+### Get Campaign Recipient
+
+*   **Description:** Retrieves a specific campaign recipient by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/campaign-recipients/{id}`
+
+### Update Campaign Recipient
+
+*   **Description:** Updates campaign recipient engagement tracking.
+*   **Method:** PUT
+*   **Endpoint:** `/api/campaign-recipients/{id}`
+*   **Request:**
+
+    ```json
+    {
+        "sent_at": "2025-06-27T10:00:00.000000Z",
+        "opened_at": "2025-06-27T10:15:00.000000Z",
+        "clicked_at": "2025-06-27T10:20:00.000000Z",
+        "open_count": 2,
+        "click_count": 1
+    }
+    ```
+
+### Remove Campaign Recipient
+
+*   **Description:** Removes a recipient from a campaign.
+*   **Method:** DELETE
+*   **Endpoint:** `/api/campaign-recipients/{id}`
 
 ## User Achievements API
 
@@ -668,6 +1141,37 @@ Accept: application/json
         }
     }
     ```
+
+### Create User Achievement
+
+*   **Description:** Creates a new achievement (typically called by system).
+*   **Method:** POST
+*   **Endpoint:** `/api/user-achievements`
+*   **Request:**
+
+    ```json
+    {
+        "achievement_type": "deal_milestone",
+        "achievement_name": "First Deal Closed",
+        "points_earned": 100,
+        "metadata": {
+            "deal_id": 1,
+            "deal_value": 15000.00
+        }
+    }
+    ```
+
+### Get User Achievement
+
+*   **Description:** Retrieves a specific achievement by ID.
+*   **Method:** GET
+*   **Endpoint:** `/api/user-achievements/{id}`
+
+### Delete User Achievement
+
+*   **Description:** Deletes a specific achievement (admin only operation).
+*   **Method:** DELETE
+*   **Endpoint:** `/api/user-achievements/{id}`
 
 ## Error Responses
 
