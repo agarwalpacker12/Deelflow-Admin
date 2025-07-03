@@ -34,12 +34,18 @@ fi
 echo ""
 echo "🎯 Starting servers..."
 echo "   Frontend: http://localhost:5173 (React Vite server)"
-echo "   Backend:  http://localhost:5174 (Laravel Vite server with proxy)"
+echo "   Backend API: http://localhost:8000 (Laravel application server)"
+echo "   Backend Assets: http://localhost:5174 (Laravel Vite server)"
 echo ""
-echo "🌐 Access your application at: http://localhost:5174"
+echo "🌐 Access your application at: http://localhost:5173"
 echo ""
 echo "Press Ctrl+C to stop all servers"
 echo ""
 
 # Start the development servers
-cd backend && npm run dev:full
+cd backend && npx concurrently \
+  "php artisan serve --port=8000 --host=0.0.0.0" \
+  "npm run dev:frontend" \
+  "npm run dev:backend" \
+  --names "laravel,frontend,vite" \
+  --prefix-colors "red,blue,green"
