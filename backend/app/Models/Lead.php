@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; // Added this line
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,23 +11,68 @@ class Lead extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'alternate_phone',
+        'property_address',
+        'property_city',
+        'property_state',
+        'property_zip',
+        'property_type',
+        'ai_score',
+        'motivation_score',
+        'urgency_score',
+        'financial_score',
         'source',
-        'original_data',
+        'source_details',
+        'estimated_value',
+        'mortgage_balance',
+        'asking_price',
         'status',
-        'qualification_score',
-        'lead_details',
-        'assigned_to_user_id',
+        'disposition',
+        'preferred_contact_method',
+        'best_time_to_call',
+        'ai_insights',
+        'conversation_summary',
+        'next_action',
+        'next_action_date',
+        'last_contact_at',
     ];
 
     protected $casts = [
-        'original_data' => 'array', // Cast original_data to array
+        'source_details' => 'array',
+        'ai_insights' => 'array',
+        'estimated_value' => 'decimal:2',
+        'mortgage_balance' => 'decimal:2',
+        'asking_price' => 'decimal:2',
+        'next_action_date' => 'date',
+        'last_contact_at' => 'datetime',
     ];
 
     /**
-     * Get the user to whom the lead is assigned.
+     * Get the user that owns the lead.
      */
-    public function assignedTo(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'assigned_to_user_id');
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the deals for the lead.
+     */
+    public function deals(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Deal::class);
+    }
+
+    /**
+     * Get the AI conversations for the lead.
+     */
+    public function aiConversations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(AiConversation::class);
     }
 }
