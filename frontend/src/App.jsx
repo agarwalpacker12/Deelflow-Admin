@@ -9,33 +9,33 @@ import { AnimatePresence } from 'framer-motion';
 import { store } from './store/store';
 
 // Contexts
-import { AuthProvider } from './contexts/AuthContext';
-import { Web3Provider } from './contexts/Web3Context';
-import { PsychologyProvider } from './contexts/PsychologyContext';
-import { AIProvider } from './contexts/AIContext';
+import { AuthProvider } from './contexts/AuthContext.jsx';
+import { Web3Provider } from './contexts/Web3Context.jsx';
+import { PsychologyProvider } from './contexts/PsychologyContext.jsx';
+import { AIProvider } from './contexts/AIContext.jsx';
 
 // Components
-import Layout from './components/Layout/Layout';
-import ProtectedRoute from './components/Auth/ProtectedRoute';
-import LoadingSpinner from './components/UI/LoadingSpinner';
+import Layout from './components/Layout/Layout.jsx';
+import ProtectedRoute from './components/Auth/ProtectedRoute.jsx';
+import LoadingSpinner from './components/UI/LoadingSpinner.jsx';
 
 // Pages
-import LandingPage from './pages/Landing/LandingPage';
-import LoginPage from './pages/Auth/LoginPage';
-import RegisterPage from './pages/Auth/RegisterPage';
-import Dashboard from './pages/Dashboard/Dashboard';
-import LeadsPage from './pages/Leads/LeadsPage';
-import PropertiesPage from './pages/Properties/PropertiesPage';
-import DealsPage from './pages/Deals/DealsPage';
-import MarketplacePage from './pages/Marketplace/MarketplacePage';
-import CampaignsPage from './pages/Campaigns/CampaignsPage';
-import AIAssistantPage from './pages/AI/AIAssistantPage';
-import BlockchainPage from './pages/Blockchain/BlockchainPage';
-import AnalyticsPage from './pages/Analytics/AnalyticsPage';
-import ProfilePage from './pages/Profile/ProfilePage';
-import SettingsPage from './pages/Settings/SettingsPage';
-import WhiteLabelPage from './pages/WhiteLabel/WhiteLabelPage';
-import PsychologyDashboard from './pages/Psychology/PsychologyDashboard';
+import LandingPage from './pages/Landing/LandingPage.jsx';
+import LoginPage from './pages/Auth/LoginPage.jsx';
+import RegisterPage from './pages/Auth/RegisterPage.jsx';
+import Dashboard from './pages/Dashboard/Dashboard.jsx';
+import LeadsPage from './pages/Leads/LeadsPage.jsx';
+import PropertiesPage from './pages/Properties/PropertiesPage.jsx';
+import DealsPage from './pages/Deals/DealsPage.jsx';
+import MarketplacePage from './pages/Marketplace/MarketplacePage.jsx';
+import CampaignsPage from './pages/Campaigns/CampaignsPage.jsx';
+import AIAssistantPage from './pages/AI/AIAssistantPage.jsx';
+import BlockchainPage from './pages/Blockchain/BlockchainPage.jsx';
+import AnalyticsPage from './pages/Analytics/AnalyticsPage.jsx';
+import ProfilePage from './pages/Profile/ProfilePage.jsx';
+import SettingsPage from './pages/Settings/SettingsPage.jsx';
+import WhiteLabelPage from './pages/WhiteLabel/WhiteLabelPage.jsx';
+import PsychologyDashboard from './pages/Psychology/PsychologyDashboard.jsx';
 
 // Styles
 import './index.css';

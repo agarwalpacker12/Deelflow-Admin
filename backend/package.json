@@ -4,7 +4,12 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "dev:frontend": "cd ../frontend && npm run dev",
+        "dev:frontend-build": "cd ../frontend && npm run build",
+        "dev:backend": "vite",
+        "dev:full": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\" --names \"frontend,backend\" --prefix-colors \"blue,green\"",
+        "dev:production": "npm run dev:frontend-build && npm run dev:backend"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
