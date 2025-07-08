@@ -4,6 +4,11 @@ import App from './App.jsx';
 import './index.css';
 import { initializeErrorSuppression } from './utils/errorSuppression.js';
 
+// Initialize Codespaces HMR fixes FIRST (before Vite's HMR client loads)
+if (import.meta.env.DEV) {
+  import('./utils/codespaces-hmr.js');
+}
+
 // Initialize error suppression for development environment
 initializeErrorSuppression();
 

@@ -125,7 +125,8 @@ class PropertyController extends Controller
 
         // Real implementation
         try {
-            $property = Property::create(array_merge($request->validated(), [
+            $validatedData = $validator->validated();
+            $property = Property::create(array_merge($validatedData, [
                 'user_id' => auth()->id(),
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'ai_score' => rand(60, 100), // Mock AI score for now
@@ -203,7 +204,8 @@ class PropertyController extends Controller
         }
 
         try {
-            $property->update($request->validated());
+            $validatedData = $validator->validated();
+            $property->update($validatedData);
             return $this->successResponse($property, 'Property updated successfully');
 
         } catch (\Exception $e) {

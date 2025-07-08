@@ -15,7 +15,7 @@ export default defineConfig({
         host: '0.0.0.0',
         hmr: {
             port: 5175, // Use a different port for backend HMR to avoid conflicts
-            host: 'localhost', // Force HMR to use localhost to avoid Codespaces routing issues
+            host: '0.0.0.0', // Use 0.0.0.0 for Codespaces compatibility
         },
         cors: true, // Enable CORS for all origins in development
         headers: {

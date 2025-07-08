@@ -97,7 +97,8 @@ class DealController extends Controller
 
         // Real implementation
         try {
-            $deal = Deal::create(array_merge($request->validated(), [
+            $validatedData = $validator->validated();
+            $deal = Deal::create(array_merge($validatedData, [
                 'wholesaler_id' => auth()->id(),
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'status' => 'active'
@@ -169,7 +170,8 @@ class DealController extends Controller
         }
 
         try {
-            $deal->update($request->validated());
+            $validatedData = $validator->validated();
+            $deal->update($validatedData);
             $deal->load(['property', 'lead', 'wholesaler', 'buyer', 'seller']);
             
             return $this->successResponse($deal, 'Deal updated successfully');

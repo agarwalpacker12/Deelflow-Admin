@@ -91,7 +91,8 @@ class CampaignController extends Controller
 
         // Real implementation
         try {
-            $campaign = Campaign::create(array_merge($request->validated(), [
+            $validatedData = $validator->validated();
+            $campaign = Campaign::create(array_merge($validatedData, [
                 'user_id' => auth()->id(),
                 'status' => 'draft',
                 'total_recipients' => 0,
@@ -175,7 +176,8 @@ class CampaignController extends Controller
         }
 
         try {
-            $campaign->update($request->validated());
+            $validatedData = $validator->validated();
+            $campaign->update($validatedData);
             $campaign->load(['user', 'recipients']);
             
             return $this->successResponse($campaign, 'Campaign updated successfully');

@@ -106,8 +106,10 @@ class AiConversationController extends Controller
 
         // Real implementation
         try {
-            $conversation = AiConversation::create(array_merge($request->validated(), [
+            $validatedData = $validator->validated();
+            $conversation = AiConversation::create(array_merge($validatedData, [
                 'user_id' => auth()->id(),
+                'uuid' => \Illuminate\Support\Str::uuid(),
                 'status' => $request->status ?? 'active',
                 'transferred_to_human' => false,
             ]));
@@ -183,7 +185,8 @@ class AiConversationController extends Controller
         }
 
         try {
-            $conversation->update($request->validated());
+            $validatedData = $validator->validated();
+            $conversation->update($validatedData);
             $conversation->load(['user', 'lead', 'property']);
             
             return $this->successResponse($conversation, 'AI conversation updated successfully');

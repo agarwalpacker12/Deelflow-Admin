@@ -12,8 +12,8 @@ export default defineConfig({
     port: 5173,
     host: '0.0.0.0', // Allow external connections (required for Codespaces)
     hmr: {
-      port: 5174, // Use a different port for frontend HMR
-      host: 'localhost', // Force HMR to use localhost to avoid Codespaces routing issues
+      port: 5174,
+      host: '0.0.0.0', // Use 0.0.0.0 for Codespaces compatibility
     },
     cors: true, // Enable CORS for all origins in development
     headers: {

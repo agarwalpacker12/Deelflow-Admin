@@ -12,6 +12,7 @@ class Deal extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'property_id',
         'lead_id',
         'wholesaler_id',
