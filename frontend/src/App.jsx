@@ -46,6 +46,7 @@ import PsychologyDashboard from "./pages/Psychology/PsychologyDashboard.jsx";
 import "./index.css";
 import AddLead from "./pages/Leads/add/index.jsx";
 import EditLead from "./pages/Leads/edit/index.jsx";
+import AddProperty from "./pages/Properties/add/index.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -94,10 +95,15 @@ function App() {
                           <Route path="leads/add" element={<AddLead />} />
                           <Route path="leads/edit" element={<EditLead />} />
 
-                          <Route
+                           <Route
                             path="properties"
                             element={<PropertiesPage />}
-                          />
+                          /> 
+                          {/* <Route
+                            path="properties/add"
+                            element={<AddProperty />}
+                          /> */}
+
                           <Route path="deals" element={<DealsPage />} />
                           <Route
                             path="marketplace"
