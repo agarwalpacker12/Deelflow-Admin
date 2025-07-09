@@ -63,9 +63,24 @@ export const logout = createAsyncThunk(
   }
 );
 
+// Helper function to safely parse JSON from localStorage
+const safeParseJSON = (item) => {
+  try {
+    const value = localStorage.getItem(item);
+    if (value === null || value === 'undefined' || value === 'null') {
+      return null;
+    }
+    return JSON.parse(value);
+  } catch (error) {
+    console.warn(`Failed to parse ${item} from localStorage:`, error);
+    localStorage.removeItem(item); // Clean up invalid data
+    return null;
+  }
+};
+
 // Initial state
 const initialState = {
-  user: JSON.parse(localStorage.getItem('user')) || null,
+  user: safeParseJSON('user'),
   token: localStorage.getItem('token') || null,
   isAuthenticated: !!localStorage.getItem('token'),
   loading: false,

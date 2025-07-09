@@ -220,7 +220,8 @@ class CampaignRecipientController extends Controller
         }
 
         try {
-            $recipient->update($request->validated());
+            $validatedData = $validator->validated();
+            $recipient->update($validatedData);
             $recipient->load(['campaign', 'lead']);
             
             return $this->successResponse($recipient, 'Campaign recipient updated successfully');

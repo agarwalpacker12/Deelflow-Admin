@@ -93,7 +93,8 @@ class UserAchievementController extends Controller
 
         // Real implementation
         try {
-            $achievement = UserAchievement::create(array_merge($request->validated(), [
+            $validatedData = $validator->validated();
+            $achievement = UserAchievement::create(array_merge($validatedData, [
                 'user_id' => auth()->id(),
             ]));
 

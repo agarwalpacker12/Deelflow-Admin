@@ -91,7 +91,8 @@ class DealMilestoneController extends Controller
 
         // Real implementation
         try {
-            $milestone = DealMilestone::create($request->validated());
+            $validatedData = $validator->validated();
+            $milestone = DealMilestone::create($validatedData);
             $milestone->load(['deal', 'completedBy']);
 
             return $this->successResponse($milestone, 'Deal milestone created successfully', 201);
@@ -150,7 +151,8 @@ class DealMilestoneController extends Controller
         }
 
         try {
-            $milestone->update($request->validated());
+            $validatedData = $validator->validated();
+            $milestone->update($validatedData);
             $milestone->load(['deal', 'completedBy']);
             
             return $this->successResponse($milestone, 'Deal milestone updated successfully');

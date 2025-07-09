@@ -97,7 +97,8 @@ class LeadController extends Controller
 
         // Real implementation
         try {
-            $lead = Lead::create(array_merge($request->validated(), [
+            $validatedData = $validator->validated();
+            $lead = Lead::create(array_merge($validatedData, [
                 'user_id' => auth()->id(),
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'ai_score' => rand(50, 100), // Mock AI score for now
@@ -174,7 +175,8 @@ class LeadController extends Controller
         }
 
         try {
-            $lead->update($request->validated());
+            $validatedData = $validator->validated();
+            $lead->update($validatedData);
             return $this->successResponse($lead, 'Lead updated successfully');
 
         } catch (\Exception $e) {
