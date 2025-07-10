@@ -34,7 +34,6 @@ import PropertiesPage from "./pages/Properties/PropertiesPage.jsx";
 import DealsPage from "./pages/Deals/DealsPage.jsx";
 import MarketplacePage from "./pages/Marketplace/MarketplacePage.jsx";
 import CampaignsPage from "./pages/Campaigns/CampaignsPage.jsx";
-import AIAssistantPage from "./pages/AI/AIAssistantPage.jsx";
 import BlockchainPage from "./pages/Blockchain/BlockchainPage.jsx";
 import AnalyticsPage from "./pages/Analytics/AnalyticsPage.jsx";
 import ProfilePage from "./pages/Profile/ProfilePage.jsx";
@@ -47,10 +46,11 @@ import "./index.css";
 import AddLead from "./pages/Leads/add/index.jsx";
 import EditLead from "./pages/Leads/edit/index.jsx";
 import AddProperty from "./pages/Properties/add/index.jsx";
-import AddDealsForm from "./pages/Deals/add/Form.jsx";
 import AddDeals from "./pages/Deals/add/index.jsx";
 import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
 import DealsMileStonePage from "./pages/Deals_Milestone/DealsMilestonePage.jsx";
+import AiAssistantPage from "./pages/AI/AiConversationPage.jsx";
+import AddAiAssistance from "./pages/AI/add/index.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -120,15 +120,20 @@ function App() {
                             element={<AddDealsMilestone />}
                           />
                           <Route
+                            path="ai-assistant"
+                            element={<AiAssistantPage />}
+                          />
+                          <Route
+                            path="ai-assistant/add"
+                            element={<AddAiAssistance />}
+                          />
+                          <Route
                             path="marketplace"
                             element={<MarketplacePage />}
                           />
 
                           <Route path="campaigns" element={<CampaignsPage />} />
-                          <Route
-                            path="ai-assistant"
-                            element={<AIAssistantPage />}
-                          />
+
                           <Route
                             path="blockchain"
                             element={<BlockchainPage />}
