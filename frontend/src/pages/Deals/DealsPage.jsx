@@ -144,7 +144,9 @@ const DealsPage = () => {
                     {deal.milestone_type}
                   </td>
                   <td className="px-6 py-4 text-white text-xs">{deal.title}</td>
-                  <td className="px-6 py-4 text-white text-xs">{due_date}</td>
+                  <td className="px-6 py-4 text-white text-xs">
+                    {deal.due_date}
+                  </td>
                   <td className="px-6 py-4 text-sm font-medium">
                     <div className="flex space-x-2">
                       <button className="text-blue-400 hover:text-blue-300 transition-colors px-2 py-1 rounded text-xs">
