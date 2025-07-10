@@ -49,6 +49,8 @@ import EditLead from "./pages/Leads/edit/index.jsx";
 import AddProperty from "./pages/Properties/add/index.jsx";
 import AddDealsForm from "./pages/Deals/add/Form.jsx";
 import AddDeals from "./pages/Deals/add/index.jsx";
+import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
+import DealsMileStonePage from "./pages/Deals_Milestone/DealsMilestonePage.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -108,10 +110,20 @@ function App() {
 
                           <Route path="deals" element={<DealsPage />} />
                           <Route path="deals/add" element={<AddDeals />} />
+
+                          <Route
+                            path="milestone"
+                            element={<DealsMileStonePage />}
+                          />
+                          <Route
+                            path="milestone/add"
+                            element={<AddDealsMilestone />}
+                          />
                           <Route
                             path="marketplace"
                             element={<MarketplacePage />}
                           />
+
                           <Route path="campaigns" element={<CampaignsPage />} />
                           <Route
                             path="ai-assistant"
