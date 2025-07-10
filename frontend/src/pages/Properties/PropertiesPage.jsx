@@ -1,18 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Filter,
   ChevronLeft,
   ChevronRight,
-  DollarSign,
   RefreshCw,
-  Home,
-  BedDouble,
-  Bath,
-  MapPin,
-  Eye,
-  Edit,
-  Trash2,
 } from "lucide-react";
 import { propertiesAPI } from "../../services/api";
 import Table from "./Table";
@@ -77,13 +69,20 @@ const PropertiesPage = () => {
       }
     };
     fetchProperties();
-  }, [searchTerm, statusFilter, cityFilter, 
-    // zipFilter, 
+  }, [
+    searchTerm,
+    statusFilter,
+    cityFilter,
+    // zipFilter,
     priceMin,
     //  priceMax,
-     bedrooms, 
+    bedrooms,
     //  bathrooms,
-      transactionType, minAiScore, perPage, currentPage]);
+    transactionType,
+    minAiScore,
+    perPage,
+    currentPage,
+  ]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -172,7 +171,7 @@ const PropertiesPage = () => {
               className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           {/* Price Min */}
           <div>
             <input
@@ -183,7 +182,7 @@ const PropertiesPage = () => {
               className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          
+
           {/* Bedrooms */}
           <div>
             <input
@@ -194,7 +193,7 @@ const PropertiesPage = () => {
               className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-           
+
           {/* Transaction Type */}
           <div>
             <select
@@ -265,7 +264,8 @@ const PropertiesPage = () => {
         <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-400">
-              Showing {(currentPage - 1) * perPage + 1} to {Math.min(currentPage * perPage, total)} of {total} properties
+              Showing {(currentPage - 1) * perPage + 1} to{" "}
+              {Math.min(currentPage * perPage, total)} of {total} properties
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -280,14 +280,20 @@ const PropertiesPage = () => {
                   <button
                     key={i + 1}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`px-3 py-1 rounded-lg text-sm transition-colors ${currentPage === i + 1 ? "bg-blue-500 text-white" : "text-gray-400 hover:text-white hover:bg-white/10"}`}
+                    className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
                   >
                     {i + 1}
                   </button>
                 ))}
               </div>
               <button
-                onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
                 disabled={currentPage === totalPages}
                 className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
