@@ -51,6 +51,10 @@ import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
 import DealsMileStonePage from "./pages/Deals_Milestone/DealsMilestonePage.jsx";
 import AiAssistantPage from "./pages/AI/AiConversationPage.jsx";
 import AddAiAssistance from "./pages/AI/add/index.jsx";
+import AddCampaign from "./pages/Campaigns/add/index.jsx";
+import CampaignsRecipientPage from "./pages/Campaigns_Recipients/RecipientPage.jsx";
+import AchievementsTable from "./pages/Achievement/AchievementPage.jsx";
+import AddAchievement from "./pages/Achievement/add/index.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -127,12 +131,30 @@ function App() {
                             path="ai-assistant/add"
                             element={<AddAiAssistance />}
                           />
+
+                          <Route path="campaigns" element={<CampaignsPage />} />
+                          <Route
+                            path="campaigns/add"
+                            element={<AddCampaign />}
+                          />
+                          <Route
+                            path="recipients"
+                            element={<CampaignsRecipientPage />}
+                          />
+
+                          <Route
+                            path="achievements/add"
+                            element={<AddAchievement />}
+                          />
+                          <Route
+                            path="achievements"
+                            element={<AchievementsTable />}
+                          />
+
                           <Route
                             path="marketplace"
                             element={<MarketplacePage />}
                           />
-
-                          <Route path="campaigns" element={<CampaignsPage />} />
 
                           <Route
                             path="blockchain"
