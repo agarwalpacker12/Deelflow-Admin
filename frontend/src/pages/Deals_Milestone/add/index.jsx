@@ -1,24 +1,22 @@
-import EditPropertyForm from "./Form";
+import AddDealMilestoneForm from "./Form";
 
-function AddProperty() {
-  
+function AddDealsMilestone() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-8">
             <h2 className="text-3xl font-bold text-white mb-2">
-              Edit New Property
+              Add New Deal Milestone
             </h2>
             <p className="text-purple-100">
-              Fill out the form below to update a property to your pipeline.
+              Fill out the form below to add a new deal milestone to your
+              pipeline.
             </p>
           </div>
 
-          {/* Success Message */}
-
           <div className="space-y-6">
-            <EditPropertyForm />
+            <AddDealMilestoneForm />
           </div>
         </div>
       </div>
@@ -26,4 +24,4 @@ function AddProperty() {
   );
 }
 
-export default AddProperty;
+export default AddDealsMilestone;

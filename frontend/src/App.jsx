@@ -34,7 +34,6 @@ import PropertiesPage from "./pages/Properties/PropertiesPage.jsx";
 import DealsPage from "./pages/Deals/DealsPage.jsx";
 import MarketplacePage from "./pages/Marketplace/MarketplacePage.jsx";
 import CampaignsPage from "./pages/Campaigns/CampaignsPage.jsx";
-import AIAssistantPage from "./pages/AI/AIAssistantPage.jsx";
 import BlockchainPage from "./pages/Blockchain/BlockchainPage.jsx";
 import AnalyticsPage from "./pages/Analytics/AnalyticsPage.jsx";
 import ProfilePage from "./pages/Profile/ProfilePage.jsx";
@@ -46,6 +45,16 @@ import PsychologyDashboard from "./pages/Psychology/PsychologyDashboard.jsx";
 import "./index.css";
 import AddLead from "./pages/Leads/add/index.jsx";
 import EditLead from "./pages/Leads/edit/index.jsx";
+import AddProperty from "./pages/Properties/add/index.jsx";
+import AddDeals from "./pages/Deals/add/index.jsx";
+import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
+import DealsMileStonePage from "./pages/Deals_Milestone/DealsMilestonePage.jsx";
+import AiAssistantPage from "./pages/AI/AiConversationPage.jsx";
+import AddAiAssistance from "./pages/AI/add/index.jsx";
+import AddCampaign from "./pages/Campaigns/add/index.jsx";
+import CampaignsRecipientPage from "./pages/Campaigns_Recipients/RecipientPage.jsx";
+import AchievementsTable from "./pages/Achievement/AchievementPage.jsx";
+import AddAchievement from "./pages/Achievement/add/index.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -98,16 +107,55 @@ function App() {
                             path="properties"
                             element={<PropertiesPage />}
                           />
-                          <Route path="deals" element={<DealsPage />} />
                           <Route
+                            path="properties/add"
+                            element={<AddProperty />}
+                          />
+
+                          <Route path="deals" element={<DealsPage />} />
+                          <Route path="deals/add" element={<AddDeals />} />
+
+                          <Route
+                            path="milestone"
+                            element={<DealsMileStonePage />}
+                          />
+                          <Route
+                            path="milestone/add"
+                            element={<AddDealsMilestone />}
+                          />
+                          <Route
+                            path="ai-assistant"
+                            element={<AiAssistantPage />}
+                          />
+                          <Route
+                            path="ai-assistant/add"
+                            element={<AddAiAssistance />}
+                          />
+
+                          <Route path="campaigns" element={<CampaignsPage />} />
+                          <Route
+                            path="campaigns/add"
+                            element={<AddCampaign />}
+                          />
+                          <Route
+                            path="recipients"
+                            element={<CampaignsRecipientPage />}
+                          />
+
+                          <Route
+                            path="achievements/add"
+                            element={<AddAchievement />}
+                          />
+                          <Route
+                            path="achievements"
+                            element={<AchievementsTable />}
+                          />
+                          <Route path="profile" element={<ProfilePage />} />
+                          {/* <Route
                             path="marketplace"
                             element={<MarketplacePage />}
                           />
-                          <Route path="campaigns" element={<CampaignsPage />} />
-                          <Route
-                            path="ai-assistant"
-                            element={<AIAssistantPage />}
-                          />
+
                           <Route
                             path="blockchain"
                             element={<BlockchainPage />}
@@ -122,7 +170,7 @@ function App() {
                           <Route
                             path="white-label"
                             element={<WhiteLabelPage />}
-                          />
+                          /> */}
                         </Route>
 
                         {/* Catch all route */}
