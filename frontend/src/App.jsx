@@ -150,8 +150,8 @@ function App() {
                             path="achievements"
                             element={<AchievementsTable />}
                           />
-
-                          <Route
+                          <Route path="profile" element={<ProfilePage />} />
+                          {/* <Route
                             path="marketplace"
                             element={<MarketplacePage />}
                           />
@@ -170,7 +170,7 @@ function App() {
                           <Route
                             path="white-label"
                             element={<WhiteLabelPage />}
-                          />
+                          /> */}
                         </Route>
 
                         {/* Catch all route */}
