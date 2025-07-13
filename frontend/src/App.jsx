@@ -1,51 +1,67 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Provider } from 'react-redux';
-import { Toaster } from 'react-hot-toast';
-import { AnimatePresence } from 'framer-motion';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
+import { Toaster } from "react-hot-toast";
+import { AnimatePresence } from "framer-motion";
 
 // Store
-import { store } from './store/store';
+import { store } from "./store/store";
 
 // Contexts
-import { AuthProvider } from './contexts/AuthContext.jsx';
-import { Web3Provider } from './contexts/Web3Context.jsx';
-import { PsychologyProvider } from './contexts/PsychologyContext.jsx';
-import { AIProvider } from './contexts/AIContext.jsx';
+import { AuthProvider } from "./contexts/AuthContext.jsx";
+import { Web3Provider } from "./contexts/Web3Context.jsx";
+import { PsychologyProvider } from "./contexts/PsychologyContext.jsx";
+import { AIProvider } from "./contexts/AIContext.jsx";
 
 // Components
-import Layout from './components/Layout/Layout.jsx';
-import ProtectedRoute from './components/Auth/ProtectedRoute.jsx';
-import LoadingSpinner from './components/UI/LoadingSpinner.jsx';
+import Layout from "./components/Layout/Layout.jsx";
+import ProtectedRoute from "./components/Auth/ProtectedRoute.jsx";
+import LoadingSpinner from "./components/UI/LoadingSpinner.jsx";
 
 // Pages
-import LandingPage from './pages/Landing/LandingPage.jsx';
-import LoginPage from './pages/Auth/LoginPage.jsx';
-import RegisterPage from './pages/Auth/RegisterPage.jsx';
-import Dashboard from './pages/Dashboard/Dashboard.jsx';
-import LeadsPage from './pages/Leads/LeadsPage.jsx';
-import PropertiesPage from './pages/Properties/PropertiesPage.jsx';
-import DealsPage from './pages/Deals/DealsPage.jsx';
-import MarketplacePage from './pages/Marketplace/MarketplacePage.jsx';
-import CampaignsPage from './pages/Campaigns/CampaignsPage.jsx';
-import AIAssistantPage from './pages/AI/AIAssistantPage.jsx';
-import BlockchainPage from './pages/Blockchain/BlockchainPage.jsx';
-import AnalyticsPage from './pages/Analytics/AnalyticsPage.jsx';
-import ProfilePage from './pages/Profile/ProfilePage.jsx';
-import SettingsPage from './pages/Settings/SettingsPage.jsx';
-import WhiteLabelPage from './pages/WhiteLabel/WhiteLabelPage.jsx';
-import PsychologyDashboard from './pages/Psychology/PsychologyDashboard.jsx';
+import LandingPage from "./pages/Landing/LandingPage.jsx";
+import LoginPage from "./pages/Auth/LoginPage.jsx";
+import RegisterPage from "./pages/Auth/RegisterPage.jsx";
+import Dashboard from "./pages/Dashboard/Dashboard.jsx";
+import LeadsPage from "./pages/Leads/LeadsPage.jsx";
+import PropertiesPage from "./pages/Properties/PropertiesPage.jsx";
+import DealsPage from "./pages/Deals/DealsPage.jsx";
+import MarketplacePage from "./pages/Marketplace/MarketplacePage.jsx";
+import CampaignsPage from "./pages/Campaigns/CampaignsPage.jsx";
+import BlockchainPage from "./pages/Blockchain/BlockchainPage.jsx";
+import AnalyticsPage from "./pages/Analytics/AnalyticsPage.jsx";
+import ProfilePage from "./pages/Profile/ProfilePage.jsx";
+import SettingsPage from "./pages/Settings/SettingsPage.jsx";
+import WhiteLabelPage from "./pages/WhiteLabel/WhiteLabelPage.jsx";
+import PsychologyDashboard from "./pages/Psychology/PsychologyDashboard.jsx";
 
 // Styles
-import './index.css';
+import "./index.css";
+import AddLead from "./pages/Leads/add/index.jsx";
+import EditLead from "./pages/Leads/edit/index.jsx";
+import AddProperty from "./pages/Properties/add/index.jsx";
+import AddDeals from "./pages/Deals/add/index.jsx";
+import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
+import DealsMileStonePage from "./pages/Deals_Milestone/DealsMilestonePage.jsx";
+import AiAssistantPage from "./pages/AI/AiConversationPage.jsx";
+import AddAiAssistance from "./pages/AI/add/index.jsx";
+import AddCampaign from "./pages/Campaigns/add/index.jsx";
+import CampaignsRecipientPage from "./pages/Campaigns_Recipients/RecipientPage.jsx";
+import AchievementsTable from "./pages/Achievement/AchievementPage.jsx";
+import AddAchievement from "./pages/Achievement/add/index.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 3,
-      retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000),
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
       staleTime: 5 * 60 * 1000, // 5 minutes
       cacheTime: 10 * 60 * 1000, // 10 minutes
     },
@@ -68,27 +84,93 @@ function App() {
                         <Route path="/" element={<LandingPage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />
-                        
+
                         {/* Protected Routes */}
-                        <Route path="/app" element={
-                          <ProtectedRoute>
-                            <Layout />
-                          </ProtectedRoute>
-                        }>
-                          <Route index element={<Navigate to="/app/dashboard" replace />} />
+                        <Route
+                          path="/app"
+                          element={
+                            <ProtectedRoute>
+                              <Layout />
+                            </ProtectedRoute>
+                          }
+                        >
+                          <Route
+                            index
+                            element={<Navigate to="/app/dashboard" replace />}
+                          />
                           <Route path="dashboard" element={<Dashboard />} />
                           <Route path="leads" element={<LeadsPage />} />
-                          <Route path="properties" element={<PropertiesPage />} />
+                          <Route path="leads/add" element={<AddLead />} />
+                          <Route path="leads/edit" element={<EditLead />} />
+
+                          <Route
+                            path="properties"
+                            element={<PropertiesPage />}
+                          />
+                          <Route
+                            path="properties/add"
+                            element={<AddProperty />}
+                          />
+
                           <Route path="deals" element={<DealsPage />} />
-                          <Route path="marketplace" element={<MarketplacePage />} />
+                          <Route path="deals/add" element={<AddDeals />} />
+
+                          <Route
+                            path="milestone"
+                            element={<DealsMileStonePage />}
+                          />
+                          <Route
+                            path="milestone/add"
+                            element={<AddDealsMilestone />}
+                          />
+                          <Route
+                            path="ai-assistant"
+                            element={<AiAssistantPage />}
+                          />
+                          <Route
+                            path="ai-assistant/add"
+                            element={<AddAiAssistance />}
+                          />
+
                           <Route path="campaigns" element={<CampaignsPage />} />
-                          <Route path="ai-assistant" element={<AIAssistantPage />} />
-                          <Route path="blockchain" element={<BlockchainPage />} />
+                          <Route
+                            path="campaigns/add"
+                            element={<AddCampaign />}
+                          />
+                          <Route
+                            path="recipients"
+                            element={<CampaignsRecipientPage />}
+                          />
+
+                          <Route
+                            path="achievements/add"
+                            element={<AddAchievement />}
+                          />
+                          <Route
+                            path="achievements"
+                            element={<AchievementsTable />}
+                          />
+                          <Route path="profile" element={<ProfilePage />} />
+                          {/* <Route
+                            path="marketplace"
+                            element={<MarketplacePage />}
+                          />
+
+                          <Route
+                            path="blockchain"
+                            element={<BlockchainPage />}
+                          />
                           <Route path="analytics" element={<AnalyticsPage />} />
-                          <Route path="psychology" element={<PsychologyDashboard />} />
+                          <Route
+                            path="psychology"
+                            element={<PsychologyDashboard />}
+                          />
                           <Route path="profile" element={<ProfilePage />} />
                           <Route path="settings" element={<SettingsPage />} />
-                          <Route path="white-label" element={<WhiteLabelPage />} />
+                          <Route
+                            path="white-label"
+                            element={<WhiteLabelPage />}
+                          /> */}
                         </Route>
 
                         {/* Catch all route */}
@@ -102,21 +184,21 @@ function App() {
                       toastOptions={{
                         duration: 4000,
                         style: {
-                          background: 'rgba(15, 23, 42, 0.95)',
-                          color: '#fff',
-                          border: '1px solid rgba(59, 130, 246, 0.3)',
-                          backdropFilter: 'blur(10px)',
+                          background: "rgba(15, 23, 42, 0.95)",
+                          color: "#fff",
+                          border: "1px solid rgba(59, 130, 246, 0.3)",
+                          backdropFilter: "blur(10px)",
                         },
                         success: {
                           iconTheme: {
-                            primary: '#10b981',
-                            secondary: '#fff',
+                            primary: "#10b981",
+                            secondary: "#fff",
                           },
                         },
                         error: {
                           iconTheme: {
-                            primary: '#ef4444',
-                            secondary: '#fff',
+                            primary: "#ef4444",
+                            secondary: "#fff",
                           },
                         },
                       }}
