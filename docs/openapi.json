@@ -46,8 +46,8 @@
         "type": "object",
         "properties": {
           "id": {"type": "integer"},
-          "email": {"type": "string", "format": "email"},
-          "phone": {"type": "string"},
+          "email": {"type": "string", "format": "email", "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"},
+          "phone": {"type": "string", "pattern": "^\\+[1-9]\\d{1,14}$"},
           "first_name": {"type": "string"},
           "last_name": {"type": "string"},
           "company_name": {"type": "string"},
@@ -76,14 +76,14 @@
           "user_id": {"type": "integer"},
           "first_name": {"type": "string"},
           "last_name": {"type": "string"},
-          "email": {"type": "string", "format": "email"},
-          "phone": {"type": "string"},
-          "alternate_phone": {"type": "string"},
+          "email": {"type": "string", "format": "email", "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"},
+          "phone": {"type": "string", "pattern": "^\\+[1-9]\\d{1,14}$"},
+          "alternate_phone": {"type": "string", "pattern": "^\\+[1-9]\\d{1,14}$"},
           "property_address": {"type": "string"},
           "property_city": {"type": "string"},
           "property_state": {"type": "string"},
           "property_zip": {"type": "string"},
-          "property_type": {"type": "string", "enum": ["single_family", "multi_family", "condo", "townhouse", "commercial"]},
+          "property_type": {"type": "string", "enum": ["single_family", "townhouse", "condo", "duplex", "multi_family", "mobile_home"]},
           "ai_score": {"type": "integer", "minimum": 0, "maximum": 100},
           "motivation_score": {"type": "integer", "minimum": 0, "maximum": 100},
           "urgency_score": {"type": "integer", "minimum": 0, "maximum": 100},
@@ -93,9 +93,9 @@
           "estimated_value": {"type": "number", "format": "decimal"},
           "mortgage_balance": {"type": "number", "format": "decimal"},
           "asking_price": {"type": "number", "format": "decimal"},
-          "status": {"type": "string", "enum": ["new", "contacted", "qualified", "unqualified", "converted"]},
+          "status": {"type": "string", "enum": ["new", "contacted", "qualified", "negotiating", "contract", "closed", "dead"]},
           "disposition": {"type": "string"},
-          "preferred_contact_method": {"type": "string", "enum": ["phone", "email", "sms", "mail"]},
+          "preferred_contact_method": {"type": "string", "enum": ["phone", "email", "text"]},
           "best_time_to_call": {"type": "string"},
           "ai_insights": {"type": "object"},
           "conversation_summary": {"type": "string"},
@@ -118,7 +118,7 @@
           "zip": {"type": "string"},
           "county": {"type": "string"},
           "location": {"type": "object"},
-          "property_type": {"type": "string", "enum": ["single_family", "multi_family", "condo", "townhouse", "commercial"]},
+          "property_type": {"type": "string", "enum": ["single_family", "townhouse", "condo", "duplex", "multi_family", "mobile_home"]},
           "bedrooms": {"type": "integer"},
           "bathrooms": {"type": "number", "format": "decimal"},
           "square_feet": {"type": "integer"},
@@ -135,10 +135,10 @@
           "ai_analysis": {"type": "object"},
           "market_analysis": {"type": "object"},
           "repair_analysis": {"type": "object"},
-          "transaction_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale"]},
+          "transaction_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale", "fix_and_flip", "buy_and_hold"]},
           "escrow_amount": {"type": "number", "format": "decimal"},
           "assignment_fee": {"type": "number", "format": "decimal"},
-          "status": {"type": "string", "enum": ["active", "pending", "sold", "withdrawn"]},
+          "status": {"type": "string", "enum": ["draft", "active", "pending", "sold"]},
           "listed_at": {"type": "string", "format": "date-time", "nullable": true},
           "expires_at": {"type": "string", "format": "date-time", "nullable": true},
           "sold_at": {"type": "string", "format": "date-time", "nullable": true},
@@ -168,7 +168,7 @@
           "buyer_id": {"type": "integer"},
           "seller_id": {"type": "integer"},
           "funder_id": {"type": "integer", "nullable": true},
-          "deal_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale"]},
+          "deal_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale", "fix_flip"]},
           "purchase_price": {"type": "number", "format": "decimal"},
           "sale_price": {"type": "number", "format": "decimal"},
           "assignment_fee": {"type": "number", "format": "decimal"},
@@ -252,7 +252,7 @@
           "voice_script": {"type": "string"},
           "landing_page_id": {"type": "integer"},
           "use_ai_personalization": {"type": "boolean"},
-          "ai_tone": {"type": "string"},
+          "ai_tone": {"type": "string", "enum": ["professional", "friendly", "urgent", "casual"]},
           "status": {"type": "string", "enum": ["draft", "scheduled", "active", "paused", "completed", "cancelled"]},
           "scheduled_at": {"type": "string", "format": "date-time"},
           "started_at": {"type": "string", "format": "date-time", "nullable": true},
@@ -730,6 +730,22 @@
         "tags": ["Deal Milestones"],
         "summary": "Complete deal milestone",
         "parameters": [{"name": "milestone", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "completed_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {"description": "Deal milestone completed successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/DealMilestone"}}}]}}}},
           "404": {"description": "Deal milestone not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
@@ -785,6 +801,22 @@
         "tags": ["Property Saves"],
         "summary": "Remove saved property",
         "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["property_id"],
+                "properties": {
+                  "property_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {"description": "Saved property removed successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
           "404": {"description": "Saved property not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
