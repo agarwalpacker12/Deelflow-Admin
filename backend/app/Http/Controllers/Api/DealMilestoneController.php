@@ -29,7 +29,12 @@ class DealMilestoneController extends Controller
         // Real implementation
         [$page, $perPage] = $this->getPaginationParams($request);
         
-        $query = DealMilestone::with(['deal', 'completedBy']);
+        $query = DealMilestone::with(['deal', 'completedBy'])
+            ->whereHas('deal', function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            });
 
         // Apply filters
         if ($request->has('deal_id')) {
@@ -111,8 +116,14 @@ class DealMilestoneController extends Controller
             return $this->handleMockShow($id);
         }
 
-        // Real implementation
-        $milestone = DealMilestone::with(['deal', 'completedBy'])->find($id);
+        // Real implementation - only show milestones for deals user is involved in
+        $milestone = DealMilestone::with(['deal', 'completedBy'])
+            ->whereHas('deal', function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            })
+            ->find($id);
 
         if (!$milestone) {
             return $this->notFoundResponse('Deal milestone not found');
@@ -143,8 +154,13 @@ class DealMilestoneController extends Controller
             return $this->handleMockUpdate($request, $id);
         }
 
-        // Real implementation
-        $milestone = DealMilestone::find($id);
+        // Real implementation - only update milestones for deals user is involved in
+        $milestone = DealMilestone::whereHas('deal', function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            })
+            ->find($id);
 
         if (!$milestone) {
             return $this->notFoundResponse('Deal milestone not found');
@@ -171,8 +187,13 @@ class DealMilestoneController extends Controller
             return $this->handleMockDestroy($id);
         }
 
-        // Real implementation
-        $milestone = DealMilestone::find($id);
+        // Real implementation - only delete milestones for deals user is involved in
+        $milestone = DealMilestone::whereHas('deal', function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            })
+            ->find($id);
 
         if (!$milestone) {
             return $this->notFoundResponse('Deal milestone not found');
@@ -196,15 +217,20 @@ class DealMilestoneController extends Controller
             return $this->handleMockComplete($id);
         }
 
-        // Real implementation
-        $milestone = DealMilestone::find($id);
+        // Real implementation - only complete milestones for deals user is involved in
+        $milestone = DealMilestone::whereHas('deal', function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            })
+            ->find($id);
 
         if (!$milestone) {
             return $this->notFoundResponse('Deal milestone not found');
         }
 
         if ($milestone->completed_at) {
-            return $this->errorResponse('Milestone is already completed', 400);
+            return $this->errorResponse('Milestone is already completed', null, 400);
         }
 
         try {

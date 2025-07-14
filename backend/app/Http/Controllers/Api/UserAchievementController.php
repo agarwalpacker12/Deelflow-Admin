@@ -77,7 +77,7 @@ class UserAchievementController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'achievement_type' => 'required|in:deal_milestone,lead_conversion,property_listing,campaign_success,referral,login_streak,profile_completion',
+            'achievement_type' => 'required|in:deal_milestone,lead_conversion,property_listing,campaign_success,referral,login_streak,profile_completion,deal_closed',
             'achievement_name' => 'required|string|max:255',
             'points_earned' => 'required|integer|min:1',
             'metadata' => 'nullable|array',
@@ -133,7 +133,10 @@ class UserAchievementController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return $this->errorResponse('Update operation is not supported for achievements', 405);
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Update operation is not supported for achievements'
+        ], 405);
     }
 
     /**

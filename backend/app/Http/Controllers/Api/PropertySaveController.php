@@ -140,7 +140,7 @@ class PropertySaveController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return $this->errorResponse('Update operation is not supported for saved properties', 405);
+        return $this->errorResponse('Update operation is not supported for saved properties', null, 405);
     }
 
     // Mock handlers
