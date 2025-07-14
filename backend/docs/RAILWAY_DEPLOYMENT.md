@@ -37,13 +37,9 @@ APP_URL=https://your-railway-app.railway.app
 
 LOG_LEVEL=error
 
-# Database (Railway will auto-populate these)
+# Database (Railway will auto-populate this)
 DB_CONNECTION=pgsql
-DB_HOST=${{Postgres.PGHOST}}
-DB_PORT=${{Postgres.PGPORT}}
-DB_DATABASE=${{Postgres.PGDATABASE}}
-DB_USERNAME=${{Postgres.PGUSER}}
-DB_PASSWORD=${{Postgres.PGPASSWORD}}
+DB_URL=postgresql://${{Postgres.PGUSER}}:${{Postgres.PGPASSWORD}}@${{Postgres.PGHOST}}:${{Postgres.PGPORT}}/${{Postgres.PGDATABASE}}
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS="https://your-frontend-app.onrender.com"
