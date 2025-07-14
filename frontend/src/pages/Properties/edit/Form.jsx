@@ -79,17 +79,27 @@ const EditPropertyForm = () => {
         ...formData,
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
         bathrooms: formData.bathrooms ? parseFloat(formData.bathrooms) : null,
-        square_feet: formData.square_feet ? parseInt(formData.square_feet) : null,
+        square_feet: formData.square_feet
+          ? parseInt(formData.square_feet)
+          : null,
         lot_size: formData.lot_size ? parseFloat(formData.lot_size) : null,
         year_built: formData.year_built ? parseInt(formData.year_built) : null,
-        purchase_price: formData.purchase_price ? parseFloat(formData.purchase_price) : null,
+        purchase_price: formData.purchase_price
+          ? parseFloat(formData.purchase_price)
+          : null,
         arv: formData.arv ? parseFloat(formData.arv) : null,
-        repair_estimate: formData.repair_estimate ? parseFloat(formData.repair_estimate) : null,
-        holding_costs: formData.holding_costs ? parseFloat(formData.holding_costs) : null,
-        assignment_fee: formData.assignment_fee ? parseFloat(formData.assignment_fee) : null,
+        repair_estimate: formData.repair_estimate
+          ? parseFloat(formData.repair_estimate)
+          : null,
+        holding_costs: formData.holding_costs
+          ? parseFloat(formData.holding_costs)
+          : null,
+        assignment_fee: formData.assignment_fee
+          ? parseFloat(formData.assignment_fee)
+          : null,
       };
 
-      const response = await propertiesAPI.updateProperty(apiData)
+      const response = await propertiesAPI.updateProperty(apiData);
 
       if (response.data.status === "success") {
         const newProperty = response.data.data;
@@ -145,16 +155,7 @@ const EditPropertyForm = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-4 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Property Investment Lead Form
-            </h1>
-            <p className="text-gray-600">
-              Submit your property details for investment opportunities
-            </p>
-          </div>
-
-          <div className="space-y-8">
+          <div>
             {/* Property Address Section */}
             <div className="bg-gray-50 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -172,7 +173,9 @@ const EditPropertyForm = () => {
                       value={formData.street_address}
                       onChange={handleInputChange}
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                        errors.street_address ? "border-red-500" : "border-gray-300"
+                        errors.street_address
+                          ? "border-red-500"
+                          : "border-gray-300"
                       }`}
                       placeholder="Enter street address"
                     />
@@ -235,7 +238,9 @@ const EditPropertyForm = () => {
                       ))}
                     </select>
                     {errors.state && (
-                      <p className="text-red-500 text-sm mt-1">{errors.state}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.state}
+                      </p>
                     )}
                   </div>
 
@@ -253,7 +258,9 @@ const EditPropertyForm = () => {
                       placeholder="ZIP Code"
                     />
                     {errors.zip_code && (
-                      <p className="text-red-500 text-sm mt-1">{errors.zip_code}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.zip_code}
+                      </p>
                     )}
                   </div>
 
@@ -271,7 +278,9 @@ const EditPropertyForm = () => {
                       placeholder="County"
                     />
                     {errors.county && (
-                      <p className="text-red-500 text-sm mt-1">{errors.county}</p>
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.county}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -294,7 +303,9 @@ const EditPropertyForm = () => {
                     value={formData.property_type}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.property_type ? "border-red-500" : "border-gray-300"
+                      errors.property_type
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                   >
                     {propertyTypeList.map((type) => (
@@ -304,7 +315,9 @@ const EditPropertyForm = () => {
                     ))}
                   </select>
                   {errors.property_type && (
-                    <p className="text-red-500 text-sm mt-1">{errors.property_type}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.property_type}
+                    </p>
                   )}
                 </div>
 
@@ -323,7 +336,9 @@ const EditPropertyForm = () => {
                     placeholder="Number of bedrooms"
                   />
                   {errors.bedrooms && (
-                    <p className="text-red-500 text-sm mt-1">{errors.bedrooms}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.bedrooms}
+                    </p>
                   )}
                 </div>
 
@@ -343,7 +358,9 @@ const EditPropertyForm = () => {
                     placeholder="Number of bathrooms"
                   />
                   {errors.bathrooms && (
-                    <p className="text-red-500 text-sm mt-1">{errors.bathrooms}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.bathrooms}
+                    </p>
                   )}
                 </div>
 
@@ -362,7 +379,9 @@ const EditPropertyForm = () => {
                     placeholder="Square feet"
                   />
                   {errors.square_feet && (
-                    <p className="text-red-500 text-sm mt-1">{errors.square_feet}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.square_feet}
+                    </p>
                   )}
                 </div>
 
@@ -382,7 +401,9 @@ const EditPropertyForm = () => {
                     placeholder="Lot size in acres"
                   />
                   {errors.lot_size && (
-                    <p className="text-red-500 text-sm mt-1">{errors.lot_size}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.lot_size}
+                    </p>
                   )}
                 </div>
 
@@ -401,7 +422,9 @@ const EditPropertyForm = () => {
                     placeholder="Year built"
                   />
                   {errors.year_built && (
-                    <p className="text-red-500 text-sm mt-1">{errors.year_built}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.year_built}
+                    </p>
                   )}
                 </div>
               </div>
@@ -424,12 +447,16 @@ const EditPropertyForm = () => {
                     value={formData.purchase_price}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.purchase_price ? "border-red-500" : "border-gray-300"
+                      errors.purchase_price
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     placeholder="Purchase price"
                   />
                   {errors.purchase_price && (
-                    <p className="text-red-500 text-sm mt-1">{errors.purchase_price}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.purchase_price}
+                    </p>
                   )}
                 </div>
 
@@ -462,12 +489,16 @@ const EditPropertyForm = () => {
                     value={formData.repair_estimate}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.repair_estimate ? "border-red-500" : "border-gray-300"
+                      errors.repair_estimate
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     placeholder="Estimated repair costs"
                   />
                   {errors.repair_estimate && (
-                    <p className="text-red-500 text-sm mt-1">{errors.repair_estimate}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.repair_estimate}
+                    </p>
                   )}
                 </div>
 
@@ -481,12 +512,16 @@ const EditPropertyForm = () => {
                     value={formData.holding_costs}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.holding_costs ? "border-red-500" : "border-gray-300"
+                      errors.holding_costs
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     placeholder="Holding costs"
                   />
                   {errors.holding_costs && (
-                    <p className="text-red-500 text-sm mt-1">{errors.holding_costs}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.holding_costs}
+                    </p>
                   )}
                 </div>
 
@@ -499,7 +534,9 @@ const EditPropertyForm = () => {
                     value={formData.transaction_type}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.transaction_type ? "border-red-500" : "border-gray-300"
+                      errors.transaction_type
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                   >
                     {transactionTypeList.map((type) => (
@@ -509,7 +546,9 @@ const EditPropertyForm = () => {
                     ))}
                   </select>
                   {errors.transaction_type && (
-                    <p className="text-red-500 text-sm mt-1">{errors.transaction_type}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.transaction_type}
+                    </p>
                   )}
                 </div>
 
@@ -523,12 +562,16 @@ const EditPropertyForm = () => {
                     value={formData.assignment_fee}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.assignment_fee ? "border-red-500" : "border-gray-300"
+                      errors.assignment_fee
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     placeholder="Assignment fee"
                   />
                   {errors.assignment_fee && (
-                    <p className="text-red-500 text-sm mt-1">{errors.assignment_fee}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.assignment_fee}
+                    </p>
                   )}
                 </div>
               </div>
@@ -541,19 +584,27 @@ const EditPropertyForm = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600">Purchase:</span>
-                    <p className="font-semibold text-blue-800">$ {purchasePrice.toLocaleString()}</p>
+                    <p className="font-semibold text-blue-800">
+                      $ {purchasePrice.toLocaleString()}
+                    </p>
                   </div>
                   <div>
                     <span className="text-gray-600">ARV:</span>
-                    <p className="font-semibold text-green-800">$ {arv.toLocaleString()}</p>
+                    <p className="font-semibold text-green-800">
+                      $ {arv.toLocaleString()}
+                    </p>
                   </div>
                   <div>
                     <span className="text-gray-600">Repairs:</span>
-                    <p className="font-semibold text-red-800">$ {repairEstimate.toLocaleString()}</p>
+                    <p className="font-semibold text-red-800">
+                      $ {repairEstimate.toLocaleString()}
+                    </p>
                   </div>
                   <div>
                     <span className="text-gray-600">Potential Profit:</span>
-                    <p className="font-semibold text-green-800">$ {potentialProfit.toLocaleString()}</p>
+                    <p className="font-semibold text-green-800">
+                      $ {potentialProfit.toLocaleString()}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -576,12 +627,16 @@ const EditPropertyForm = () => {
                     value={formData.property_description}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.property_description ? "border-red-500" : "border-gray-300"
+                      errors.property_description
+                        ? "border-red-500"
+                        : "border-gray-300"
                     }`}
                     placeholder="Describe the property, its condition, potential, etc."
                   />
                   {errors.property_description && (
-                    <p className="text-red-500 text-sm mt-1">{errors.property_description}</p>
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.property_description}
+                    </p>
                   )}
                 </div>
 
