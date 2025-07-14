@@ -37,7 +37,7 @@ Accept: application/json
         "first_name": "John",
         "last_name": "Doe",
         "company_name": "Real Estate Ventures LLC",
-        "phone": "+1234567890",
+        "phone": "+14155552671",
         "role": "wholesaler"
     }
     ```
@@ -54,7 +54,7 @@ Accept: application/json
             "first_name": "John",
             "last_name": "Doe",
             "company_name": "Real Estate Ventures LLC",
-            "phone": "+1234567890",
+            "phone": "+14155552671",
             "role": "wholesaler",
             "level": 1,
             "points": 0,
@@ -120,7 +120,7 @@ Accept: application/json
             "first_name": "John",
             "last_name": "Doe",
             "company_name": "Real Estate Ventures LLC",
-            "phone": "+1234567890",
+            "phone": "+14155552671",
             "role": "wholesaler",
             "level": 1,
             "points": 0,
@@ -177,7 +177,7 @@ Accept: application/json
                 "first_name": "Jane",
                 "last_name": "Smith",
                 "email": "jane.smith@example.com",
-                "phone": "+1987654321",
+                "phone": "+14155552671",
                 "property_address": "123 Main St",
                 "property_city": "Austin",
                 "property_state": "TX",
@@ -220,7 +220,7 @@ Accept: application/json
         "first_name": "Jane",
         "last_name": "Smith",
         "email": "jane.smith@example.com",
-        "phone": "+1987654321",
+        "phone": "+14155552671",
         "property_address": "123 Main St",
         "property_city": "Austin",
         "property_state": "TX",
@@ -231,6 +231,46 @@ Accept: application/json
         "mortgage_balance": 180000.00,
         "asking_price": 220000.00,
         "preferred_contact_method": "phone"
+    }
+    ```
+*   **Field Restrictions:**
+    - `property_type`: Allowed values are `single_family`, `townhouse`, `condo`, `duplex`, `multi_family`, `mobile_home`.
+    - `preferred_contact_method`: Allowed values are `phone`, `email`, `text`.
+    - `status`: Allowed values are `new`, `contacted`, `qualified`, `negotiating`, `contract`, `closed`, `dead`.
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Lead created successfully",
+        "data": {
+            "id": 2,
+            "uuid": "550e8400-e29b-41d4-a716-446655440005",
+            "user_id": 1,
+            "first_name": "Jane",
+            "last_name": "Smith",
+            "email": "jane.smith@example.com",
+            "phone": "+14155552671",
+            "property_address": "123 Main St",
+            "property_city": "Austin",
+            "property_state": "TX",
+            "property_zip": "78701",
+            "property_type": "single_family",
+            "ai_score": 0,
+            "motivation_score": 0,
+            "urgency_score": 0,
+            "financial_score": 0,
+            "source": "website_form",
+            "estimated_value": 250000.00,
+            "mortgage_balance": 180000.00,
+            "asking_price": 220000.00,
+            "status": "new",
+            "preferred_contact_method": "phone",
+            "next_action": null,
+            "next_action_date": null,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
     }
     ```
 
@@ -252,7 +292,7 @@ Accept: application/json
             "first_name": "Jane",
             "last_name": "Smith",
             "email": "jane.smith@example.com",
-            "phone": "+1987654321",
+            "phone": "+14155552671",
             "property_address": "123 Main St",
             "property_city": "Austin",
             "property_state": "TX",
@@ -288,10 +328,46 @@ Accept: application/json
         "first_name": "Jane",
         "last_name": "Smith",
         "email": "jane.smith@example.com",
-        "phone": "+1987654321",
+        "phone": "+14155552671",
         "status": "qualified",
         "next_action": "Schedule property visit",
         "next_action_date": "2025-06-28"
+    }
+    ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Lead updated successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440001",
+            "user_id": 1,
+            "first_name": "Jane",
+            "last_name": "Smith",
+            "email": "jane.smith@example.com",
+            "phone": "+14155552671",
+            "property_address": "123 Main St",
+            "property_city": "Austin",
+            "property_state": "TX",
+            "property_zip": "78701",
+            "property_type": "single_family",
+            "ai_score": 85,
+            "motivation_score": 90,
+            "urgency_score": 75,
+            "financial_score": 80,
+            "source": "website_form",
+            "estimated_value": 250000.00,
+            "mortgage_balance": 180000.00,
+            "asking_price": 220000.00,
+            "status": "qualified",
+            "preferred_contact_method": "phone",
+            "next_action": "Schedule property visit",
+            "next_action_date": "2025-06-28",
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
     }
     ```
 
@@ -428,6 +504,50 @@ Accept: application/json
         "seller_notes": "Motivated seller, quick closing preferred"
     }
     ```
+*   **Field Restrictions:**
+    - `property_type`: Allowed values are `single_family`, `townhouse`, `condo`, `duplex`, `multi_family`, `mobile_home`.
+    - `transaction_type`: Allowed values are `assignment`, `double_close`, `wholesale`, `fix_and_flip`, `buy_and_hold`.
+    - `status`: Allowed values are `draft`, `active`, `pending`, `sold`.
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Property created successfully",
+        "data": {
+            "id": 2,
+            "uuid": "550e8400-e29b-41d4-a716-446655440006",
+            "user_id": 1,
+            "address": "456 Oak Avenue",
+            "unit": "Unit A",
+            "city": "Austin",
+            "state": "TX",
+            "zip": "78702",
+            "county": "Travis",
+            "property_type": "single_family",
+            "bedrooms": 3,
+            "bathrooms": 2.5,
+            "square_feet": 1800,
+            "lot_size": 0.25,
+            "year_built": 1995,
+            "purchase_price": 180000.00,
+            "arv": 250000.00,
+            "repair_estimate": 25000.00,
+            "holding_costs": 5000.00,
+            "profit_potential": 40000.00,
+            "ai_score": 0,
+            "transaction_type": "assignment",
+            "assignment_fee": 15000.00,
+            "status": "new",
+            "view_count": 0,
+            "save_count": 0,
+            "inquiry_count": 0,
+            "images": [],
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Get Property
 
@@ -496,6 +616,49 @@ Accept: application/json
         "status": "active"
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Property updated successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440002",
+            "user_id": 1,
+            "address": "456 Oak Avenue",
+            "unit": "Unit A",
+            "city": "Austin",
+            "state": "TX",
+            "zip": "78702",
+            "county": "Travis",
+            "property_type": "single_family",
+            "bedrooms": 3,
+            "bathrooms": 2.5,
+            "square_feet": 1800,
+            "lot_size": 0.25,
+            "year_built": 1995,
+            "purchase_price": 185000.00,
+            "arv": 260000.00,
+            "repair_estimate": 25000.00,
+            "holding_costs": 5000.00,
+            "profit_potential": 45000.00,
+            "ai_score": 92,
+            "transaction_type": "assignment",
+            "assignment_fee": 15000.00,
+            "status": "active",
+            "view_count": 45,
+            "save_count": 8,
+            "inquiry_count": 3,
+            "images": [
+                "https://example.com/images/property1_1.jpg",
+                "https://example.com/images/property1_2.jpg"
+            ],
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Delete Property
 
@@ -561,18 +724,72 @@ Accept: application/json
         "property_id": 1
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Property saved successfully",
+        "data": {
+            "id": 1,
+            "user_id": 1,
+            "property_id": 1,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### List Saved Properties
 
 *   **Description:** Retrieves user's saved properties.
 *   **Method:** GET
 *   **Endpoint:** `/api/property-saves`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Saved properties retrieved successfully",
+        "data": [
+            {
+                "id": 1,
+                "user_id": 1,
+                "property_id": 1,
+                "property": {
+                    "id": 1,
+                    "address": "456 Oak Avenue",
+                    "city": "Austin",
+                    "state": "TX",
+                    "purchase_price": 180000.00,
+                    "arv": 250000.00
+                },
+                "saved_at": "2025-06-26T20:00:00.000000Z"
+            }
+        ]
+    }
+    ```
 
 ### Remove Saved Property
 
 *   **Description:** Removes a property from user's saved list.
 *   **Method:** DELETE
 *   **Endpoint:** `/api/property-saves/{property_save}`
+*   **Request:**
+
+    ```json
+    {
+        "property_id": 1
+    }
+    ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Property removed from saved list"
+    }
+    ```
 
 ## Deals API
 
@@ -650,6 +867,47 @@ Accept: application/json
         }
     }
     ```
+*   **Field Restrictions:**
+    - `deal_type`: Allowed values are `assignment`, `double_close`, `wholesale`, `fix_flip`.
+    - `status`: Allowed values are `active`, `pending`, `closed`, `cancelled`.
+*   **Field Restrictions:**
+    - `campaign_type`: Allowed values are `lead_generation`, `nurture`, `follow_up`, `promotional`.
+    - `channel`: Allowed values are `email`, `sms`, `voice`, `direct_mail`.
+    - `ai_tone`: Allowed values are `professional`, `friendly`, `urgent`, `casual`.
+    - `status`: Allowed values are `draft`, `scheduled`, `active`, `paused`, `completed`, `cancelled`.
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal created successfully",
+        "data": {
+            "id": 2,
+            "uuid": "550e8400-e29b-41d4-a716-446655440007",
+            "property_id": 1,
+            "lead_id": 1,
+            "wholesaler_id": 1,
+            "buyer_id": 2,
+            "seller_id": 3,
+            "deal_type": "assignment",
+            "purchase_price": 180000.00,
+            "sale_price": 195000.00,
+            "assignment_fee": 15000.00,
+            "contract_date": "2025-06-26",
+            "closing_date": "2025-07-15",
+            "inspection_period": 10,
+            "earnest_money": 5000.00,
+            "status": "new",
+            "contract_terms": {
+                "financing_contingency": true,
+                "inspection_contingency": true,
+                "appraisal_contingency": false
+            },
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Get Deal
 
@@ -705,6 +963,39 @@ Accept: application/json
         "status": "pending"
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal updated successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440003",
+            "property_id": 1,
+            "lead_id": 1,
+            "wholesaler_id": 1,
+            "buyer_id": 2,
+            "seller_id": 3,
+            "deal_type": "assignment",
+            "purchase_price": 185000.00,
+            "sale_price": 200000.00,
+            "assignment_fee": 15000.00,
+            "contract_date": "2025-06-26",
+            "closing_date": "2025-07-20",
+            "inspection_period": 10,
+            "earnest_money": 5000.00,
+            "status": "pending",
+            "contract_terms": {
+                "financing_contingency": true,
+                "inspection_contingency": true,
+                "appraisal_contingency": false
+            },
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Delete Deal
 
@@ -727,6 +1018,29 @@ Accept: application/json
 *   **Description:** Retrieves milestones for a specific deal.
 *   **Method:** GET
 *   **Endpoint:** `/api/deals/{deal}/milestones`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal milestones retrieved successfully",
+        "data": [
+            {
+                "id": 1,
+                "uuid": "550e8400-e29b-41d4-a716-446655440008",
+                "deal_id": 1,
+                "milestone_type": "inspection",
+                "title": "Property Inspection",
+                "description": "Schedule and complete property inspection",
+                "due_date": "2025-07-01",
+                "completed_at": null,
+                "is_critical": true,
+                "created_at": "2025-06-27T20:00:00.000000Z",
+                "updated_at": "2025-06-27T20:00:00.000000Z"
+            }
+        ]
+    }
+    ```
 
 ### Create Deal Milestone
 
@@ -745,12 +1059,61 @@ Accept: application/json
         "is_critical": true
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal milestone created successfully",
+        "data": {
+            "id": 2,
+            "uuid": "550e8400-e29b-41d4-a716-446655440009",
+            "deal_id": 1,
+            "milestone_type": "inspection",
+            "title": "Property Inspection",
+            "description": "Schedule and complete property inspection",
+            "due_date": "2025-07-01",
+            "completed_at": null,
+            "is_critical": true,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Complete Deal Milestone
 
 *   **Description:** Marks a milestone as completed.
 *   **Method:** PATCH
 *   **Endpoint:** `/api/deal-milestones/{milestone}/complete`
+*   **Request:**
+
+    ```json
+    {
+        "completed_at": "2025-06-28T10:00:00.000000Z"
+    }
+    ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal milestone completed successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440008",
+            "deal_id": 1,
+            "milestone_type": "inspection",
+            "title": "Property Inspection",
+            "description": "Schedule and complete property inspection",
+            "due_date": "2025-07-01",
+            "completed_at": "2025-06-28T10:00:00.000000Z",
+            "is_critical": true,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-28T10:00:00.000000Z"
+        }
+    }
+    ```
 
 ### List All Deal Milestones
 
@@ -762,12 +1125,56 @@ Accept: application/json
     - `milestone_type`: Filter by milestone type
     - `is_critical`: Filter by critical milestones
     - `completed`: Filter by completion status
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "All deal milestones retrieved successfully",
+        "data": [
+            {
+                "id": 1,
+                "uuid": "550e8400-e29b-41d4-a716-446655440008",
+                "deal_id": 1,
+                "milestone_type": "inspection",
+                "title": "Property Inspection",
+                "description": "Schedule and complete property inspection",
+                "due_date": "2025-07-01",
+                "completed_at": null,
+                "is_critical": true,
+                "created_at": "2025-06-27T20:00:00.000000Z",
+                "updated_at": "2025-06-27T20:00:00.000000Z"
+            }
+        ]
+    }
+    ```
 
 ### Get Deal Milestone
 
 *   **Description:** Retrieves a specific deal milestone by ID.
 *   **Method:** GET
 *   **Endpoint:** `/api/deal-milestones/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal milestone retrieved successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440008",
+            "deal_id": 1,
+            "milestone_type": "inspection",
+            "title": "Property Inspection",
+            "description": "Schedule and complete property inspection",
+            "due_date": "2025-07-01",
+            "completed_at": null,
+            "is_critical": true,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Update Deal Milestone
 
@@ -784,12 +1191,41 @@ Accept: application/json
         "is_critical": false
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal milestone updated successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440008",
+            "deal_id": 1,
+            "milestone_type": "inspection",
+            "title": "Updated Property Inspection",
+            "description": "Updated description",
+            "due_date": "2025-07-05",
+            "completed_at": null,
+            "is_critical": false,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-28T11:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Delete Deal Milestone
 
 *   **Description:** Deletes a specific deal milestone.
 *   **Method:** DELETE
 *   **Endpoint:** `/api/deal-milestones/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Deal milestone deleted successfully"
+    }
+    ```
 
 ## Property Saves API (Complete)
 
@@ -835,18 +1271,63 @@ Accept: application/json
         "property_id": 1
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Property saved successfully",
+        "data": {
+            "id": 1,
+            "user_id": 1,
+            "property_id": 1,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Get Saved Property
 
 *   **Description:** Retrieves a specific saved property by ID.
 *   **Method:** GET
 *   **Endpoint:** `/api/property-saves/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Saved property retrieved successfully",
+        "data": {
+            "id": 1,
+            "user_id": 1,
+            "property_id": 1,
+            "property": {
+                "id": 1,
+                "address": "456 Oak Avenue",
+                "city": "Austin",
+                "state": "TX",
+                "purchase_price": 180000.00,
+                "arv": 250000.00
+            },
+            "saved_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Remove Saved Property
 
 *   **Description:** Removes a property from user's saved list.
 *   **Method:** DELETE
 *   **Endpoint:** `/api/property-saves/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Property removed from saved list"
+    }
+    ```
 
 ## AI Conversations API
 
@@ -910,12 +1391,72 @@ Accept: application/json
         "external_id": "twilio_call_123"
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "AI conversation created successfully",
+        "data": {
+            "id": 2,
+            "uuid": "550e8400-e29b-41d4-a716-446655440010",
+            "user_id": 1,
+            "lead_id": 1,
+            "property_id": 1,
+            "channel": "sms",
+            "external_id": "twilio_call_123",
+            "sentiment_score": 0,
+            "urgency_score": 0,
+            "motivation_score": 0,
+            "qualification_score": 0,
+            "extracted_data": null,
+            "identified_pain_points": [],
+            "status": "initiated",
+            "outcome": null,
+            "next_steps": null,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Get AI Conversation
 
 *   **Description:** Retrieves a specific AI conversation by ID.
 *   **Method:** GET
 *   **Endpoint:** `/api/ai-conversations/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "AI conversation retrieved successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440004",
+            "user_id": 1,
+            "lead_id": 1,
+            "property_id": 1,
+            "channel": "sms",
+            "external_id": "twilio_call_123",
+            "sentiment_score": 75,
+            "urgency_score": 80,
+            "motivation_score": 85,
+            "qualification_score": 78,
+            "extracted_data": {
+                "timeline": "30 days",
+                "motivation": "divorce",
+                "price_flexibility": "moderate"
+            },
+            "identified_pain_points": ["Financial stress", "Time pressure"],
+            "status": "completed",
+            "outcome": "qualified_lead",
+            "next_steps": "Schedule property visit",
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Update AI Conversation
 
@@ -933,12 +1474,52 @@ Accept: application/json
         "next_steps": "Schedule property visit"
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "AI conversation updated successfully",
+        "data": {
+            "id": 1,
+            "uuid": "550e8400-e29b-41d4-a716-446655440004",
+            "user_id": 1,
+            "lead_id": 1,
+            "property_id": 1,
+            "channel": "sms",
+            "external_id": "twilio_call_123",
+            "sentiment_score": 80,
+            "urgency_score": 85,
+            "motivation_score": 85,
+            "qualification_score": 78,
+            "extracted_data": {
+                "timeline": "30 days",
+                "motivation": "divorce",
+                "price_flexibility": "moderate"
+            },
+            "identified_pain_points": ["Financial stress", "Time pressure"],
+            "status": "completed",
+            "outcome": "qualified_lead",
+            "next_steps": "Schedule property visit",
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Delete AI Conversation
 
 *   **Description:** Deletes a specific AI conversation.
 *   **Method:** DELETE
 *   **Endpoint:** `/api/ai-conversations/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "AI conversation deleted successfully"
+    }
+    ```
 
 ## Campaigns API
 
@@ -1008,12 +1589,78 @@ Accept: application/json
         "use_ai_personalization": true
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign created successfully",
+        "data": {
+            "id": 2,
+            "user_id": 1,
+            "name": "Austin Distressed Properties Q3",
+            "campaign_type": "lead_generation",
+            "channel": "email",
+            "target_criteria": {
+                "location": "Austin, TX",
+                "property_type": "single_family",
+                "equity_min": 50000
+            },
+            "subject_line": "We Buy Houses Fast - Cash Offer in 24 Hours",
+            "status": "draft",
+            "scheduled_at": "2025-06-27T09:00:00.000000Z",
+            "total_recipients": 0,
+            "sent_count": 0,
+            "open_count": 0,
+            "click_count": 0,
+            "response_count": 0,
+            "conversion_count": 0,
+            "budget": 1000.00,
+            "spent": 0.00,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Get Campaign
 
 *   **Description:** Retrieves a specific campaign by ID.
 *   **Method:** GET
 *   **Endpoint:** `/api/campaigns/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign retrieved successfully",
+        "data": {
+            "id": 1,
+            "user_id": 1,
+            "name": "Austin Distressed Properties Q3",
+            "campaign_type": "lead_generation",
+            "channel": "email",
+            "target_criteria": {
+                "location": "Austin, TX",
+                "property_type": "single_family",
+                "equity_min": 50000
+            },
+            "subject_line": "We Buy Houses Fast - Cash Offer in 24 Hours",
+            "status": "active",
+            "scheduled_at": "2025-06-27T09:00:00.000000Z",
+            "total_recipients": 500,
+            "sent_count": 450,
+            "open_count": 135,
+            "click_count": 45,
+            "response_count": 12,
+            "conversion_count": 3,
+            "budget": 1000.00,
+            "spent": 750.00,
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Update Campaign
 
@@ -1029,18 +1676,83 @@ Accept: application/json
         "budget": 1500.00
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign updated successfully",
+        "data": {
+            "id": 1,
+            "user_id": 1,
+            "name": "Updated Campaign Name",
+            "campaign_type": "lead_generation",
+            "channel": "email",
+            "target_criteria": {
+                "location": "Austin, TX",
+                "property_type": "single_family",
+                "equity_min": 50000
+            },
+            "subject_line": "We Buy Houses Fast - Cash Offer in 24 Hours",
+            "status": "paused",
+            "scheduled_at": "2025-06-27T09:00:00.000000Z",
+            "total_recipients": 500,
+            "sent_count": 450,
+            "open_count": 135,
+            "click_count": 45,
+            "response_count": 12,
+            "conversion_count": 3,
+            "budget": 1500.00,
+            "spent": 750.00,
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Delete Campaign
 
 *   **Description:** Deletes a specific campaign.
 *   **Method:** DELETE
 *   **Endpoint:** `/api/campaigns/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign deleted successfully"
+    }
+    ```
 
 ### Get Campaign Recipients
 
 *   **Description:** Retrieves recipients for a specific campaign.
 *   **Method:** GET
 *   **Endpoint:** `/api/campaigns/{id}/recipients`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign recipients retrieved successfully",
+        "data": [
+            {
+                "id": 1,
+                "campaign_id": 1,
+                "lead_id": 1,
+                "sent_at": "2025-06-27T10:00:00.000000Z",
+                "opened_at": "2025-06-27T10:15:00.000000Z",
+                "clicked_at": "2025-06-27T10:20:00.000000Z",
+                "responded_at": null,
+                "open_count": 2,
+                "click_count": 1,
+                "response_count": 0,
+                "created_at": "2025-06-27T20:00:00.000000Z",
+                "updated_at": "2025-06-27T20:00:00.000000Z"
+            }
+        ]
+    }
+    ```
 
 ## Campaign Recipients API
 
@@ -1049,6 +1761,30 @@ Accept: application/json
 *   **Description:** Retrieves recipients and their engagement for a campaign.
 *   **Method:** GET
 *   **Endpoint:** `/api/campaigns/{campaign}/recipients`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign recipients retrieved successfully",
+        "data": [
+            {
+                "id": 1,
+                "campaign_id": 1,
+                "lead_id": 1,
+                "sent_at": "2025-06-27T10:00:00.000000Z",
+                "opened_at": "2025-06-27T10:15:00.000000Z",
+                "clicked_at": "2025-06-27T10:20:00.000000Z",
+                "responded_at": null,
+                "open_count": 2,
+                "click_count": 1,
+                "response_count": 0,
+                "created_at": "2025-06-27T20:00:00.000000Z",
+                "updated_at": "2025-06-27T20:00:00.000000Z"
+            }
+        ]
+    }
+    ```
 
 ### Add Campaign Recipients
 
@@ -1063,6 +1799,14 @@ Accept: application/json
         "lead_ids": [1, 2, 3, 4, 5]
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign recipients added successfully"
+    }
+    ```
 
 ### List All Campaign Recipients
 
@@ -1075,12 +1819,58 @@ Accept: application/json
     - `opened`: Filter by opened status
     - `clicked`: Filter by clicked status
     - `responded`: Filter by responded status
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "All campaign recipients retrieved successfully",
+        "data": [
+            {
+                "id": 1,
+                "campaign_id": 1,
+                "lead_id": 1,
+                "sent_at": "2025-06-27T10:00:00.000000Z",
+                "opened_at": "2025-06-27T10:15:00.000000Z",
+                "clicked_at": "2025-06-27T10:20:00.000000Z",
+                "responded_at": null,
+                "open_count": 2,
+                "click_count": 1,
+                "response_count": 0,
+                "created_at": "2025-06-27T20:00:00.000000Z",
+                "updated_at": "2025-06-27T20:00:00.000000Z"
+            }
+        ]
+    }
+    ```
 
 ### Get Campaign Recipient
 
 *   **Description:** Retrieves a specific campaign recipient by ID.
 *   **Method:** GET
 *   **Endpoint:** `/api/campaign-recipients/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign recipient retrieved successfully",
+        "data": {
+            "id": 1,
+            "campaign_id": 1,
+            "lead_id": 1,
+            "sent_at": "2025-06-27T10:00:00.000000Z",
+            "opened_at": "2025-06-27T10:15:00.000000Z",
+            "clicked_at": "2025-06-27T10:20:00.000000Z",
+            "responded_at": null,
+            "open_count": 2,
+            "click_count": 1,
+            "response_count": 0,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Update Campaign Recipient
 
@@ -1098,12 +1888,42 @@ Accept: application/json
         "click_count": 1
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign recipient updated successfully",
+        "data": {
+            "id": 1,
+            "campaign_id": 1,
+            "lead_id": 1,
+            "sent_at": "2025-06-27T10:00:00.000000Z",
+            "opened_at": "2025-06-27T10:15:00.000000Z",
+            "clicked_at": "2025-06-27T10:20:00.000000Z",
+            "responded_at": null,
+            "open_count": 2,
+            "click_count": 1,
+            "response_count": 0,
+            "created_at": "2025-06-27T20:00:00.000000Z",
+            "updated_at": "2025-06-28T12:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Remove Campaign Recipient
 
 *   **Description:** Removes a recipient from a campaign.
 *   **Method:** DELETE
 *   **Endpoint:** `/api/campaign-recipients/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "Campaign recipient removed successfully"
+    }
+    ```
 
 ## User Achievements API
 
@@ -1160,18 +1980,66 @@ Accept: application/json
         }
     }
     ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "User achievement created successfully",
+        "data": {
+            "id": 2,
+            "user_id": 1,
+            "achievement_type": "deal_milestone",
+            "achievement_name": "First Deal Closed",
+            "points_earned": 100,
+            "metadata": {
+                "deal_id": 1,
+                "deal_value": 15000.00
+            },
+            "earned_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Get User Achievement
 
 *   **Description:** Retrieves a specific achievement by ID.
 *   **Method:** GET
 *   **Endpoint:** `/api/user-achievements/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "User achievement retrieved successfully",
+        "data": {
+            "id": 1,
+            "user_id": 1,
+            "achievement_type": "deal_milestone",
+            "achievement_name": "First Deal Closed",
+            "points_earned": 100,
+            "metadata": {
+                "deal_id": 1,
+                "deal_value": 15000.00
+            },
+            "earned_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
 
 ### Delete User Achievement
 
 *   **Description:** Deletes a specific achievement (admin only operation).
 *   **Method:** DELETE
 *   **Endpoint:** `/api/user-achievements/{id}`
+*   **Response (Success):**
+
+    ```json
+    {
+        "status": "success",
+        "message": "User achievement deleted successfully"
+    }
+    ```
 
 ## Error Responses
 

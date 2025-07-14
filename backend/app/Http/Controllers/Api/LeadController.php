@@ -29,7 +29,7 @@ class LeadController extends Controller
         // Real implementation
         [$page, $perPage] = $this->getPaginationParams($request);
         
-        $query = Lead::query();
+        $query = Lead::where('user_id', auth()->id());
 
         // Apply filters
         if ($request->has('status')) {
@@ -43,10 +43,10 @@ class LeadController extends Controller
         if ($request->has('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('first_name', 'ILIKE', "%{$search}%")
-                  ->orWhere('last_name', 'ILIKE', "%{$search}%")
-                  ->orWhere('email', 'ILIKE', "%{$search}%")
-                  ->orWhere('property_address', 'ILIKE', "%{$search}%");
+                $q->where('first_name', 'LIKE', "%{$search}%")
+                  ->orWhere('last_name', 'LIKE', "%{$search}%")
+                  ->orWhere('email', 'LIKE', "%{$search}%")
+                  ->orWhere('property_address', 'LIKE', "%{$search}%");
             });
         }
 
@@ -85,6 +85,9 @@ class LeadController extends Controller
             'mortgage_balance' => 'nullable|numeric|min:0',
             'asking_price' => 'nullable|numeric|min:0',
             'preferred_contact_method' => 'nullable|in:phone,email,text'
+        ], [
+            'property_type.in' => 'The property type must be one of the following: single_family, townhouse, condo, duplex, multi_family, mobile_home.',
+            'preferred_contact_method.in' => 'The preferred contact method must be one of the following: phone, email, text.',
         ]);
 
         if ($validator->fails()) {
@@ -124,8 +127,8 @@ class LeadController extends Controller
             return $this->handleMockShow($id);
         }
 
-        // Real implementation
-        $lead = Lead::find($id);
+        // Real implementation - only show user's own leads
+        $lead = Lead::where('user_id', auth()->id())->find($id);
 
         if (!$lead) {
             return $this->notFoundResponse('Lead not found');
@@ -157,6 +160,10 @@ class LeadController extends Controller
             'preferred_contact_method' => 'sometimes|in:phone,email,text',
             'next_action' => 'sometimes|string',
             'next_action_date' => 'sometimes|date'
+        ], [
+            'property_type.in' => 'The property type must be one of the following: single_family, townhouse, condo, duplex, multi_family, mobile_home.',
+            'preferred_contact_method.in' => 'The preferred contact method must be one of the following: phone, email, text.',
+            'status.in' => 'The status must be one of the following: new, contacted, qualified, negotiating, contract, closed, dead.',
         ]);
 
         if ($validator->fails()) {
@@ -167,8 +174,8 @@ class LeadController extends Controller
             return $this->handleMockUpdate($request, $id);
         }
 
-        // Real implementation
-        $lead = Lead::find($id);
+        // Real implementation - only update user's own leads
+        $lead = Lead::where('user_id', auth()->id())->find($id);
 
         if (!$lead) {
             return $this->notFoundResponse('Lead not found');
@@ -193,8 +200,8 @@ class LeadController extends Controller
             return $this->handleMockDestroy($id);
         }
 
-        // Real implementation
-        $lead = Lead::find($id);
+        // Real implementation - only delete user's own leads
+        $lead = Lead::where('user_id', auth()->id())->find($id);
 
         if (!$lead) {
             return $this->notFoundResponse('Lead not found');
@@ -218,8 +225,8 @@ class LeadController extends Controller
             return $this->handleMockAiScore($id);
         }
 
-        // Real implementation
-        $lead = Lead::find($id);
+        // Real implementation - only analyze user's own leads
+        $lead = Lead::where('user_id', auth()->id())->find($id);
 
         if (!$lead) {
             return $this->notFoundResponse('Lead not found');

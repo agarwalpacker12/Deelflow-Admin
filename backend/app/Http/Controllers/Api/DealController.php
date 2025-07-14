@@ -29,7 +29,12 @@ class DealController extends Controller
         // Real implementation
         [$page, $perPage] = $this->getPaginationParams($request);
         
-        $query = Deal::with(['property', 'lead', 'wholesaler', 'buyer', 'seller']);
+        $query = Deal::with(['property', 'lead', 'wholesaler', 'buyer', 'seller'])
+            ->where(function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            });
 
         // Apply filters
         if ($request->has('status')) {
@@ -85,6 +90,8 @@ class DealController extends Controller
             'contract_terms.financing_contingency' => 'nullable|boolean',
             'contract_terms.inspection_contingency' => 'nullable|boolean',
             'contract_terms.appraisal_contingency' => 'nullable|boolean',
+        ], [
+            'deal_type.in' => 'The deal type must be one of the following: assignment, double_close, wholesale, fix_flip.',
         ]);
 
         if ($validator->fails()) {
@@ -122,8 +129,14 @@ class DealController extends Controller
             return $this->handleMockShow($id);
         }
 
-        // Real implementation
-        $deal = Deal::with(['property', 'lead', 'wholesaler', 'buyer', 'seller', 'milestones'])->find($id);
+        // Real implementation - only show deals user is involved in
+        $deal = Deal::with(['property', 'lead', 'wholesaler', 'buyer', 'seller', 'milestones'])
+            ->where(function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            })
+            ->find($id);
 
         if (!$deal) {
             return $this->notFoundResponse('Deal not found');
@@ -152,6 +165,9 @@ class DealController extends Controller
             'earnest_money' => 'sometimes|numeric|min:0',
             'status' => 'sometimes|in:active,pending,closed,cancelled',
             'contract_terms' => 'sometimes|array',
+        ], [
+            'deal_type.in' => 'The deal type must be one of the following: assignment, double_close, wholesale, fix_flip.',
+            'status.in' => 'The status must be one of the following: active, pending, closed, cancelled.',
         ]);
 
         if ($validator->fails()) {
@@ -162,8 +178,13 @@ class DealController extends Controller
             return $this->handleMockUpdate($request, $id);
         }
 
-        // Real implementation
-        $deal = Deal::find($id);
+        // Real implementation - only update deals user is involved in
+        $deal = Deal::where(function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            })
+            ->find($id);
 
         if (!$deal) {
             return $this->notFoundResponse('Deal not found');
@@ -190,8 +211,13 @@ class DealController extends Controller
             return $this->handleMockDestroy($id);
         }
 
-        // Real implementation
-        $deal = Deal::find($id);
+        // Real implementation - only delete deals user is involved in
+        $deal = Deal::where(function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            })
+            ->find($id);
 
         if (!$deal) {
             return $this->notFoundResponse('Deal not found');
@@ -215,8 +241,14 @@ class DealController extends Controller
             return $this->handleMockMilestones($id);
         }
 
-        // Real implementation
-        $deal = Deal::with('milestones')->find($id);
+        // Real implementation - only show milestones for deals user is involved in
+        $deal = Deal::with('milestones')
+            ->where(function($q) {
+                $q->where('wholesaler_id', auth()->id())
+                  ->orWhere('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id());
+            })
+            ->find($id);
 
         if (!$deal) {
             return $this->notFoundResponse('Deal not found');
