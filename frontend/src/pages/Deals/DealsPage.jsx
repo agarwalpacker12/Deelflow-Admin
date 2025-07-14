@@ -14,10 +14,14 @@ import {
   User,
   Clock,
   TrendingUp,
+  Sparkles,
+  Plus,
 } from "lucide-react";
 import { dealsAPI } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 const DealsPage = () => {
+  const navigate = useNavigate();
   const [deals, setDeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -142,7 +146,23 @@ const DealsPage = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Deals Management</h1>
-        <div className="text-sm text-gray-400">Total: {total} deals</div>
+        <div className="flex items-center gap-3">
+          {/* Add Deal Button */}
+          <button
+            onClick={() => navigate('/app/deals/add')}
+            className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
+          >
+            {/* Animated background effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Sparkle effect */}
+            <Sparkles className="h-4 w-4 group-hover:animate-pulse" />
+            <Plus className="h-5 w-5" />
+            <span className="relative z-10">Add Deal</span>
+            {/* Hover effect line */}
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></div>
+          </button>
+          <div className="text-sm text-gray-400">Total: {total} deals</div>
+        </div>
       </div>
 
       {/* Filters */}

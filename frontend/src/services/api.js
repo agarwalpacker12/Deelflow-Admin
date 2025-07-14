@@ -77,6 +77,16 @@ export const dealsAPI = {
   getMilestones: (id) => api.get(`/deals/${id}/milestones`),
 };
 
+// Deal Milestones API
+export const dealMilestonesAPI = {
+  getMilestones: (params) => api.get('/deal-milestones', { params }),
+  getMilestone: (id) => api.get(`/deal-milestones/${id}`),
+  createMilestone: (data) => api.post('/deal-milestones', data),
+  updateMilestone: (id, data) => api.put(`/deal-milestones/${id}`, data),
+  deleteMilestone: (id) => api.delete(`/deal-milestones/${id}`),
+  completeMilestone: (id) => api.patch(`/deal-milestones/${id}/complete`),
+};
+
 // Campaigns API
 export const campaignsAPI = {
   getCampaigns: (params) => api.get('/campaigns', { params }),
