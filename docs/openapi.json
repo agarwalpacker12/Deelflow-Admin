@@ -25,7 +25,7 @@
     },
     {
       "url": "http://localhost:8000/api",
-      "description": "Development server"
+      "description": "Development server (configurable via APP_PORT environment variable)"
     }
   ],
   "security": [
