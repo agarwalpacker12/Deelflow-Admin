@@ -64,8 +64,7 @@ Railway will automatically run migrations during deployment via the `post-instal
     "@php artisan migrate --force",
     "@php artisan optimize:clear",
     "@php artisan config:cache",
-    "@php artisan route:cache",
-    "@php artisan view:cache"
+    "@php artisan route:cache"
 ]
 ```
 
@@ -113,6 +112,14 @@ The `--force` flag is used to run migrations in production without confirmation 
    - This occurs when `optimize:clear` runs before migrations
    - Fixed by adding `@php artisan migrate --force` before `optimize:clear` in `post-install-cmd`
    - If you encounter this, redeploy after updating the `composer.json` file
+
+5. **Views Directory Missing Error**
+   ```
+   The "/app/resources/views" directory does not exist.
+   ```
+   - This occurs when `view:cache` runs on an API-only application without Blade views
+   - Fixed by removing `@php artisan view:cache` from `post-install-cmd` since it's not needed for API applications
+   - API applications don't use Blade templates, so view caching is unnecessary
 
 ### Logs
 - Check Railway logs in the dashboard for deployment issues
