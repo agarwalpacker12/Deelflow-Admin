@@ -89,11 +89,11 @@ const LeadForm = () => {
           ? parseFloat(formData.asking_price)
           : null,
       };
-      const response = await leadsAPI.createLead(apiData);
+      const response = await leadsAPI.updateLead(apiData);
 
       if (response.data.status === "success") {
         const newLead = response.data.data;
-        console.log("Lead created successfully:", newLead);
+        console.log("Lead updated successfully:", newLead);
 
         // Update Redux state with new lead
         // Option 1: Add the new lead to existing leads array
@@ -104,14 +104,14 @@ const LeadForm = () => {
         // dispatch(setLeads(allLeadsResponse.data.data));
 
         setSubmitStatus("success");
-        setSubmitMessage("Lead created successfully! We'll contact you soon.");
+        setSubmitMessage("Lead updated successfully! We'll contact you soon.");
         setFormData(DefaultValues);
         setErrors({});
       } else {
         throw new Error(response.data.message || "Failed to create lead");
       }
     } catch (error) {
-      console.error("Error creating lead:", error);
+      console.error("Error updating lead:", error);
 
       // Dispatch error to Redux
       dispatch(setError(error.response?.data?.message || error.message));
