@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Filter,
   ChevronLeft,
   ChevronRight,
   RefreshCw,
+  Plus,
+  Sparkles,
 } from "lucide-react";
 import { propertiesAPI } from "../../services/api";
 import Table from "./Table";
 
 const PropertiesPage = () => {
+  const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -130,8 +134,42 @@ const PropertiesPage = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Properties</h1>
-        <div className="text-sm text-gray-400">Total: {total} properties</div>
+        <div>
+          <h1 className="text-3xl font-bold text-white">Properties</h1>
+          <div className="text-sm text-gray-400 mt-1">Total: {total} properties</div>
+        </div>
+        
+        <div className="flex items-center gap-3">
+          {/* Smart Add Button */}
+          <button 
+            onClick={() => navigate('/app/properties/add')}
+            className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
+          >
+            {/* Animated background effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            {/* Sparkle effect */}
+            <Sparkles className="h-4 w-4 group-hover:animate-pulse" />
+            <Plus className="h-5 w-5" />
+            <span className="relative z-10">Add Property</span>
+            
+            {/* Hover effect line */}
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></div>
+          </button>
+          
+          {/* Quick Stats */}
+          <div className="hidden md:flex items-center gap-4 text-sm">
+            <div className="px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300">
+              Active: {properties.filter(p => p.status === 'active').length}
+            </div>
+            <div className="px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300">
+              Pending: {properties.filter(p => p.status === 'pending').length}
+            </div>
+            <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300">
+              Sold: {properties.filter(p => p.status === 'sold').length}
+            </div>
+          </div>
+        </div>
       </div>
       {/* Filters */}
       <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">

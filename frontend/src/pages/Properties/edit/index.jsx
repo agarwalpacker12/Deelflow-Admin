@@ -1,6 +1,7 @@
 import EditPropertyForm from "./Form";
 
-function AddProperty() {
+ 
+function EditProperty() {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 p-4 md:p-6">
@@ -26,4 +27,4 @@ function AddProperty() {
   );
 }
 
-export default AddProperty;
+export default EditProperty;
