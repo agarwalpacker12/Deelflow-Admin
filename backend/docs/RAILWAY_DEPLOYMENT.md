@@ -57,7 +57,19 @@ Railway will automatically run `php artisan key:generate` during deployment.
 
 ### 5. Database Migrations
 
-Railway will automatically run migrations during deployment via the `post-install-cmd` script.
+Railway will automatically run migrations during deployment via the `post-install-cmd` script in `composer.json`. The script includes:
+
+```json
+"post-install-cmd": [
+    "@php artisan migrate --force",
+    "@php artisan optimize:clear",
+    "@php artisan config:cache",
+    "@php artisan route:cache",
+    "@php artisan view:cache"
+]
+```
+
+The `--force` flag is used to run migrations in production without confirmation prompts.
 
 ## Important Notes
 
@@ -93,6 +105,14 @@ Railway will automatically run migrations during deployment via the `post-instal
 3. **Key Generation**
    - If app key is missing, Railway should auto-generate it
    - You can manually set `APP_KEY` in environment variables
+
+4. **Cache Table Missing Error**
+   ```
+   SQLSTATE[42P01]: Undefined table: 7 ERROR: relation "cache" does not exist
+   ```
+   - This occurs when `optimize:clear` runs before migrations
+   - Fixed by adding `@php artisan migrate --force` before `optimize:clear` in `post-install-cmd`
+   - If you encounter this, redeploy after updating the `composer.json` file
 
 ### Logs
 - Check Railway logs in the dashboard for deployment issues
