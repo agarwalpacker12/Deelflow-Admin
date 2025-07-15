@@ -49,6 +49,7 @@ import AddCampaign from "./pages/Campaigns/add/index.jsx";
 import CampaignsRecipientPage from "./pages/Campaigns_Recipients/RecipientPage.jsx";
 import AchievementsTable from "./pages/Achievement/AchievementPage.jsx";
 import AddAchievement from "./pages/Achievement/add/index.jsx";
+import EditProperty from "./pages/Properties/[id]/index.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -105,6 +106,7 @@ function App() {
                             path="properties/add"
                             element={<AddProperty />}
                           />
+                          <Route path="properties/:id" element={<EditProperty />} /> 
 
                           <Route path="deals" element={<DealsPage />} />
                           <Route path="deals/add" element={<AddDeals />} />

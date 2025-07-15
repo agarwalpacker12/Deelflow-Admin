@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { propertiesAPI } from "../../../services/api";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import {
   setProperties,
@@ -17,12 +18,41 @@ import {
   validateField,
 } from "./utility";
 
-const EditPropertyForm = () => {
+// Mapping function: backend property object -> form fields
+function mapPropertyToFormFields(property) {
+  if (!property) return { ...DefaultValues };
+  return {
+    street_address: property.address || "",
+    unit_apt: property.unit || "",
+    city: property.city || "",
+    state: property.state || "",
+    zip_code: property.zip || "",
+    county: property.county || "",
+    property_type: property.property_type || "",
+    bedrooms: property.bedrooms ?? "",
+    bathrooms: property.bathrooms ?? "",
+    square_feet: property.square_feet ?? "",
+    lot_size: property.lot_size ?? "",
+    year_built: property.year_built ?? "",
+    purchase_price: property.purchase_price ?? "",
+    arv: property.arv ?? "",
+    repair_estimate: property.repair_estimate ?? "",
+    holding_costs: property.holding_costs ?? "",
+    transaction_type: property.transaction_type || "",
+    assignment_fee: property.assignment_fee ?? "",
+    property_description: property.description || "",
+    seller_notes: property.seller_notes || "",
+  };
+}
+
+const EditPropertyForm = ({propertyRes}) => {
   // Redux hooks
   const dispatch = useDispatch();
   const { properties, loading } = useSelector((state) => state.properties);
+  const navigate = useNavigate();
 
-  const [formData, setFormData] = useState(DefaultValues);
+  // Use mapping function to initialize formData
+  const [formData, setFormData] = useState(mapPropertyToFormFields(propertyRes));
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error'
@@ -74,32 +104,31 @@ const EditPropertyForm = () => {
     dispatch(setError(null));
 
     try {
-      // Prepare data for API
+      // Prepare data for API (only selected fields)
       const apiData = {
-        ...formData,
+        address: formData.street_address, // backend expects 'address'
+        unit: formData.unit_apt || "",         // backend expects 'unit'
+        city: formData.city,
+        state: formData.state,
+        zip: formData.zip_code,          // backend expects 'zip'
+        county: formData.county,
+        property_type: formData.property_type,
         bedrooms: formData.bedrooms ? parseInt(formData.bedrooms) : null,
         bathrooms: formData.bathrooms ? parseFloat(formData.bathrooms) : null,
-        square_feet: formData.square_feet
-          ? parseInt(formData.square_feet)
-          : null,
+        square_feet: formData.square_feet ? parseInt(formData.square_feet) : null,
         lot_size: formData.lot_size ? parseFloat(formData.lot_size) : null,
         year_built: formData.year_built ? parseInt(formData.year_built) : null,
-        purchase_price: formData.purchase_price
-          ? parseFloat(formData.purchase_price)
-          : null,
+        purchase_price: formData.purchase_price ? parseFloat(formData.purchase_price) : null,
         arv: formData.arv ? parseFloat(formData.arv) : null,
-        repair_estimate: formData.repair_estimate
-          ? parseFloat(formData.repair_estimate)
-          : null,
-        holding_costs: formData.holding_costs
-          ? parseFloat(formData.holding_costs)
-          : null,
-        assignment_fee: formData.assignment_fee
-          ? parseFloat(formData.assignment_fee)
-          : null,
+        repair_estimate: formData.repair_estimate ? parseFloat(formData.repair_estimate) : null,
+        holding_costs: formData.holding_costs ? parseFloat(formData.holding_costs) : null,
+        transaction_type: formData.transaction_type, // must be one of: assignment, double_close, wholesale, fix_and_flip, buy_and_hold
+        assignment_fee: formData.assignment_fee ? parseFloat(formData.assignment_fee) : null,
+        description: formData.property_description, // backend expects 'description'
+        seller_notes: formData.seller_notes || "",
       };
 
-      const response = await propertiesAPI.updateProperty(apiData);
+      const response = await propertiesAPI.updateProperty(propertyRes?.id,  apiData);
 
       if (response.data.status === "success") {
         const newProperty = response.data.data;
@@ -112,6 +141,7 @@ const EditPropertyForm = () => {
         setSubmitMessage("Property updated successfully!");
         setFormData(DefaultValues);
         setErrors({});
+        navigate("/app/properties");
       } else {
         throw new Error(response.data.message || "Failed to update property");
       }
@@ -197,6 +227,12 @@ const EditPropertyForm = () => {
                       className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black border-gray-300"
                       placeholder="Unit, Apt, Suite"
                     />
+
+{errors.unit_apt && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.unit_apt}
+                    </p>
+                  )}
                   </div>
                 </div>
 
@@ -649,9 +685,18 @@ const EditPropertyForm = () => {
                     rows={3}
                     value={formData.seller_notes}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black border-gray-300"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                         errors.property_description
+                           ? "border-red-500"
+                           : "border-gray-300"
+                       }`}
                     placeholder="Any additional notes about the seller or property"
                   />
+                  {errors.seller_notes && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.seller_notes}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

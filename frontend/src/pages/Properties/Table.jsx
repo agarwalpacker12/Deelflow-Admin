@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Home, BedDouble, Bath, DollarSign, Eye, Edit, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { propertiesAPI } from '../../services/api';
 
 const Table = ({
   properties = [],
@@ -7,10 +9,26 @@ const Table = ({
   formatCurrency,
   getScoreColor,
   getStatusColor,
-  onView = () => {},
-  onEdit = () => {},
-  onDelete = () => {},
+  onView = () => {}, 
 }) => {
+
+  const navigate = useNavigate();
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
+
+  // Wrap onDelete to handle loading and error
+  const handleDeleteClick = async (property) => {
+    setDeleteError("");
+    setDeletingId(property.id);
+    try {
+      await propertiesAPI.deleteProperty(property.id);
+    } catch (err) {
+      setDeleteError(err?.message || "Failed to delete property");
+    } finally {
+      setDeletingId(null);
+    }
+  };
+
   return (
     <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
       {loading ? (
@@ -19,6 +37,11 @@ const Table = ({
         <div className="p-8 text-center text-gray-400">No properties found</div>
       ) : (
         <div className="overflow-x-auto">
+          {deleteError && (
+            <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-2 text-red-300 text-center mb-2">
+              {deleteError}
+            </div>
+          )}
           <table className="w-full">
             <thead className="bg-white/10 border-b border-white/10">
               <tr>
@@ -86,14 +109,21 @@ const Table = ({
                   </td>
                   <td className="p-4">
                     <div className="flex gap-2">
-                      <button className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors" onClick={() => onView(property)}>
-                        <Eye className="h-4 w-4" />
+                      
+                      <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"  onClick={() =>navigate(`/app/properties/${property.id}`)}>
+                        <Edit className="h-4 w-4"
+                        
+                        />
                       </button>
-                      <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors" onClick={() => onEdit(property)}>
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors" onClick={() => onDelete(property)}>
-                        <Trash2 className="h-4 w-4" />
+                      <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors" 
+                        onClick={() => handleDeleteClick(property)}
+                        disabled={deletingId === property.id}
+                      >
+                        {deletingId === property.id ? (
+                          <span className="inline-block w-4 h-4 border-2 border-red-400 border-t-transparent rounded-full animate-spin"></span>
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
                       </button>
                     </div>
                   </td>

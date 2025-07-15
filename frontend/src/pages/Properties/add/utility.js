@@ -136,6 +136,10 @@ export const validateField = (fieldName, value) => {
       return !value || value < 0 ? "Valid assignment fee is required" : "";
     case "property_description":
       return !value.trim() ? "Property description is required" : "";
+    case "unit_apt":
+      return !value.trim() ? "Unit/Apt is required" : "";
+    case "seller_notes":
+      return !value.trim() ? "Seller notes are required" : "";
     default:
       return "";
   }

@@ -121,9 +121,7 @@ export const validateField = (fieldName, value) => {
     case "lot_size":
       return !value || value < 0 ? "Valid lot size is required" : "";
     case "year_built":
-      return !value || value < 1800 || value > new Date().getFullYear()
-        ? "Valid year built is required"
-        : "";
+      return !value || value < 1800 || value > new Date().getFullYear() ? "Valid year built is required" : "";
     case "purchase_price":
       return !value || value < 0 ? "Valid purchase price is required" : "";
     case "arv":
@@ -138,6 +136,10 @@ export const validateField = (fieldName, value) => {
       return !value || value < 0 ? "Valid assignment fee is required" : "";
     case "property_description":
       return !value.trim() ? "Property description is required" : "";
+    case "unit_apt":
+      return !value.trim() ? "Unit/Apt is required" : "";
+    case "seller_notes":
+      return !value.trim() ? "Seller notes are required" : "";
     default:
       return "";
   }

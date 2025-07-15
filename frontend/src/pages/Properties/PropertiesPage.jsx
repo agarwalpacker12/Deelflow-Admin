@@ -131,6 +131,41 @@ const PropertiesPage = () => {
     setCurrentPage(1);
   };
 
+  // Delete property handler
+  const handleDelete = async (property) => {
+    if (!window.confirm("Are you sure you want to delete this property?")) return;
+    try {
+      await propertiesAPI.deleteProperty(property.id);
+      // Refetch properties after delete
+      const params = {
+        page: currentPage,
+        per_page: perPage,
+      };
+      if (searchTerm) params.search = searchTerm;
+      if (statusFilter) params.status = statusFilter;
+      if (cityFilter) params.city = cityFilter;
+      if (priceMin) params.price_min = priceMin;
+      if (bedrooms) params.bedrooms = bedrooms;
+      if (transactionType) params.transaction_type = transactionType;
+      if (minAiScore) params.ai_score_min = minAiScore;
+      const response = await propertiesAPI.getProperties(params);
+      if (response.data.status === "success") {
+        setProperties(response.data.data);
+        if (response.data.meta) {
+          setTotal(response.data.meta.total);
+          setTotalPages(response.data.meta.last_page);
+        } else {
+          setTotal(response.data.data.length);
+          setTotalPages(1);
+        }
+      } else {
+        setError("Failed to fetch properties");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to delete property");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -292,10 +327,7 @@ const PropertiesPage = () => {
         loading={loading}
         formatCurrency={formatCurrency}
         getScoreColor={getScoreColor}
-        getStatusColor={getStatusColor}
-        onView={() => {}}
-        onEdit={() => {}}
-        onDelete={() => {}}
+        getStatusColor={getStatusColor} 
       />
       {/* Pagination */}
       {totalPages > 1 && (
