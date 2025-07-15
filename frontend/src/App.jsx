@@ -1,4 +1,3 @@
-import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -32,19 +31,14 @@ import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import LeadsPage from "./pages/Leads/LeadsPage.jsx";
 import PropertiesPage from "./pages/Properties/PropertiesPage.jsx";
 import DealsPage from "./pages/Deals/DealsPage.jsx";
-import MarketplacePage from "./pages/Marketplace/MarketplacePage.jsx";
 import CampaignsPage from "./pages/Campaigns/CampaignsPage.jsx";
-import BlockchainPage from "./pages/Blockchain/BlockchainPage.jsx";
-import AnalyticsPage from "./pages/Analytics/AnalyticsPage.jsx";
 import ProfilePage from "./pages/Profile/ProfilePage.jsx";
-import SettingsPage from "./pages/Settings/SettingsPage.jsx";
-import WhiteLabelPage from "./pages/WhiteLabel/WhiteLabelPage.jsx";
-import PsychologyDashboard from "./pages/Psychology/PsychologyDashboard.jsx";
 
 // Styles
 import "./index.css";
 import AddLead from "./pages/Leads/add/index.jsx";
-import EditLead from "./pages/Leads/edit/index.jsx";
+import EditLead from "./pages/Leads/[id]/index.jsx";
+
 import AddProperty from "./pages/Properties/add/index.jsx";
 import AddDeals from "./pages/Deals/add/index.jsx";
 import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
@@ -101,7 +95,7 @@ function App() {
                           <Route path="dashboard" element={<Dashboard />} />
                           <Route path="leads" element={<LeadsPage />} />
                           <Route path="leads/add" element={<AddLead />} />
-                          <Route path="leads/edit" element={<EditLead />} />
+                          <Route path="leads/:id" element={<EditLead />} /> 
 
                           <Route
                             path="properties"

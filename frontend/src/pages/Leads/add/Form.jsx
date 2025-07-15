@@ -18,8 +18,13 @@ import {
   validateField,
 } from "./utilities";
 
+import { useNavigate } from "react-router-dom";
+
+
 // Remove the mock API function and replace with real API call
 const LeadForm = () => {
+    const navigate = useNavigate();
+  
   // Redux hooks
   const dispatch = useDispatch();
   const { leads, loading } = useSelector((state) => state.leads);
@@ -107,6 +112,7 @@ const LeadForm = () => {
         setSubmitMessage("Lead created successfully! We'll contact you soon.");
         setFormData(DefaultValues);
         setErrors({});
+        navigate('/app/leads');
       } else {
         throw new Error(response.data.message || "Failed to create lead");
       }

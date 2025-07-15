@@ -57,12 +57,13 @@ const LeadsPage = () => {
         }
 
         const response = await leadsAPI.getLeads(params);
+        console.log(response.data.data);
         
         // Handle the API response format
         if (response.data.status === 'success') {
-          setLeads(response.data.data);
-          setTotal(response.data.meta.total);
-          setTotalPages(response.data.meta.last_page);
+          setLeads(response.data.data.data); // leads array
+          setTotal(response.data.data.meta.total);
+          setTotalPages(response.data.data.meta.last_page);
         } else {
           setError('Failed to fetch leads');
         }
@@ -256,7 +257,7 @@ const LeadsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {leads.map((lead) => (
+                {leads.length > 0 && leads?.map((lead) => (
                   <tr
                     key={lead.id}
                     className="border-b border-white/10 hover:bg-white/5"
@@ -388,7 +389,9 @@ const LeadsPage = () => {
                         <button className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors">
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors">
+                        <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"
+                          onClick={() =>navigate(`/app/leads/${lead.id}`)}
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors">
