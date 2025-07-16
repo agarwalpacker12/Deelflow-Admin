@@ -61,9 +61,10 @@ const DealsPage = () => {
         
         // Handle the API response format
         if (response.data.status === 'success') {
-          setDeals(response.data.data);
-          setTotal(response.data.meta.total);
-          setTotalPages(response.data.meta.last_page);
+          setDeals(response.data.data.data); // deals array
+          setTotal(response.data.data.meta.total);
+          setTotalPages(response.data.data.meta.last_page);
+          // Do NOT setCurrentPage here to avoid infinite loop
         } else {
           setError('Failed to fetch deals');
         }
@@ -77,6 +78,13 @@ const DealsPage = () => {
 
     fetchDeals();
   }, [searchTerm, statusFilter, dealTypeFilter, perPage, currentPage]);
+
+  // Add a guard to prevent currentPage from being out of bounds
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages > 0 ? totalPages : 1);
+    }
+  }, [totalPages]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -286,19 +294,19 @@ const DealsPage = () => {
                     <td className="p-4">
                       <div className="space-y-2">
                         <div className="text-white font-medium">
-                          Deal #{deal.id}
+                          Deal #{deal?.id}
                         </div>
                         <div className="flex items-center gap-2 text-gray-400 text-sm">
                           <Building className="h-3 w-3" />
-                          <span className={getDealTypeColor(deal.deal_type)}>
-                            {deal.deal_type?.replace("_", " ")}
+                          <span className={getDealTypeColor(deal?.deal_type)}>
+                            {deal?.deal_type?.replace("_", " ")}
                           </span>
                         </div>
                         <div className="text-xs text-gray-500">
-                          Property ID: {deal.property_id}
+                          Property ID: {deal?.property_id}
                         </div>
                         <div className="text-xs text-gray-500">
-                          Lead ID: {deal.lead_id}
+                          Lead ID: {deal?.lead_id}
                         </div>
                       </div>
                     </td>
@@ -306,16 +314,16 @@ const DealsPage = () => {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-gray-300 text-sm">
                           <User className="h-3 w-3" />
-                          Buyer ID: {deal.buyer_id}
+                          Buyer ID: {deal?.buyer_id}
                         </div>
                         <div className="flex items-center gap-2 text-gray-300 text-sm">
                           <User className="h-3 w-3" />
-                          Seller ID: {deal.seller_id}
+                          Seller ID: {deal?.seller_id}
                         </div>
-                        {deal.inspection_period && (
+                        {deal?.inspection_period && (
                           <div className="flex items-center gap-2 text-gray-400 text-xs">
                             <Clock className="h-3 w-3" />
-                            Inspection: {deal.inspection_period} days
+                            Inspection: {deal?.inspection_period} days
                           </div>
                         )}
                       </div>
@@ -324,22 +332,22 @@ const DealsPage = () => {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-green-400 text-sm">
                           <DollarSign className="h-3 w-3" />
-                          Purchase: {formatCurrency(deal.purchase_price)}
+                          Purchase: {formatCurrency(deal?.purchase_price)}
                         </div>
                         <div className="flex items-center gap-2 text-blue-400 text-sm">
                           <DollarSign className="h-3 w-3" />
-                          Sale: {formatCurrency(deal.sale_price)}
+                          Sale: {formatCurrency(deal?.sale_price)}
                         </div>
-                        {deal.assignment_fee && (
+                        {deal?.assignment_fee && (
                           <div className="flex items-center gap-2 text-purple-400 text-xs">
                             <DollarSign className="h-3 w-3" />
-                            Assignment: {formatCurrency(deal.assignment_fee)}
+                            Assignment: {formatCurrency(deal?.assignment_fee)}
                           </div>
                         )}
-                        {deal.earnest_money && (
+                        {deal?.earnest_money && (
                           <div className="flex items-center gap-2 text-yellow-400 text-xs">
                             <DollarSign className="h-3 w-3" />
-                            Earnest: {formatCurrency(deal.earnest_money)}
+                            Earnest: {formatCurrency(deal?.earnest_money)}
                           </div>
                         )}
                         <div className="flex items-center gap-2 text-green-400 text-xs font-medium">
@@ -352,17 +360,17 @@ const DealsPage = () => {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 text-gray-300 text-sm">
                           <Calendar className="h-3 w-3" />
-                          Contract: {formatDate(deal.contract_date)}
+                          Contract: {formatDate(deal?.contract_date)}
                         </div>
                         <div className="flex items-center gap-2 text-gray-300 text-sm">
                           <Calendar className="h-3 w-3" />
-                          Closing: {formatDate(deal.closing_date)}
+                          Closing: {formatDate(deal?.closing_date)}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {deal.financing_contingency && "Financing ✓"}
-                          {deal.inspection_contingency && " Inspection ✓"}
-                          {deal.appraisal_contingency && " Appraisal ✓"}
-                          {deal.title_contingency && " Title ✓"}
+                          {deal?.financing_contingency && "Financing ✓"}
+                          {deal?.inspection_contingency && " Inspection ✓"}
+                          {deal?.appraisal_contingency && " Appraisal ✓"}
+                          {deal?.title_contingency && " Title ✓"}
                         </div>
                       </div>
                     </td>
@@ -370,14 +378,14 @@ const DealsPage = () => {
                       <div className="space-y-2">
                         <span
                           className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                            deal.status
+                            deal?.status
                           )}`}
                         >
-                          {deal.status}
+                          {deal?.status}
                         </span>
-                        {deal.notes && (
+                        {deal?.notes && (
                           <div className="text-xs text-gray-500 truncate max-w-32">
-                            {deal.notes}
+                            {deal?.notes}
                           </div>
                         )}
                       </div>

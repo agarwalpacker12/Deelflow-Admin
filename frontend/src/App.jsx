@@ -110,6 +110,7 @@ function App() {
 
                           <Route path="deals" element={<DealsPage />} />
                           <Route path="deals/add" element={<AddDeals />} />
+                          
 
                           <Route
                             path="milestone"

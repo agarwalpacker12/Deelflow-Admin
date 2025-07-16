@@ -328,6 +328,7 @@ const PropertiesPage = () => {
         formatCurrency={formatCurrency}
         getScoreColor={getScoreColor}
         getStatusColor={getStatusColor} 
+        onDelete={handleDelete}
       />
       {/* Pagination */}
       {totalPages > 1 && (
