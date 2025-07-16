@@ -504,11 +504,28 @@ Accept: application/json
         "seller_notes": "Motivated seller, quick closing preferred"
     }
     ```
+*   **Required Fields:**
+    - `address` (string, max 500 chars)
+    - `city` (string, max 100 chars)
+    - `state` (string, max 2 chars)
+    - `zip` (string, max 10 chars)
+    - `property_type` (enum)
+    - `purchase_price` (numeric, min 0)
+    - `arv` (numeric, min 0)
+    - `transaction_type` (enum)
+*   **Optional Fields:**
+    - `unit`, `county`, `bedrooms`, `bathrooms`, `square_feet`, `lot_size`, `year_built`, `repair_estimate`, `holding_costs`, `assignment_fee`, `description`, `seller_notes`
 *   **Field Restrictions:**
     - `property_type`: Allowed values are `single_family`, `townhouse`, `condo`, `duplex`, `multi_family`, `mobile_home`.
     - `transaction_type`: Allowed values are `assignment`, `double_close`, `wholesale`, `fix_and_flip`, `buy_and_hold`.
-    - `status`: Allowed values are `draft`, `active`, `pending`, `sold`.
-*   **Response (Success):**
+*   **Auto-Generated Fields:**
+    - `uuid`: Unique identifier automatically generated
+    - `user_id`: Set from authenticated user
+    - `ai_score`: Random score between 60-100 (mock implementation)
+    - `status`: Always set to "draft" for new properties
+    - `profit_potential`: Calculated as ARV - purchase_price - repair_estimate - holding_costs
+    - `view_count`, `save_count`, `inquiry_count`: All initialized to 0
+*   **Response (Success - 201):**
 
     ```json
     {
@@ -535,16 +552,33 @@ Accept: application/json
             "repair_estimate": 25000.00,
             "holding_costs": 5000.00,
             "profit_potential": 40000.00,
-            "ai_score": 0,
+            "ai_score": 85,
             "transaction_type": "assignment",
             "assignment_fee": 15000.00,
-            "status": "new",
+            "status": "draft",
             "view_count": 0,
             "save_count": 0,
             "inquiry_count": 0,
-            "images": [],
             "created_at": "2025-06-27T20:00:00.000000Z",
             "updated_at": "2025-06-27T20:00:00.000000Z"
+        }
+    }
+    ```
+*   **Validation Error Response (422):**
+
+    ```json
+    {
+        "status": "error",
+        "message": "Validation failed",
+        "errors": {
+            "address": ["The address field is required."],
+            "city": ["The city field is required."],
+            "state": ["The state field is required."],
+            "zip": ["The zip field is required."],
+            "property_type": ["The property type field is required."],
+            "purchase_price": ["The purchase price field is required."],
+            "arv": ["The arv field is required."],
+            "transaction_type": ["The transaction type field is required."]
         }
     }
     ```
