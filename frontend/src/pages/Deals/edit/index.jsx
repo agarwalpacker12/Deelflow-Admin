@@ -6,9 +6,9 @@ function EditDeals() {
       <div className="max-w-5xl mx-auto">
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-8">
-            <h2 className="text-3xl font-bold text-white mb-2">Add New Deal</h2>
+            <h2 className="text-3xl font-bold text-white mb-2">Update Deal</h2>
             <p className="text-purple-100">
-              Fill out the form below to add a new deal to your pipeline.
+              Fill out the form below to update a deal to your pipeline.
             </p>
           </div>
 

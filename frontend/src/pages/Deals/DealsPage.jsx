@@ -1,36 +1,122 @@
-// No imports needed for design-only version
+import React, { useState, useEffect } from "react";
+import {
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  DollarSign,
+  Calendar,
+  Eye,
+  Edit,
+  Trash2,
+  RefreshCw,
+  Building,
+  User,
+  Clock,
+  TrendingUp,
+  Sparkles,
+  Plus,
+} from "lucide-react";
+import { dealsAPI } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 const DealsPage = () => {
-  // Mock data for display
-  const mockProperties = [
-    {
-      id: 1,
-      deal_id: 1,
-      milestone_type: "inspection",
-      title: "Property Inspection",
-      description: "Schedule and complete property inspection",
-      due_date: "2025-07-01",
-      is_critical: true,
-    },
-    {
-      id: 2,
-      deal_id: 2,
-      milestone_type: "inspection",
-      title: "Property Inspection",
-      description: "Schedule and complete property inspection",
-      due_date: "2025-07-01",
-      is_critical: true,
-    },
-    {
-      id: 3,
-      deal_id: 3,
-      milestone_type: "inspection",
-      title: "Property Inspection",
-      description: "Schedule and complete property inspection",
-      due_date: "2025-07-01",
-      is_critical: true,
-    },
-  ];
+  const navigate = useNavigate();
+  const [deals, setDeals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [dealTypeFilter, setDealTypeFilter] = useState("");
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchDeals = async () => {
+      setLoading(true);
+      setError(null);
+      
+      try {
+        // Prepare API parameters
+        const params = {
+          page: currentPage,
+          per_page: perPage,
+        };
+
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
+
+        if (statusFilter) {
+          params.status = statusFilter;
+        }
+
+        if (dealTypeFilter) {
+          params.deal_type = dealTypeFilter;
+        }
+
+        const response = await dealsAPI.getDeals(params);
+        
+        // Handle the API response format
+        if (response.data.status === 'success') {
+          setDeals(response.data.data.data); // deals array
+          setTotal(response.data.data.meta.total);
+          setTotalPages(response.data.data.meta.last_page);
+          // Do NOT setCurrentPage here to avoid infinite loop
+        } else {
+          setError('Failed to fetch deals');
+        }
+      } catch (err) {
+        console.error('Error fetching deals:', err);
+        setError(err.response?.data?.message || 'Failed to fetch deals');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDeals();
+  }, [searchTerm, statusFilter, dealTypeFilter, perPage, currentPage]);
+
+  // Add a guard to prevent currentPage from being out of bounds
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages > 0 ? totalPages : 1);
+    }
+  }, [totalPages]);
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "active":
+        return "bg-green-500/20 text-green-300 border-green-500/30";
+      case "pending":
+        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+      case "closed":
+        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+      case "cancelled":
+        return "bg-red-500/20 text-red-300 border-red-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
+    }
+  };
+
+  const getDealTypeColor = (dealType) => {
+    switch (dealType) {
+      case "assignment":
+        return "text-purple-400";
+      case "wholesale":
+        return "text-blue-400";
+      case "fix_and_flip":
+        return "text-orange-400";
+      case "buy_and_hold":
+        return "text-green-400";
+      case "direct_sale":
+        return "text-indigo-400";
+      default:
+        return "text-gray-400";
+    }
+  };
 
   const formatCurrency = (amount) => {
     if (amount === null || amount === undefined) return "-";
@@ -41,54 +127,106 @@ const DealsPage = () => {
     }).format(amount);
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const calculateProfit = (deal) => {
+    const salePrice = parseFloat(deal.sale_price) || 0;
+    const purchasePrice = parseFloat(deal.purchase_price) || 0;
+    const assignmentFee = parseFloat(deal.assignment_fee) || 0;
+    return salePrice - purchasePrice + assignmentFee;
+  };
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("");
+    setDealTypeFilter("");
+    setCurrentPage(1);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-white">Deals</h1>
-        <div className="text-sm text-gray-400">
-          Total: {mockProperties.length} Deals
+        <h1 className="text-3xl font-bold text-white">Deals Management</h1>
+        <div className="flex items-center gap-3">
+          {/* Add Deal Button */}
+          <button
+            onClick={() => navigate('/app/deals/add')}
+            className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
+          >
+            {/* Animated background effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Sparkle effect */}
+            <Sparkles className="h-4 w-4 group-hover:animate-pulse" />
+            <Plus className="h-5 w-5" />
+            <span className="relative z-10">Add Deal</span>
+            {/* Hover effect line */}
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></div>
+          </button>
+          <div className="text-sm text-gray-400">Total: {total} deals</div>
         </div>
       </div>
 
       {/* Filters */}
       <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
-        <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-8 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {/* Search */}
-          <div className="relative md:col-span-2">
-            <label className="block text-xs text-gray-400 mb-1">Search</label>
-            <span className="absolute left-3 top-8 text-gray-400">🔍</span>
+          <div className="relative">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search properties..."
+              placeholder="Search deals..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* Status Filter */}
           <div className="relative">
-            <label className="block text-xs text-gray-400 mb-1">Status</label>
-            <span className="absolute left-3 top-8 text-gray-400">⚙️</span>
-            <select className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white">
+            <Filter className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white"
+            >
               <option value="">All Status</option>
               <option value="active">Active</option>
               <option value="pending">Pending</option>
-              <option value="sold">Sold</option>
+              <option value="closed">Closed</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
 
-          {/* Close Date From */}
+          {/* Deal Type Filter */}
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Due Date</label>
-            <input
-              type="date"
-              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-60"
-            />
+            <select
+              value={dealTypeFilter}
+              onChange={(e) => setDealTypeFilter(e.target.value)}
+              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white"
+            >
+              <option value="">All Types</option>
+              <option value="assignment">Assignment</option>
+              <option value="wholesale">Wholesale</option>
+              <option value="fix_and_flip">Fix & Flip</option>
+              <option value="buy_and_hold">Buy & Hold</option>
+              <option value="direct_sale">Direct Sale</option>
+            </select>
           </div>
 
           {/* Per Page */}
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Per Page</label>
-            <select className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white">
+            <select
+              value={perPage}
+              onChange={(e) => setPerPage(parseInt(e.target.value))}
+              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white"
+            >
               <option value="10">10 per page</option>
               <option value="25">25 per page</option>
               <option value="50">50 per page</option>
@@ -96,98 +234,229 @@ const DealsPage = () => {
             </select>
           </div>
 
-          {/* Reset Button */}
+          {/* Refresh Button */}
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Actions</label>
-            <button className="w-full px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-colors flex items-center justify-center gap-2">
-              <span>↻</span>
+            <button
+              onClick={resetFilters}
+              className="w-full px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-colors flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
               Reset
             </button>
           </div>
         </div>
       </div>
 
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4">
+          <p className="text-red-300">{error}</p>
+        </div>
+      )}
+
       {/* Table */}
       <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-white/10 border-b border-white/10">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Property ID
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  milestone_type
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  title
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  due_date
-                </th>
-
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/10">
-              {mockProperties.map((deal) => (
-                <tr
-                  key={deal.id}
-                  className="hover:bg-white/5 transition-colors"
-                >
-                  <td className="px-6 py-4 text-white text-xs">
-                    {deal.deal_id}
-                  </td>
-                  <td className="px-6 py-4 text-white text-xs">
-                    {deal.milestone_type}
-                  </td>
-                  <td className="px-6 py-4 text-white text-xs">{deal.title}</td>
-                  <td className="px-6 py-4 text-white text-xs">
-                    {deal.due_date}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium">
-                    <div className="flex space-x-2">
-                      <button className="text-blue-400 hover:text-blue-300 transition-colors px-2 py-1 rounded text-xs">
-                        View
-                      </button>
-                      <button className="text-green-400 hover:text-green-300 transition-colors px-2 py-1 rounded text-xs">
-                        Edit
-                      </button>
-                      <button className="text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded text-xs">
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+        {loading ? (
+          <div className="p-8 text-center text-gray-400">Loading deals...</div>
+        ) : deals.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">No deals found</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-white/10 border-b border-white/10">
+                <tr>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Deal Info
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Property & Lead
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Financial Details
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Timeline
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Status
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {deals.map((deal) => (
+                  <tr
+                    key={deal.id}
+                    className="border-b border-white/10 hover:bg-white/5"
+                  >
+                    <td className="p-4">
+                      <div className="space-y-2">
+                        <div className="text-white font-medium">
+                          Deal #{deal?.id}
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-400 text-sm">
+                          <Building className="h-3 w-3" />
+                          <span className={getDealTypeColor(deal?.deal_type)}>
+                            {deal?.deal_type?.replace("_", " ")}
+                          </span>
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Property ID: {deal?.property_id}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Lead ID: {deal?.lead_id}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-gray-300 text-sm">
+                          <User className="h-3 w-3" />
+                          Buyer ID: {deal?.buyer_id}
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-300 text-sm">
+                          <User className="h-3 w-3" />
+                          Seller ID: {deal?.seller_id}
+                        </div>
+                        {deal?.inspection_period && (
+                          <div className="flex items-center gap-2 text-gray-400 text-xs">
+                            <Clock className="h-3 w-3" />
+                            Inspection: {deal?.inspection_period} days
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-green-400 text-sm">
+                          <DollarSign className="h-3 w-3" />
+                          Purchase: {formatCurrency(deal?.purchase_price)}
+                        </div>
+                        <div className="flex items-center gap-2 text-blue-400 text-sm">
+                          <DollarSign className="h-3 w-3" />
+                          Sale: {formatCurrency(deal?.sale_price)}
+                        </div>
+                        {deal?.assignment_fee && (
+                          <div className="flex items-center gap-2 text-purple-400 text-xs">
+                            <DollarSign className="h-3 w-3" />
+                            Assignment: {formatCurrency(deal?.assignment_fee)}
+                          </div>
+                        )}
+                        {deal?.earnest_money && (
+                          <div className="flex items-center gap-2 text-yellow-400 text-xs">
+                            <DollarSign className="h-3 w-3" />
+                            Earnest: {formatCurrency(deal?.earnest_money)}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 text-green-400 text-xs font-medium">
+                          <TrendingUp className="h-3 w-3" />
+                          Profit: {formatCurrency(calculateProfit(deal))}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-gray-300 text-sm">
+                          <Calendar className="h-3 w-3" />
+                          Contract: {formatDate(deal?.contract_date)}
+                        </div>
+                        <div className="flex items-center gap-2 text-gray-300 text-sm">
+                          <Calendar className="h-3 w-3" />
+                          Closing: {formatDate(deal?.closing_date)}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {deal?.financing_contingency && "Financing ✓"}
+                          {deal?.inspection_contingency && " Inspection ✓"}
+                          {deal?.appraisal_contingency && " Appraisal ✓"}
+                          {deal?.title_contingency && " Title ✓"}
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="space-y-2">
+                        <span
+                          className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                            deal?.status
+                          )}`}
+                        >
+                          {deal?.status}
+                        </span>
+                        {deal?.notes && (
+                          <div className="text-xs text-gray-500 truncate max-w-32">
+                            {deal?.notes}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex gap-2">
+                        <button className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors">
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors">
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Pagination */}
-      <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-gray-400">
-            Showing 1 to 3 of 3 properties
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              <span>‹</span>
-            </button>
-            <div className="flex items-center gap-1">
-              <button className="px-3 py-1 rounded-lg text-sm transition-colors bg-blue-500 text-white">
-                1
+      {totalPages > 1 && (
+        <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-400">
+              Showing {(currentPage - 1) * perPage + 1} to{" "}
+              {Math.min(currentPage * perPage, total)} of {total} deals
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+
+              <div className="flex items-center gap-1">
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-4 w-4" />
               </button>
             </div>
-            <button className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-              <span>›</span>
-            </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

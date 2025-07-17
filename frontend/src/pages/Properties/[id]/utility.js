@@ -5,22 +5,19 @@ export const propertyTypeList = [
   { value: "condo", label: "Condo" },
   { value: "townhouse", label: "Townhouse" },
   { value: "multi_family", label: "Multi Family" },
-  { value: "duplex", label: "Duplex" },
-  { value: "mobile_home", label: "Mobile Home" },
+  { value: "land", label: "Land" },
+  { value: "commercial", label: "Commercial" },
 ];
-// single_family, townhouse, condo, duplex, multi_family, mobile_home
 
 // Transaction type options
 export const transactionTypeList = [
   { value: "", label: "Select Transaction Type" },
   { value: "wholesale", label: "Wholesale" },
-  { value: "fix_and_flip", label: "Fix & Flip" },
+  { value: "retail", label: "Retail" },
   { value: "assignment", label: "Assignment" },
   { value: "double_close", label: "Double Close" },
-  { value: "buy_and_hold", label: "Buy & Hold" },
-
 ];
-//  assignment, double_close, wholesale, fix_and_flip, buy_and_holds
+
 // US States list
 export const stateList = [
   { value: "", label: "Select State" },
@@ -124,9 +121,7 @@ export const validateField = (fieldName, value) => {
     case "lot_size":
       return !value || value < 0 ? "Valid lot size is required" : "";
     case "year_built":
-      return !value || value < 1800 || value > new Date().getFullYear()
-        ? "Valid year built is required"
-        : "";
+      return !value || value < 1800 || value > new Date().getFullYear() ? "Valid year built is required" : "";
     case "purchase_price":
       return !value || value < 0 ? "Valid purchase price is required" : "";
     case "arv":
