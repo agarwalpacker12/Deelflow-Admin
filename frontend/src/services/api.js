@@ -20,7 +20,7 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
- 
+
     // Debug logging
     console.log("API Request:", {
       method: config.method,
@@ -119,6 +119,14 @@ export const campaignsAPI = {
   updateCampaign: (id, data) => api.put(`/campaigns/${id}`, data),
   deleteCampaign: (id) => api.delete(`/campaigns/${id}`),
   getRecipients: (id) => api.get(`/campaigns/${id}/recipients`),
+};
+
+export const propertySaveAPI = {
+  getPropertySave: (params) => api.get("/property-saves", { params }),
+  getSinglePropertySave: (id) => api.get(`/property-saves/${id}`),
+  createPropertySave: (data) => api.post("/property-saves", data),
+  updatePropertySave: (id, data) => api.put(`/property-saves/${id}`, data),
+  deletePropertySave: (id) => api.delete(`/property-saves/${id}`),
 };
 
 export default api;

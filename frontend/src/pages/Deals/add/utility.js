@@ -24,10 +24,9 @@ export const dealTypeList = [
   { value: "", label: "Select Deal Type" },
   { value: "assignment", label: "Assignment" },
   { value: "wholesale", label: "Wholesale" },
-  { value: "fix_and_flip", label: "Fix & Flip" },
-  { value: "buy_and_hold", label: "Buy & Hold" },
-  { value: "direct_sale", label: "Direct Sale" },
-];
+  { value: "fix_flip", label: "Fix & Flip" },
+  { value: "double_close", label: "Double & cCose" }
+]; 
 
 // Validation function
 export const validateField = (fieldName, value) => {

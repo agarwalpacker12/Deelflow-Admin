@@ -7,9 +7,10 @@ import {
   Eye,
   Edit,
   Trash2,
+  Bookmark,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { propertiesAPI } from "../../services/api";
+import { propertiesAPI, propertySaveAPI } from "../../services/api";
 
 const Table = ({
   properties = [],
@@ -17,12 +18,18 @@ const Table = ({
   formatCurrency,
   getScoreColor,
   getStatusColor,
-  onView = () => {},
-  onDelete = () => {}, // <-- add this
+  savedPropertyIds,
+  onPropertySaved, // <-- add this prop
 }) => {
   const navigate = useNavigate();
   const [deletingId, setDeletingId] = useState(null);
   const [deleteError, setDeleteError] = useState("");
+  // Add state for saving property
+  const [savingId, setSavingId] = useState(null);
+  const [saveError, setSaveError] = useState("");
+  const [saveSuccess, setSaveSuccess] = useState(null);
+
+  console.log("savedPropertyIds", savedPropertyIds);
 
   // Remove direct API call, just handle loading/error UI
   const handleDeleteClick = async (property) => {
@@ -34,6 +41,28 @@ const Table = ({
       setDeleteError(err?.message || "Failed to delete property");
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  // Add handler for saving property
+  const handleSaveClick = async (property) => {
+    setSaveError("");
+    setSaveSuccess(null);
+    setSavingId(property.id);
+    try {
+      // Assuming API expects { property_id: ... }
+      await propertySaveAPI.createPropertySave({ property_id: property.id });
+      setSaveSuccess(property.id);
+      setTimeout(() => setSaveSuccess(null), 1500);
+      if (onPropertySaved) onPropertySaved(property.id); // <-- notify parent
+    } catch (err) {
+      setSaveError(
+        err?.response?.data?.message ||
+          err?.message ||
+          "Failed to save property"
+      );
+    } finally {
+      setSavingId(null);
     }
   };
 
@@ -50,6 +79,11 @@ const Table = ({
           {deleteError && (
             <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-2 text-red-300 text-center mb-2">
               {deleteError}
+            </div>
+          )}
+          {saveError && (
+            <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-2 text-red-300 text-center mb-2">
+              {saveError}
             </div>
           )}
           <table className="w-full">
@@ -170,12 +204,67 @@ const Table = ({
                   </td>
                   <td className="p-4">
                     <div className="flex gap-2">
+                      {/* Heart icon for saved property */}
+                      {savedPropertyIds &&
+                      savedPropertyIds.includes(property.id) ? (
+                        <button
+                          className="p-2 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors cursor-default"
+                          title="Saved Property"
+                          disabled
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4 fill-red-500"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 21C12 21 4 13.5 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.5 16 21 16 21H12Z"
+                            />
+                          </svg>
+                        </button>
+                      ) : (
+                        <button
+                          className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-500/20 rounded-lg transition-colors"
+                          onClick={() => handleSaveClick(property)}
+                          title="Save Property"
+                          disabled={savingId === property.id}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 21C12 21 4 13.5 4 8.5C4 5.42 6.42 3 9.5 3C11.24 3 12.91 3.81 14 5.08C15.09 3.81 16.76 3 18.5 3C21.58 3 24 5.42 24 8.5C24 13.5 16 21 16 21H12Z"
+                            />
+                          </svg>
+                        </button>
+                      )}
                       <button
                         className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"
-                        onClick={() => navigate(`/app/properties/${property.id}`)}
+                        onClick={() =>
+                          navigate(`/app/properties/${property.id}`)
+                        }
                       >
                         <Edit className="h-4 w-4" />
                       </button>
+                      {/* <button
+                        className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
+                        onClick={() => handleSaveClick(property)}
+                        title="Save Property"
+                        disabled={savingId === property.id || (savedPropertyIds && savedPropertyIds.includes(property.id))}
+                      >
+                        <Bookmark className="h-4 w-4" />
+                      </button> */}
                       <button
                         className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                         onClick={() => handleDeleteClick(property)}

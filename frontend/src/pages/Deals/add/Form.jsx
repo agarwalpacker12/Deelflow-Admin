@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { dealsAPI } from "../../../services/api";
+import React, { useState, useEffect } from "react";
+import { dealsAPI, propertiesAPI, leadsAPI } from "../../../services/api";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
@@ -9,11 +9,7 @@ import {
 } from "../../../store/slices/dealsSlice";
 
 // Import utilities
-import {
-  DefaultValues,
-  dealTypeList,
-  validateField,
-} from "./utility";
+import { DefaultValues, dealTypeList, validateField } from "./utility";
 
 const AddDealsForm = () => {
   // Redux hooks
@@ -25,6 +21,40 @@ const AddDealsForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null);
   const [submitMessage, setSubmitMessage] = useState("");
+  const [properties, setProperties] = useState([]);
+  const [propertiesLoading, setPropertiesLoading] = useState(true);
+  const [propertiesError, setPropertiesError] = useState(null);
+  const [leads, setLeads] = useState([]);
+  const [leadsLoading, setLeadsLoading] = useState(true);
+  const [leadsError, setLeadsError] = useState(null);
+
+  useEffect(() => {
+    // Replace with your actual API call
+    propertiesAPI
+      .getProperties()
+      .then((response) => {
+        setProperties(response.data.data); // Adjust based on your API response shape
+        setPropertiesLoading(false);
+      })
+      .catch((error) => {
+        setPropertiesError("Failed to load properties");
+        setPropertiesLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    leadsAPI
+      .getLeads()
+      .then((response) => {
+        // console.log("response.data.data", response.data.data);
+        setLeads(response.data.data.data); // Adjust if your API response shape is different
+        setLeadsLoading(false);
+      })
+      .catch((error) => {
+        setLeadsError("Failed to load leads");
+        setLeadsLoading(false);
+      });
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -93,15 +123,9 @@ const AddDealsForm = () => {
         property_id: formData.property_id
           ? parseInt(formData.property_id)
           : null,
-        lead_id: formData.lead_id
-          ? parseInt(formData.lead_id)
-          : null,
-        buyer_id: formData.buyer_id
-          ? parseInt(formData.buyer_id)
-          : null,
-        seller_id: formData.seller_id
-          ? parseInt(formData.seller_id)
-          : null,
+        lead_id: formData.lead_id ? parseInt(formData.lead_id) : null,
+        buyer_id: formData.buyer_id ? parseInt(formData.buyer_id) : null,
+        seller_id: formData.seller_id ? parseInt(formData.seller_id) : null,
       };
 
       const response = await dealsAPI.createDeal(apiData);
@@ -163,20 +187,25 @@ const AddDealsForm = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Property ID *
             </label>
-            <input
+            <select
               name="property_id"
-              type="number"
               value={formData.property_id}
               onChange={handleInputChange}
               className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                 errors.property_id ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter property ID"
-            />
+            >
+              <option value="">Select a property</option>
+              {propertiesLoading && <option disabled>Loading...</option>}
+              {propertiesError && <option disabled>{propertiesError}</option>}
+              {properties.map((property) => (
+                <option key={property.id} value={property.id}>
+                  {property.property_type}
+                </option>
+              ))}
+            </select>
             {errors.property_id && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.property_id}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.property_id}</p>
             )}
           </div>
 
@@ -184,20 +213,25 @@ const AddDealsForm = () => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Lead ID *
             </label>
-            <input
+            <select
               name="lead_id"
-              type="number"
               value={formData.lead_id}
               onChange={handleInputChange}
               className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                 errors.lead_id ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter lead ID"
-            />
+            >
+              <option value="">Select a lead</option>
+              {leadsLoading && <option disabled>Loading...</option>}
+              {leadsError && <option disabled>{leadsError}</option>}
+              {leads.map((lead) => (
+                <option key={lead.id} value={lead.id}>
+                  {lead.first_name}
+                </option>
+              ))}
+            </select>
             {errors.lead_id && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.lead_id}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.lead_id}</p>
             )}
           </div>
 
@@ -220,9 +254,7 @@ const AddDealsForm = () => {
               ))}
             </select>
             {errors.deal_type && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.deal_type}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.deal_type}</p>
             )}
           </div>
 
@@ -241,9 +273,7 @@ const AddDealsForm = () => {
               placeholder="Enter buyer ID"
             />
             {errors.buyer_id && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.buyer_id}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.buyer_id}</p>
             )}
           </div>
 
@@ -262,9 +292,7 @@ const AddDealsForm = () => {
               placeholder="Enter seller ID"
             />
             {errors.seller_id && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.seller_id}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.seller_id}</p>
             )}
           </div>
 
@@ -336,9 +364,7 @@ const AddDealsForm = () => {
               placeholder="Enter sale price"
             />
             {errors.sale_price && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.sale_price}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.sale_price}</p>
             )}
           </div>
 
@@ -415,7 +441,8 @@ const AddDealsForm = () => {
               <div>
                 <span className="text-gray-600">Profit:</span>
                 <p className="font-semibold text-green-800">
-                  ${(
+                  $
+                  {(
                     parseFloat(formData.sale_price || 0) -
                     parseFloat(formData.purchase_price || 0) +
                     parseFloat(formData.assignment_fee || 0)
@@ -429,9 +456,7 @@ const AddDealsForm = () => {
 
       {/* Timeline Section */}
       <div className="bg-gray-50 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Timeline
-        </h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">Timeline</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -468,9 +493,7 @@ const AddDealsForm = () => {
               }`}
             />
             {errors.closing_date && (
-              <p className="text-red-500 text-sm mt-1">
-                {errors.closing_date}
-              </p>
+              <p className="text-red-500 text-sm mt-1">{errors.closing_date}</p>
             )}
           </div>
         </div>

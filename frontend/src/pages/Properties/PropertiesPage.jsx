@@ -9,7 +9,7 @@ import {
   Plus,
   Sparkles,
 } from "lucide-react";
-import { propertiesAPI } from "../../services/api";
+import { propertiesAPI, propertySaveAPI } from "../../services/api";
 import Table from "./Table";
 
 const PropertiesPage = () => {
@@ -31,6 +31,31 @@ const PropertiesPage = () => {
   const [transactionType, setTransactionType] = useState("");
   const [minAiScore, setMinAiScore] = useState("");
   const [error, setError] = useState(null);
+  const [savedPropertyIds, setSavedPropertyIds] = useState([]);
+
+  // Fetch saved properties
+  useEffect(() => {
+    const fetchSavedProperties = async () => {
+      try {
+        const response = await propertySaveAPI.getPropertySave({
+          per_page: 100,
+        }); // adjust per_page as needed
+        if (response.data.status === "success") {
+          console.log(
+            "response.data.data",
+            JSON.stringify(response.data.data.data)
+          );
+
+          setSavedPropertyIds(
+            response.data.data.data.map((item) => item.property_id)
+          );
+        }
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchSavedProperties();
+  }, []);
 
   useEffect(() => {
     const fetchProperties = async () => {
@@ -133,7 +158,8 @@ const PropertiesPage = () => {
 
   // Delete property handler
   const handleDelete = async (property) => {
-    if (!window.confirm("Are you sure you want to delete this property?")) return;
+    if (!window.confirm("Are you sure you want to delete this property?"))
+      return;
     try {
       await propertiesAPI.deleteProperty(property.id);
       // Refetch properties after delete
@@ -166,42 +192,83 @@ const PropertiesPage = () => {
     }
   };
 
+  // Add handler for saving property (to update savedPropertyIds)
+  const handlePropertySaved = async (propertyId) => {
+    // Refetch saved properties and properties list
+    try {
+      // Refetch saved properties
+      const savedResponse = await propertySaveAPI.getPropertySave({ per_page: 100 });
+      if (savedResponse.data.status === "success") {
+        setSavedPropertyIds(savedResponse.data.data.data.map((item) => item.property_id));
+      }
+      // Refetch properties
+      const params = {
+        page: currentPage,
+        per_page: perPage,
+      };
+      if (searchTerm) params.search = searchTerm;
+      if (statusFilter) params.status = statusFilter;
+      if (cityFilter) params.city = cityFilter;
+      if (priceMin) params.price_min = priceMin;
+      if (bedrooms) params.bedrooms = bedrooms;
+      if (transactionType) params.transaction_type = transactionType;
+      if (minAiScore) params.ai_score_min = minAiScore;
+      const response = await propertiesAPI.getProperties(params);
+      if (response.data.status === "success") {
+        setProperties(response.data.data);
+        if (response.data.meta) {
+          setTotal(response.data.meta.total);
+          setTotalPages(response.data.meta.last_page);
+        } else {
+          setTotal(response.data.data.length);
+          setTotalPages(1);
+        }
+      } else {
+        setError("Failed to fetch properties");
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to refresh after saving property");
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-white">Properties</h1>
-          <div className="text-sm text-gray-400 mt-1">Total: {total} properties</div>
+          <div className="text-sm text-gray-400 mt-1">
+            Total: {total} properties
+          </div>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* Smart Add Button */}
-          <button 
-            onClick={() => navigate('/app/properties/add')}
+          <button
+            onClick={() => navigate("/app/properties/add")}
             className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
           >
             {/* Animated background effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            
+
             {/* Sparkle effect */}
             <Sparkles className="h-4 w-4 group-hover:animate-pulse" />
             <Plus className="h-5 w-5" />
             <span className="relative z-10">Add Property</span>
-            
+
             {/* Hover effect line */}
             <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></div>
           </button>
-          
+
           {/* Quick Stats */}
           <div className="hidden md:flex items-center gap-4 text-sm">
             <div className="px-3 py-1 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300">
-              Active: {properties.filter(p => p.status === 'active').length}
+              Active: {properties.filter((p) => p.status === "active").length}
             </div>
             <div className="px-3 py-1 bg-yellow-500/20 border border-yellow-500/30 rounded-lg text-yellow-300">
-              Pending: {properties.filter(p => p.status === 'pending').length}
+              Pending: {properties.filter((p) => p.status === "pending").length}
             </div>
             <div className="px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300">
-              Sold: {properties.filter(p => p.status === 'sold').length}
+              Sold: {properties.filter((p) => p.status === "sold").length}
             </div>
           </div>
         </div>
@@ -327,8 +394,10 @@ const PropertiesPage = () => {
         loading={loading}
         formatCurrency={formatCurrency}
         getScoreColor={getScoreColor}
-        getStatusColor={getStatusColor} 
+        getStatusColor={getStatusColor}
         onDelete={handleDelete}
+        savedPropertyIds={savedPropertyIds}
+        onPropertySaved={handlePropertySaved}
       />
       {/* Pagination */}
       {totalPages > 1 && (
