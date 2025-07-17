@@ -25,7 +25,7 @@
     },
     {
       "url": "http://localhost:8000/api",
-      "description": "Development server"
+      "description": "Development server (configurable via APP_PORT environment variable)"
     }
   ],
   "security": [
@@ -551,10 +551,117 @@
       "post": {
         "tags": ["Properties"],
         "summary": "Create property",
-        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Property"}}}},
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["address", "city", "state", "zip", "property_type", "purchase_price", "arv", "transaction_type"],
+                "properties": {
+                  "address": {"type": "string", "maxLength": 500},
+                  "unit": {"type": "string", "maxLength": 50},
+                  "city": {"type": "string", "maxLength": 100},
+                  "state": {"type": "string", "maxLength": 2},
+                  "zip": {"type": "string", "maxLength": 10},
+                  "county": {"type": "string", "maxLength": 100},
+                  "property_type": {"type": "string", "enum": ["single_family", "townhouse", "condo", "duplex", "multi_family", "mobile_home"]},
+                  "bedrooms": {"type": "integer", "minimum": 0},
+                  "bathrooms": {"type": "number", "format": "decimal", "minimum": 0},
+                  "square_feet": {"type": "integer", "minimum": 0},
+                  "lot_size": {"type": "number", "format": "decimal", "minimum": 0},
+                  "year_built": {"type": "integer", "minimum": 1800, "maximum": 2025},
+                  "purchase_price": {"type": "number", "format": "decimal", "minimum": 0},
+                  "arv": {"type": "number", "format": "decimal", "minimum": 0},
+                  "repair_estimate": {"type": "number", "format": "decimal", "minimum": 0},
+                  "holding_costs": {"type": "number", "format": "decimal", "minimum": 0},
+                  "transaction_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale", "fix_and_flip", "buy_and_hold"]},
+                  "assignment_fee": {"type": "number", "format": "decimal", "minimum": 0},
+                  "description": {"type": "string"},
+                  "seller_notes": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
         "responses": {
-          "201": {"description": "Property created successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Property"}}}]}}}},
-          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+          "201": {
+            "description": "Property created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {"type": "string", "enum": ["success"]},
+                    "message": {"type": "string", "example": "Property created successfully"},
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "integer"},
+                        "uuid": {"type": "string", "format": "uuid"},
+                        "user_id": {"type": "integer"},
+                        "address": {"type": "string"},
+                        "unit": {"type": "string", "nullable": true},
+                        "city": {"type": "string"},
+                        "state": {"type": "string"},
+                        "zip": {"type": "string"},
+                        "county": {"type": "string", "nullable": true},
+                        "property_type": {"type": "string", "enum": ["single_family", "townhouse", "condo", "duplex", "multi_family", "mobile_home"]},
+                        "bedrooms": {"type": "integer", "nullable": true},
+                        "bathrooms": {"type": "number", "format": "decimal", "nullable": true},
+                        "square_feet": {"type": "integer", "nullable": true},
+                        "lot_size": {"type": "number", "format": "decimal", "nullable": true},
+                        "year_built": {"type": "integer", "nullable": true},
+                        "purchase_price": {"type": "number", "format": "decimal"},
+                        "arv": {"type": "number", "format": "decimal"},
+                        "repair_estimate": {"type": "number", "format": "decimal", "nullable": true},
+                        "holding_costs": {"type": "number", "format": "decimal", "nullable": true},
+                        "profit_potential": {"type": "number", "format": "decimal"},
+                        "ai_score": {"type": "integer", "minimum": 60, "maximum": 100},
+                        "transaction_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale", "fix_and_flip", "buy_and_hold"]},
+                        "assignment_fee": {"type": "number", "format": "decimal", "nullable": true},
+                        "status": {"type": "string", "enum": ["draft"]},
+                        "view_count": {"type": "integer", "enum": [0]},
+                        "save_count": {"type": "integer", "enum": [0]},
+                        "inquiry_count": {"type": "integer", "enum": [0]},
+                        "description": {"type": "string", "nullable": true},
+                        "seller_notes": {"type": "string", "nullable": true},
+                        "created_at": {"type": "string", "format": "date-time"},
+                        "updated_at": {"type": "string", "format": "date-time"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {"type": "string", "enum": ["error"]},
+                    "message": {"type": "string", "example": "Validation failed"},
+                    "errors": {
+                      "type": "object",
+                      "properties": {
+                        "address": {"type": "array", "items": {"type": "string"}, "example": ["The address field is required."]},
+                        "city": {"type": "array", "items": {"type": "string"}, "example": ["The city field is required."]},
+                        "state": {"type": "array", "items": {"type": "string"}, "example": ["The state field is required."]},
+                        "zip": {"type": "array", "items": {"type": "string"}, "example": ["The zip field is required."]},
+                        "property_type": {"type": "array", "items": {"type": "string"}, "example": ["The property type field is required."]},
+                        "purchase_price": {"type": "array", "items": {"type": "string"}, "example": ["The purchase price field is required."]},
+                        "arv": {"type": "array", "items": {"type": "string"}, "example": ["The arv field is required."]},
+                        "transaction_type": {"type": "array", "items": {"type": "string"}, "example": ["The transaction type field is required."]}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

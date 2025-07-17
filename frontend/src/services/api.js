@@ -1,7 +1,9 @@
 // Updated services/api.js with debugging
 import axios from "axios";
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = process.env.NODE_ENV === 'development'
+  ? (process.env.REACT_APP_API_URL || `/api`)
+  : (process.env.REACT_APP_API_URL || 'https://develop.monorepo-backend.dealflow.pro.kurious.dev/api');
 
 // Create axios instance
 const api = axios.create({

@@ -31,10 +31,21 @@ if [ ! -d "frontend/node_modules" ]; then
     cd frontend && npm install && cd ..
 fi
 
+# Load environment variables and get the port
+cd backend
+if [ -f .env ]; then
+    APP_PORT=$(grep "^APP_PORT=" .env | cut -d '=' -f2)
+    if [ -z "$APP_PORT" ]; then
+        APP_PORT=8000
+    fi
+else
+    APP_PORT=8000
+fi
+
 echo ""
 echo "🎯 Starting servers..."
 echo "   Frontend: http://localhost:5173 (React Vite server)"
-echo "   Backend API: http://localhost:8000 (Laravel application server)"
+echo "   Backend API: http://localhost:$APP_PORT (Laravel application server)"
 echo "   Backend Assets: http://localhost:5174 (Laravel Vite server)"
 echo ""
 echo "🌐 Access your application at: http://localhost:5173"
@@ -43,8 +54,8 @@ echo "Press Ctrl+C to stop all servers"
 echo ""
 
 # Start the development servers
-cd backend && npx concurrently \
-  "php artisan serve --port=8000 --host=0.0.0.0" \
+npx concurrently \
+  "php artisan serve --port=$APP_PORT --host=0.0.0.0" \
   "npm run dev:frontend" \
   "npm run dev:backend" \
   --names "laravel,frontend,vite" \
