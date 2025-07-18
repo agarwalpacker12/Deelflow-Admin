@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { propertySaveAPI } from "../../services/api";
+import SavedPropertiesPage from "../PropertiesSave/Table";
+import { Mail } from "lucide-react";
+import { authAPI } from "../../services/api";
 
 const mockUser = {
   name: "John Doe",
@@ -110,79 +113,116 @@ const ProfilePage = () => {
       {/* Tab Content */}
       <div className="mt-6">
         {activeTab === "profile" && (
-          <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden md:max-w-2xl p-6">
-            <div className="flex items-center space-x-4">
-              <div className="flex-shrink-0">
-                <span className="inline-block h-16 w-16 rounded-full bg-gray-200 dark:bg-gray-700" />
-              </div>
-              <div>
-                <div className="text-xl font-medium text-black dark:text-white">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <div className="bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 rounded-2xl shadow-xl p-8 w-full max-w-lg border border-white/10">
+              <div className="flex flex-col items-center gap-4">
+                {/* Avatar */}
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-indigo-500 flex items-center justify-center shadow-lg border-4 border-white dark:border-gray-800">
+                  {/* SVG Avatar */}
+                  <svg
+                    width="64"
+                    height="64"
+                    viewBox="0 0 32 32"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="16"
+                      cy="16"
+                      r="15"
+                      stroke="url(#profile-gradient)"
+                      strokeWidth="2"
+                      fill="white"
+                    />
+                    <defs>
+                      <linearGradient
+                        id="profile-gradient"
+                        x1="0"
+                        y1="0"
+                        x2="32"
+                        y2="32"
+                        gradientUnits="userSpaceOnUse"
+                      >
+                        <stop stopColor="#a78bfa" />
+                        <stop offset="1" stopColor="#6366f1" />
+                      </linearGradient>
+                    </defs>
+                    <ellipse
+                      cx="16"
+                      cy="13"
+                      rx="5"
+                      ry="5.5"
+                      fill="#6366f1"
+                      fillOpacity="0.15"
+                    />
+                    <ellipse cx="16" cy="13" rx="3.5" ry="3.5" fill="#6366f1" />
+                    <path
+                      d="M8.5 24c1.5-3 5-4 7.5-4s6 1 7.5 4"
+                      stroke="#6366f1"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      fill="none"
+                    />
+                  </svg>
+                </div>
+                {/* Name */}
+                <div className="text-2xl font-bold text-white text-center">
                   {user.name}
                 </div>
-                <p className="text-gray-500 dark:text-gray-400">{user.email}</p>
-                <p className="text-gray-500 dark:text-gray-400">
-                  Role: {user.role}
-                </p>
-                {user.phone && (
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Phone: {user.phone}
-                  </p>
+                {/* Role badge */}
+                {user.role && (
+                  <span className="inline-block bg-indigo-600/80 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm mb-1">
+                    {user.role}
+                  </span>
                 )}
+                {/* Email */}
+                <div className="text-gray-300 text-sm flex items-center gap-2">
+                  {/* <svg className="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 12H8m8 0a4 4 0 11-8 0 4 4 0 018 0zm0 0v1a4 4 0 01-8 0v-1"></path></svg> */}
+                  <Mail />
+                  {user.email}
+                </div>
+                {/* Phone */}
+                {user.phone && (
+                  <div className="text-gray-400 text-sm flex items-center gap-2">
+                    <svg
+                      className="w-4 h-4 text-indigo-300"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M3 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm0 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm10-10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 10a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                      ></path>
+                    </svg>
+                    {user.phone}
+                  </div>
+                )}
+                {/* Edit Profile Button (optional, for future) */}
+                <button className="mt-4 px-5 py-2 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow transition">
+                  Edit Profile
+                </button>
+                {/* Logout Button */}
+                <button
+                  className="mt-2 px-5 py-2 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold shadow transition"
+                  onClick={async () => {
+                    try {
+                      await authAPI.logout();
+                    } catch (e) {}
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("user");
+                    window.location.href = "/login";
+                  }}
+                >
+                  Logout
+                </button>
               </div>
             </div>
           </div>
         )}
-        {activeTab === "property" && (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Location
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Value
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {savedProperty && savedProperty.length > 0 ? (
-                  savedProperty.map((savedItem) => (
-                    <tr key={savedItem.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        {savedItem.property?.id || "--"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        {savedItem.property?.address || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        {savedItem.property?.city || "N/A"}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                        ${savedItem.property?.purchase_price || "0.00"}
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="4"
-                      className="text-center py-4 text-gray-500 dark:text-gray-400"
-                    >
-                      No saved properties found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+        {activeTab === "property" && <SavedPropertiesPage />}
       </div>
     </>
   );
