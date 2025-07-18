@@ -82,7 +82,7 @@ class CampaignController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'campaign validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -108,8 +108,10 @@ class CampaignController extends Controller
 
             return $this->successResponse($campaign, 'Campaign created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'campaign operation', 'campaign');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create campaign');
+            return $this->serverErrorResponse('campaign operation', $e);
         }
     }
 
@@ -156,7 +158,7 @@ class CampaignController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'campaign validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -182,8 +184,10 @@ class CampaignController extends Controller
             
             return $this->successResponse($campaign, 'Campaign updated successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'campaign operation', 'campaign');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to update campaign');
+            return $this->serverErrorResponse('campaign operation', $e);
         }
     }
 
@@ -212,8 +216,10 @@ class CampaignController extends Controller
             $campaign->delete();
             return $this->successResponse(null, 'Campaign deleted successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'campaign operation', 'campaign');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to delete campaign');
+            return $this->serverErrorResponse('campaign operation', $e);
         }
     }
 
@@ -272,8 +278,10 @@ class CampaignController extends Controller
             $campaign = $this->mockDataService->createCampaign($campaignData);
             return $this->successResponse($campaign, 'Campaign created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'campaign operation', 'campaign');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create campaign');
+            return $this->serverErrorResponse('campaign operation', $e);
         }
     }
 

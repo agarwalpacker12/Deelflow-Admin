@@ -97,7 +97,7 @@ class AiConversationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'aiconversation validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -118,8 +118,10 @@ class AiConversationController extends Controller
 
             return $this->successResponse($conversation, 'AI conversation created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'aiconversation operation', 'aiconversation');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create AI conversation');
+            return $this->serverErrorResponse('aiconversation operation', $e);
         }
     }
 
@@ -170,7 +172,7 @@ class AiConversationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'aiconversation validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -191,8 +193,10 @@ class AiConversationController extends Controller
             
             return $this->successResponse($conversation, 'AI conversation updated successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'aiconversation operation', 'aiconversation');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to update AI conversation');
+            return $this->serverErrorResponse('aiconversation operation', $e);
         }
     }
 
@@ -216,8 +220,10 @@ class AiConversationController extends Controller
             $conversation->delete();
             return $this->successResponse(null, 'AI conversation deleted successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'aiconversation operation', 'aiconversation');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to delete AI conversation');
+            return $this->serverErrorResponse('aiconversation operation', $e);
         }
     }
 
@@ -249,8 +255,10 @@ class AiConversationController extends Controller
             $conversation = $this->mockDataService->createAiConversation($conversationData);
             return $this->successResponse($conversation, 'AI conversation created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'aiconversation operation', 'aiconversation');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create AI conversation');
+            return $this->serverErrorResponse('aiconversation operation', $e);
         }
     }
 

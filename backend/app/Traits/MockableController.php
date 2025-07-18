@@ -3,7 +3,9 @@
 namespace App\Traits;
 
 use App\Services\MockDataService;
+use App\Http\Helpers\ApiErrorHelper;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Database\QueryException;
 
 trait MockableController
 {
@@ -36,43 +38,39 @@ trait MockableController
         return $response;
     }
 
-    protected function errorResponse($message, $errors = null, $statusCode = 400): JsonResponse
+    protected function validationErrorResponse($errors, string $operation = 'data validation'): JsonResponse
     {
-        $response = [
-            'status' => 'error',
-            'message' => $message
-        ];
-
-        if ($errors) {
-            $response['errors'] = $errors;
-        }
-
-        return response()->json($response, $statusCode);
+        return ApiErrorHelper::validationError($errors, $operation);
     }
 
-    protected function validationErrorResponse($errors, $message = 'Validation failed'): JsonResponse
+    protected function notFoundResponse(string $resourceType = 'resource', $resourceId = null): JsonResponse
     {
-        return $this->errorResponse($message, $errors, 422);
+        return ApiErrorHelper::notFoundError($resourceType, $resourceId);
     }
 
-    protected function notFoundResponse($message = 'Resource not found'): JsonResponse
+    protected function unauthorizedResponse(string $action = 'perform this action'): JsonResponse
     {
-        return $this->errorResponse($message, null, 404);
+        return ApiErrorHelper::unauthorizedError($action);
     }
 
-    protected function unauthorizedResponse($message = 'Unauthenticated'): JsonResponse
+    protected function forbiddenResponse(string $action = 'perform this action', string $requiredRole = null): JsonResponse
     {
-        return $this->errorResponse($message, null, 401);
+        return ApiErrorHelper::forbiddenError($action, $requiredRole);
     }
 
-    protected function forbiddenResponse($message = 'Forbidden'): JsonResponse
+    protected function serverErrorResponse(string $operation = 'operation', \Exception $exception = null): JsonResponse
     {
-        return $this->errorResponse($message, null, 403);
+        return ApiErrorHelper::serverError($operation, $exception);
     }
 
-    protected function serverErrorResponse($message = 'Internal server error'): JsonResponse
+    protected function databaseErrorResponse(QueryException $e, string $operation = 'operation', string $resourceType = 'resource'): JsonResponse
     {
-        return $this->errorResponse($message, null, 500);
+        return ApiErrorHelper::databaseError($e, $operation, $resourceType);
+    }
+
+    protected function businessLogicErrorResponse(string $message, string $errorCode, array $details = [], array $suggestions = []): JsonResponse
+    {
+        return ApiErrorHelper::businessLogicError($message, $errorCode, $details, $suggestions);
     }
 
     protected function addRateLimitHeaders($response)

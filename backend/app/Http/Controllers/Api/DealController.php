@@ -95,7 +95,7 @@ class DealController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'deal creation');
         }
 
         if ($this->isMockEnabled()) {
@@ -115,8 +115,10 @@ class DealController extends Controller
 
             return $this->successResponse($deal, 'Deal created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'deal creation', 'deal');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create deal');
+            return $this->serverErrorResponse('deal creation', $e);
         }
     }
 
@@ -139,7 +141,7 @@ class DealController extends Controller
             ->find($id);
 
         if (!$deal) {
-            return $this->notFoundResponse('Deal not found');
+            return $this->notFoundResponse('deal', $id);
         }
 
         return $this->successResponse($deal, 'Deal retrieved successfully');
@@ -171,7 +173,7 @@ class DealController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'deal update');
         }
 
         if ($this->isMockEnabled()) {
@@ -187,7 +189,7 @@ class DealController extends Controller
             ->find($id);
 
         if (!$deal) {
-            return $this->notFoundResponse('Deal not found');
+            return $this->notFoundResponse('deal', $id);
         }
 
         try {
@@ -197,8 +199,10 @@ class DealController extends Controller
             
             return $this->successResponse($deal, 'Deal updated successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'deal update', 'deal');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to update deal');
+            return $this->serverErrorResponse('deal update', $e);
         }
     }
 
@@ -220,15 +224,17 @@ class DealController extends Controller
             ->find($id);
 
         if (!$deal) {
-            return $this->notFoundResponse('Deal not found');
+            return $this->notFoundResponse('deal', $id);
         }
 
         try {
             $deal->delete();
             return $this->successResponse(null, 'Deal deleted successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'deal deletion', 'deal');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to delete deal');
+            return $this->serverErrorResponse('deal deletion', $e);
         }
     }
 
@@ -251,7 +257,7 @@ class DealController extends Controller
             ->find($id);
 
         if (!$deal) {
-            return $this->notFoundResponse('Deal not found');
+            return $this->notFoundResponse('deal', $id);
         }
 
         return $this->successResponse($deal->milestones, 'Deal milestones retrieved successfully');

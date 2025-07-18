@@ -91,7 +91,7 @@ class LeadController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'lead validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -113,8 +113,10 @@ class LeadController extends Controller
 
             return $this->successResponse($lead, 'Lead created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'lead operation', 'lead');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create lead');
+            return $this->serverErrorResponse('lead operation', $e);
         }
     }
 
@@ -131,7 +133,7 @@ class LeadController extends Controller
         $lead = Lead::where('user_id', auth()->id())->find($id);
 
         if (!$lead) {
-            return $this->notFoundResponse('Lead not found');
+            return $this->notFoundResponse('lead', $id);
         }
 
         return $this->successResponse($lead, 'Lead retrieved successfully');
@@ -167,7 +169,7 @@ class LeadController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'lead validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -178,7 +180,7 @@ class LeadController extends Controller
         $lead = Lead::where('user_id', auth()->id())->find($id);
 
         if (!$lead) {
-            return $this->notFoundResponse('Lead not found');
+            return $this->notFoundResponse('lead', $id);
         }
 
         try {
@@ -186,8 +188,10 @@ class LeadController extends Controller
             $lead->update($validatedData);
             return $this->successResponse($lead, 'Lead updated successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'lead operation', 'lead');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to update lead');
+            return $this->serverErrorResponse('lead operation', $e);
         }
     }
 
@@ -204,15 +208,17 @@ class LeadController extends Controller
         $lead = Lead::where('user_id', auth()->id())->find($id);
 
         if (!$lead) {
-            return $this->notFoundResponse('Lead not found');
+            return $this->notFoundResponse('lead', $id);
         }
 
         try {
             $lead->delete();
             return $this->successResponse(null, 'Lead deleted successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'lead operation', 'lead');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to delete lead');
+            return $this->serverErrorResponse('lead operation', $e);
         }
     }
 
@@ -229,7 +235,7 @@ class LeadController extends Controller
         $lead = Lead::where('user_id', auth()->id())->find($id);
 
         if (!$lead) {
-            return $this->notFoundResponse('Lead not found');
+            return $this->notFoundResponse('lead', $id);
         }
 
         // Mock AI analysis for now
@@ -277,8 +283,10 @@ class LeadController extends Controller
             $lead = $this->mockDataService->createLead($leadData);
             return $this->successResponse($lead, 'Lead created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'lead operation', 'lead');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create lead');
+            return $this->serverErrorResponse('lead operation', $e);
         }
     }
 
