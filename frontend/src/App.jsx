@@ -50,6 +50,7 @@ import CampaignsRecipientPage from "./pages/Campaigns_Recipients/RecipientPage.j
 import AchievementsTable from "./pages/Achievement/AchievementPage.jsx";
 import AddAchievement from "./pages/Achievement/add/index.jsx";
 import EditProperty from "./pages/Properties/[id]/index.jsx";
+import VycentraPaymentGateway from "./pages/Payment.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -79,7 +80,10 @@ function App() {
                         <Route path="/" element={<LandingPage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />
-
+                        <Route
+                          path="/pay"
+                          element={<VycentraPaymentGateway />}
+                        />
                         {/* Protected Routes */}
                         <Route
                           path="/app"
@@ -96,7 +100,7 @@ function App() {
                           <Route path="dashboard" element={<Dashboard />} />
                           <Route path="leads" element={<LeadsPage />} />
                           <Route path="leads/add" element={<AddLead />} />
-                          <Route path="leads/:id" element={<EditLead />} /> 
+                          <Route path="leads/:id" element={<EditLead />} />
 
                           <Route
                             path="properties"
@@ -106,11 +110,13 @@ function App() {
                             path="properties/add"
                             element={<AddProperty />}
                           />
-                          <Route path="properties/:id" element={<EditProperty />} /> 
+                          <Route
+                            path="properties/:id"
+                            element={<EditProperty />}
+                          />
 
                           <Route path="deals" element={<DealsPage />} />
                           <Route path="deals/add" element={<AddDeals />} />
-                          
 
                           <Route
                             path="milestone"
