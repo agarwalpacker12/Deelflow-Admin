@@ -29,6 +29,15 @@ export default defineConfig({
           Accept: "application/json",
         },
       },
+      "/sanctum": {
+        target: "https://develop.monorepo-backend.dealflow.pro.kurious.dev",
+        changeOrigin: true,
+        secure: true,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      },
     },
   },
   define: {
