@@ -156,24 +156,21 @@ export const validateField = (name, value) => {
       return "";
 
     case "estimated_value":
-      if (value && value.trim()) {
-        const num = parseFloat(value);
-        if (isNaN(num) || num <= 0) return "Must be a positive number";
-      }
+      if (!value || value.toString().trim() === "") return "Estimated value is required";
+      const estNum = parseFloat(value);
+      if (isNaN(estNum) || estNum <= 0) return "Must be a positive number";
       return "";
 
     case "mortgage_balance":
-      if (value && value.trim()) {
-        const num = parseFloat(value);
-        if (isNaN(num) || num < 0) return "Must be a non-negative number";
-      }
+      if (!value || value.toString().trim() === "") return "Mortgage balance is required";
+      const mortNum = parseFloat(value);
+      if (isNaN(mortNum) || mortNum < 0) return "Must be a non-negative number";
       return "";
 
     case "asking_price":
-      if (value && value.trim()) {
-        const num = parseFloat(value);
-        if (isNaN(num) || num <= 0) return "Must be a positive number";
-      }
+      if (!value || value.toString().trim() === "") return "Asking price is required";
+      const askNum = parseFloat(value);
+      if (isNaN(askNum) || askNum <= 0) return "Must be a positive number";
       return "";
 
     case "preferred_contact_method":

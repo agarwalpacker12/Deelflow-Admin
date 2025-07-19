@@ -18,8 +18,13 @@ import {
   validateField,
 } from "./utilities";
 
+import { useNavigate } from "react-router-dom";
+
+
 // Remove the mock API function and replace with real API call
 const LeadForm = () => {
+    const navigate = useNavigate();
+  
   // Redux hooks
   const dispatch = useDispatch();
   const { leads, loading } = useSelector((state) => state.leads);
@@ -107,6 +112,7 @@ const LeadForm = () => {
         setSubmitMessage("Lead created successfully! We'll contact you soon.");
         setFormData(DefaultValues);
         setErrors({});
+        navigate('/app/leads');
       } else {
         throw new Error(response.data.message || "Failed to create lead");
       }
@@ -144,15 +150,6 @@ const LeadForm = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Lead Generation Form
-            </h1>
-            <p className="text-gray-600">
-              Fill out the form below to get started
-            </p>
-          </div>
-
           <div className="space-y-6">
             {/* Personal Information Section */}
             <div className="bg-gray-50 rounded-xl p-6">
@@ -480,7 +477,6 @@ const LeadForm = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Preferred Contact Method *
-                    
                   </label>
                   <select
                     name="preferred_contact_method"

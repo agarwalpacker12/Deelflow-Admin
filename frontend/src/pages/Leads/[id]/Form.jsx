@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { leadsAPI } from "../../../services/api";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -17,18 +17,26 @@ import {
   stateList,
   validateField,
 } from "./utilities";
+import { useNavigate } from "react-router-dom";
 
 // Remove the mock API function and replace with real API call
-const LeadForm = () => {
+const LeadForm = ({ leadRes }) => {
+  const navigate = useNavigate();
   // Redux hooks
   const dispatch = useDispatch();
   const { leads, loading } = useSelector((state) => state.leads);
 
-  const [formData, setFormData] = useState(DefaultValues);
+  const [formData, setFormData] = useState({ ...DefaultValues, ...leadRes });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState(null); // 'success' | 'error'
   const [submitMessage, setSubmitMessage] = useState("");
+
+  useEffect(() => {
+    if (leadRes) {
+      setFormData({ ...DefaultValues, ...leadRes });
+    }
+  }, [leadRes]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -63,6 +71,23 @@ const LeadForm = () => {
     return isValid;
   };
 
+  const allowedFields = [
+    "first_name",
+    "last_name",
+    "email",
+    "phone",
+    "property_address",
+    "property_city",
+    "property_state",
+    "property_zip",
+    "property_type",
+    "source",
+    "estimated_value",
+    "mortgage_balance",
+    "asking_price",
+    "preferred_contact_method"
+  ];
+
   const handleSubmit = async () => {
     setSubmitStatus(null);
     setSubmitMessage("");
@@ -71,52 +96,41 @@ const LeadForm = () => {
       return;
     }
 
-    // Dispatch loading state
     dispatch(setLoading(true));
     dispatch(setError(null));
 
     try {
-      // Prepare data for API
-      const apiData = {
-        ...formData,
-        estimated_value: formData.estimated_value
-          ? parseFloat(formData.estimated_value)
-          : null,
-        mortgage_balance: formData.mortgage_balance
-          ? parseFloat(formData.mortgage_balance)
-          : null,
-        asking_price: formData.asking_price
-          ? parseFloat(formData.asking_price)
-          : null,
-      };
-      const response = await leadsAPI.createLead(apiData);
+      // Only include allowed fields
+      const apiData = {};
+      allowedFields.forEach(field => {
+        apiData[field] = formData[field];
+      });
+
+      // Parse numbers if needed
+      if (apiData.estimated_value) apiData.estimated_value = parseFloat(apiData.estimated_value);
+      if (apiData.mortgage_balance) apiData.mortgage_balance = parseFloat(apiData.mortgage_balance);
+      if (apiData.asking_price) apiData.asking_price = parseFloat(apiData.asking_price);
+
+      console.log("Submitting lead update:", apiData);
+
+      const response = await leadsAPI.updateLead(leadRes?.id, apiData);
 
       if (response.data.status === "success") {
-        const newLead = response.data.data;
-        console.log("Lead created successfully:", newLead);
-
-        // Update Redux state with new lead
-        // Option 1: Add the new lead to existing leads array
-        dispatch(setLeads([...leads, newLead]));
-
-        // Option 2: If you want to refetch all leads instead, you could call:
-        // const allLeadsResponse = await leadsAPI.getAllLeads();
-        // dispatch(setLeads(allLeadsResponse.data.data));
-
         setSubmitStatus("success");
-        setSubmitMessage("Lead created successfully! We'll contact you soon.");
-        setFormData(DefaultValues);
-        setErrors({});
+        setSubmitMessage("Lead updated successfully!");
+        setTimeout(() => {
+          navigate("/app/leads");
+        }, 1000);
+        // Optionally refetch leads here
       } else {
-        throw new Error(response.data.message || "Failed to create lead");
+        throw new Error(response.data.message || "Failed to update lead");
       }
     } catch (error) {
-      console.error("Error creating lead:", error);
-
-      // Dispatch error to Redux
+      console.error("Error updating lead:", error);
+      if (error.response?.data?.errors) {
+        console.log("Validation errors:", error.response.data.errors);
+      }
       dispatch(setError(error.response?.data?.message || error.message));
-
-      // Handle validation errors from API
       if (error.response?.data?.errors) {
         const apiErrors = {};
         Object.keys(error.response.data.errors).forEach((key) => {
@@ -128,7 +142,7 @@ const LeadForm = () => {
       } else {
         setSubmitStatus("error");
         setSubmitMessage(
-          `Error creating lead: ${
+          `Error updating lead: ${
             error.response?.data?.message ||
             error.message ||
             "Please try again."
@@ -144,15 +158,6 @@ const LeadForm = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Lead Generation Form
-            </h1>
-            <p className="text-gray-600">
-              Fill out the form below to get started
-            </p>
-          </div>
-
           <div className="space-y-6">
             {/* Personal Information Section */}
             <div className="bg-gray-50 rounded-xl p-6">

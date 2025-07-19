@@ -8,7 +8,7 @@ function AddProperty() {
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-8">
             <h2 className="text-3xl font-bold text-white mb-2">
-              Add New Property
+              Add Property
             </h2>
             <p className="text-purple-100">
               Fill out the form below to add a new property to your pipeline.

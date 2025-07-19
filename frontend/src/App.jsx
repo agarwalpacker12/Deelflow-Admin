@@ -35,19 +35,14 @@ import Dashboard from "./pages/Dashboard/Dashboard.jsx";
 import LeadsPage from "./pages/Leads/LeadsPage.jsx";
 import PropertiesPage from "./pages/Properties/PropertiesPage.jsx";
 import DealsPage from "./pages/Deals/DealsPage.jsx";
-import MarketplacePage from "./pages/Marketplace/MarketplacePage.jsx";
 import CampaignsPage from "./pages/Campaigns/CampaignsPage.jsx";
-import BlockchainPage from "./pages/Blockchain/BlockchainPage.jsx";
-import AnalyticsPage from "./pages/Analytics/AnalyticsPage.jsx";
 import ProfilePage from "./pages/Profile/ProfilePage.jsx";
-import SettingsPage from "./pages/Settings/SettingsPage.jsx";
-import WhiteLabelPage from "./pages/WhiteLabel/WhiteLabelPage.jsx";
-import PsychologyDashboard from "./pages/Psychology/PsychologyDashboard.jsx";
 
 // Styles
 import "./index.css";
 import AddLead from "./pages/Leads/add/index.jsx";
-import EditLead from "./pages/Leads/edit/index.jsx";
+import EditLead from "./pages/Leads/[id]/index.jsx";
+
 import AddProperty from "./pages/Properties/add/index.jsx";
 import AddDeals from "./pages/Deals/add/index.jsx";
 import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
@@ -58,6 +53,8 @@ import AddCampaign from "./pages/Campaigns/add/index.jsx";
 import CampaignsRecipientPage from "./pages/Campaigns_Recipients/RecipientPage.jsx";
 import AchievementsTable from "./pages/Achievement/AchievementPage.jsx";
 import AddAchievement from "./pages/Achievement/add/index.jsx";
+import EditProperty from "./pages/Properties/[id]/index.jsx";
+import VycentraPaymentGateway from "./pages/Payment.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -92,7 +89,10 @@ function App() {
                         <Route path="/" element={<LandingPage />} />
                         <Route path="/login" element={<LoginPage />} />
                         <Route path="/register" element={<RegisterPage />} />
-
+                        <Route
+                          path="/pay"
+                          element={<VycentraPaymentGateway />}
+                        />
                         {/* Protected Routes */}
                         <Route
                           path="/app"
@@ -109,7 +109,7 @@ function App() {
                           <Route path="dashboard" element={<Dashboard />} />
                           <Route path="leads" element={<LeadsPage />} />
                           <Route path="leads/add" element={<AddLead />} />
-                          <Route path="leads/edit" element={<EditLead />} />
+                          <Route path="leads/:id" element={<EditLead />} />
 
                           <Route
                             path="properties"
@@ -118,6 +118,10 @@ function App() {
                           <Route
                             path="properties/add"
                             element={<AddProperty />}
+                          />
+                          <Route
+                            path="properties/:id"
+                            element={<EditProperty />}
                           />
 
                           <Route path="deals" element={<DealsPage />} />

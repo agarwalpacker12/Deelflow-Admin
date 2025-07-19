@@ -1,23 +1,22 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { propertySaveAPI } from "../../services/api";
 
 const SavedPropertiesPage = () => {
-  // Property data from your JSON
-  const savedProperties = [
-    {
-      id: 1,
-      user_id: 1,
-      property_id: 1,
-      property: {
-        id: 1,
-        address: "456 Oak Avenue",
-        city: "Austin",
-        state: "TX",
-        purchase_price: 180000.0,
-        arv: 250000.0,
-      },
-      saved_at: "2025-06-26T20:00:00.000000Z",
-    },
-  ];
+  const [savedProperties, setSavedProperties] = useState([]);
+
+  useEffect(() => {
+    const fetchSavedProperties = async () => {
+      try {
+        const response = await propertySaveAPI.getPropertySave({ per_page: 100 });
+        if (response.data.status === "success") {
+          setSavedProperties(response.data.data.data);
+        }
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchSavedProperties();
+  }, []);
 
   // Format currency
   const formatCurrency = (amount) => {

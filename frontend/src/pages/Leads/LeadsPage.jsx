@@ -13,10 +13,14 @@ import {
   Edit,
   Trash2,
   RefreshCw,
+  Sparkles,
+  Plus,
 } from "lucide-react";
 import { leadsAPI } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 const LeadsPage = () => {
+  const navigate = useNavigate();
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -27,6 +31,7 @@ const LeadsPage = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [minAiScore, setMinAiScore] = useState("");
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     const fetchLeads = async () => {
@@ -53,12 +58,13 @@ const LeadsPage = () => {
         }
 
         const response = await leadsAPI.getLeads(params);
+        console.log(response.data.data);
         
         // Handle the API response format
         if (response.data.status === 'success') {
-          setLeads(response.data.data);
-          setTotal(response.data.meta.total);
-          setTotalPages(response.data.meta.last_page);
+          setLeads(response.data.data.data); // leads array
+          setTotal(response.data.data.meta.total);
+          setTotalPages(response.data.data.meta.last_page);
         } else {
           setError('Failed to fetch leads');
         }
@@ -118,11 +124,39 @@ const LeadsPage = () => {
     setCurrentPage(1);
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this lead?")) return;
+    try {
+      await leadsAPI.deleteLead(id);
+      setLeads((prevLeads) => prevLeads.filter((lead) => lead.id !== id));
+      setSuccess('Lead deleted successfully');
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete lead');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white">Leads Management</h1>
-        <div className="text-sm text-gray-400">Total: {total} leads</div>
+        <div className="flex items-center gap-3">
+          {/* Add Lead Button */}
+          <button
+            onClick={() => navigate('/app/leads/add')}
+            className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
+          >
+            {/* Animated background effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Sparkle effect */}
+            <Sparkles className="h-4 w-4 group-hover:animate-pulse" />
+            <Plus className="h-5 w-5" />
+            <span className="relative z-10">Add Lead</span>
+            {/* Hover effect line */}
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></div>
+          </button>
+          <div className="text-sm text-gray-400">Total: {total} leads</div>
+        </div>
       </div>
 
       {/* Filters */}
@@ -200,6 +234,11 @@ const LeadsPage = () => {
           <p className="text-red-300">{error}</p>
         </div>
       )}
+      {success && (
+        <div className="bg-green-500/20 border border-green-500/30 rounded-xl p-4">
+          <p className="text-green-300">{success}</p>
+        </div>
+      )}
 
       {/* Table */}
       <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
@@ -236,7 +275,7 @@ const LeadsPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {leads.map((lead) => (
+                {leads.length > 0 && leads?.map((lead) => (
                   <tr
                     key={lead.id}
                     className="border-b border-white/10 hover:bg-white/5"
@@ -368,10 +407,12 @@ const LeadsPage = () => {
                         <button className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors">
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors">
+                        <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"
+                          onClick={() =>navigate(`/app/leads/${lead.id}`)}
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors">
+                        <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors" onClick={() => handleDelete(lead.id)}>
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
