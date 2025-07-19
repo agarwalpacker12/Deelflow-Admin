@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,6 +12,9 @@ import { AnimatePresence } from "framer-motion";
 
 // Store
 import { store } from "./store/store";
+
+// Environment test
+import { testEnvVars } from "./utils/envTest";
 
 // Contexts
 import { AuthProvider } from "./contexts/AuthContext.jsx";
@@ -69,6 +72,11 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  // Test environment variables on app load
+  useEffect(() => {
+    testEnvVars();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
