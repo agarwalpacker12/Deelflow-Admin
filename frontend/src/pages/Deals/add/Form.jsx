@@ -10,11 +10,14 @@ import {
 
 // Import utilities
 import { DefaultValues, dealTypeList, validateField } from "./utility";
+import { useNavigate } from "react-router-dom";
 
-const AddDealsForm = () => {
+const AddDealsForm = ({ propertyId, propertyDetails }) => {
   // Redux hooks
   const dispatch = useDispatch();
-  const { deals, loading } = useSelector((state) => state.deals);
+  const { deals } = useSelector((state) => state.deals);
+  const navigate = useNavigate();
+  const userDetails = JSON.parse(localStorage.getItem("user") || "{}");
 
   const [formData, setFormData] = useState(DefaultValues);
   const [errors, setErrors] = useState({});
@@ -36,7 +39,7 @@ const AddDealsForm = () => {
         setProperties(response.data.data); // Adjust based on your API response shape
         setPropertiesLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         setPropertiesError("Failed to load properties");
         setPropertiesLoading(false);
       });
@@ -50,11 +53,21 @@ const AddDealsForm = () => {
         setLeads(response.data.data.data); // Adjust if your API response shape is different
         setLeadsLoading(false);
       })
-      .catch((error) => {
+      .catch(() => {
         setLeadsError("Failed to load leads");
         setLeadsLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (propertyDetails && propertyDetails.user_id) {
+      setFormData((prev) => ({
+        ...prev,
+        seller_id: propertyDetails.user_id,
+        buyer_id: userDetails.id,
+      }));
+    }
+  }, [propertyDetails]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -104,7 +117,11 @@ const AddDealsForm = () => {
     try {
       // Prepare data for API
       const apiData = {
-        ...formData,
+        property_id: propertyId ? parseInt(propertyId) : null,
+        lead_id: formData.lead_id ? parseInt(formData.lead_id) : null,
+        buyer_id: formData.buyer_id ? parseInt(formData.buyer_id) : null,
+        seller_id: formData.seller_id ? parseInt(formData.seller_id) : null,
+        deal_type: formData.deal_type,
         purchase_price: formData.purchase_price
           ? parseFloat(formData.purchase_price)
           : null,
@@ -114,18 +131,21 @@ const AddDealsForm = () => {
         assignment_fee: formData.assignment_fee
           ? parseFloat(formData.assignment_fee)
           : null,
-        earnest_money: formData.earnest_money
-          ? parseFloat(formData.earnest_money)
-          : null,
+        contract_date: formData.contract_date,
+        closing_date: formData.closing_date,
         inspection_period: formData.inspection_period
           ? parseInt(formData.inspection_period)
           : null,
-        property_id: formData.property_id
-          ? parseInt(formData.property_id)
+        earnest_money: formData.earnest_money
+          ? parseFloat(formData.earnest_money)
           : null,
-        lead_id: formData.lead_id ? parseInt(formData.lead_id) : null,
-        buyer_id: formData.buyer_id ? parseInt(formData.buyer_id) : null,
-        seller_id: formData.seller_id ? parseInt(formData.seller_id) : null,
+        notes: formData.notes,
+        contract_terms: {
+          financing_contingency: !!formData.financing_contingency,
+          inspection_contingency: !!formData.inspection_contingency,
+          appraisal_contingency: !!formData.appraisal_contingency,
+          title_contingency: !!formData.title_contingency,
+        },
       };
 
       const response = await dealsAPI.createDeal(apiData);
@@ -141,6 +161,7 @@ const AddDealsForm = () => {
         setSubmitMessage("Deal created successfully!");
         setFormData(DefaultValues);
         setErrors({});
+        navigate("/app/properties");
       } else {
         throw new Error(response.data.message || "Failed to create deal");
       }
@@ -173,6 +194,7 @@ const AddDealsForm = () => {
       dispatch(setLoading(false));
     }
   };
+  console.log("formData", formData);
 
   return (
     <div className="space-y-6">
@@ -183,7 +205,7 @@ const AddDealsForm = () => {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Property ID *
             </label>
@@ -207,7 +229,7 @@ const AddDealsForm = () => {
             {errors.property_id && (
               <p className="text-red-500 text-sm mt-1">{errors.property_id}</p>
             )}
-          </div>
+          </div> */}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -266,18 +288,17 @@ const AddDealsForm = () => {
               name="buyer_id"
               type="number"
               value={formData.buyer_id}
-              onChange={handleInputChange}
               className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                 errors.buyer_id ? "border-red-500" : "border-gray-300"
               }`}
-              placeholder="Enter buyer ID"
+              disabled
             />
             {errors.buyer_id && (
               <p className="text-red-500 text-sm mt-1">{errors.buyer_id}</p>
             )}
           </div>
 
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Seller ID *
             </label>
@@ -294,7 +315,7 @@ const AddDealsForm = () => {
             {errors.seller_id && (
               <p className="text-red-500 text-sm mt-1">{errors.seller_id}</p>
             )}
-          </div>
+          </div> */}
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">

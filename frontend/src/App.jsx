@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -48,7 +48,6 @@ import AddLead from "./pages/Leads/add/index.jsx";
 import EditLead from "./pages/Leads/[id]/index.jsx";
 
 import AddProperty from "./pages/Properties/add/index.jsx";
-import AddDeals from "./pages/Deals/add/index.jsx";
 import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
 import DealsMileStonePage from "./pages/Deals_Milestone/DealsMilestonePage.jsx";
 import AiAssistantPage from "./pages/AI/AiConversationPage.jsx";
@@ -59,6 +58,7 @@ import AchievementsTable from "./pages/Achievement/AchievementPage.jsx";
 import AddAchievement from "./pages/Achievement/add/index.jsx";
 import EditProperty from "./pages/Properties/[id]/index.jsx";
 import VycentraPaymentGateway from "./pages/Payment.jsx";
+import BidIndex from "./pages/Properties/[id]/bid/BidIndex.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -78,18 +78,18 @@ function App() {
     const initializeApp = async () => {
       // Test environment variables
       testEnvVars();
-      
+
       // Initialize and test CSRF setup for Laravel Sanctum
       try {
         await fetchCsrfCookie();
-        console.log('CSRF cookie initialized successfully');
-        
+        console.log("CSRF cookie initialized successfully");
+
         // Run CSRF test in development
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           await testCsrfSetup();
         }
       } catch (error) {
-        console.error('Failed to initialize CSRF cookie:', error);
+        console.error("Failed to initialize CSRF cookie:", error);
       }
     };
 
@@ -147,7 +147,10 @@ function App() {
                           />
 
                           <Route path="deals" element={<DealsPage />} />
-                          <Route path="deals/add" element={<AddDeals />} />
+                          <Route
+                            path="properties/:propertyId/bid"
+                            element={<BidIndex />}
+                          />
 
                           <Route
                             path="milestone"

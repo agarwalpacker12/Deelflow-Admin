@@ -31,14 +31,14 @@ export const dealTypeList = [
 // Validation function
 export const validateField = (fieldName, value) => {
   switch (fieldName) {
-    case "property_id":
-      return !value ? "Property ID is required" : "";
+    // case "property_id":
+    //   return !value ? "Property ID is required" : "";
     case "lead_id":
       return !value ? "Lead ID is required" : "";
     case "deal_type":
       return !value ? "Deal type is required" : "";
-    case "buyer_id":
-      return !value ? "Buyer ID is required" : "";
+    // case "buyer_id":
+    //   return !value ? "Buyer ID is required" : "";
     case "seller_id":
       return !value ? "Seller ID is required" : "";
     case "purchase_price":

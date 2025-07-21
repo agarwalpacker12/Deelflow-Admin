@@ -29,8 +29,6 @@ const Table = ({
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState(null);
 
-  console.log("savedPropertyIds", savedPropertyIds);
-
   // Remove direct API call, just handle loading/error UI
   const handleDeleteClick = async (property) => {
     setDeleteError("");
@@ -257,14 +255,16 @@ const Table = ({
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      {/* <button
+
+                      <button
                         className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
-                        onClick={() => handleSaveClick(property)}
-                        title="Save Property"
-                        disabled={savingId === property.id || (savedPropertyIds && savedPropertyIds.includes(property.id))}
+                        onClick={() =>
+                          navigate(`/app/properties/${property.id}/bid`)
+                        }
                       >
-                        <Bookmark className="h-4 w-4" />
-                      </button> */}
+                        Bid
+                      </button>
+
                       <button
                         className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                         onClick={() => handleDeleteClick(property)}

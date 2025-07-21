@@ -1,9 +1,36 @@
-import React, { useState } from "react";
-import AddDealsForm from "./Form";
+import { useEffect, useState } from "react";
 import { CheckCircle, AlertCircle } from "lucide-react";
+import AddDealsForm from "../../../Deals/add/Form";
+import { useParams } from "react-router-dom";
+import { propertiesAPI } from "../../../../services/api";
 
-function AddDeals() {
+function BidIndex() {
+  const { propertyId } = useParams();
   const [submitStatus, setSubmitStatus] = useState(null);
+  const [propertyDetails, setPropertyDetails] = useState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchProperty = async () => {
+      setLoading(true);
+      try {
+        const response = await propertiesAPI.getProperty(propertyId);
+        console.log("response12", response.data.data);
+
+        setPropertyDetails(response.data.data); // Adjust if your API response is nested differently
+      } catch (err) {
+        setError("Failed to fetch lead details");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProperty();
+  }, [propertyId]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
@@ -37,7 +64,10 @@ function AddDeals() {
             )}
 
             <div className="space-y-6">
-              <AddDealsForm />
+              <AddDealsForm
+                propertyId={propertyId}
+                propertyDetails={propertyDetails}
+              />
             </div>
           </div>
         </div>
@@ -46,4 +76,4 @@ function AddDeals() {
   );
 }
 
-export default AddDeals;
+export default BidIndex;

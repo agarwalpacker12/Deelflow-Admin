@@ -47,10 +47,6 @@ const ProfilePage = () => {
           per_page: 100,
         }); // adjust per_page as needed
         if (response.data.status === "success") {
-          console.log(
-            "response.data.data",
-            JSON.stringify(response.data.data.data)
-          );
           setSavedProperty(response.data.data.data);
         }
       } catch (err) {

@@ -32,6 +32,7 @@ const DealsPage = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [dealTypeFilter, setDealTypeFilter] = useState("");
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   useEffect(() => {
     const fetchDeals = async () => {
@@ -150,6 +151,18 @@ const DealsPage = () => {
     setCurrentPage(1);
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this deal?")) return;
+    try {
+      await dealsAPI.deleteDeal(id);
+      setDeals((prevDeals) => prevDeals.filter((deal) => deal.id !== id));
+      setSuccess('Deal deleted successfully');
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to delete deal');
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -251,6 +264,11 @@ const DealsPage = () => {
       {error && (
         <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4">
           <p className="text-red-300">{error}</p>
+        </div>
+      )}
+      {success && (
+        <div className="bg-green-500/20 border border-green-500/30 rounded-xl p-4">
+          <p className="text-green-300">{success}</p>
         </div>
       )}
 
@@ -395,10 +413,12 @@ const DealsPage = () => {
                         <button className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors">
                           <Eye className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors">
+                        <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"
+                          onClick={() => navigate(`/app/deals/${deal.id}`)}
+                        >
                           <Edit className="h-4 w-4" />
                         </button>
-                        <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors">
+                        <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors" onClick={() => handleDelete(deal.id)}>
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
