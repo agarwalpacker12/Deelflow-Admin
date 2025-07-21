@@ -140,7 +140,7 @@ class PropertyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'property validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -171,8 +171,10 @@ class PropertyController extends Controller
 
             return $this->successResponse($property, 'Property created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'property operation', 'property');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create property');
+            return $this->serverErrorResponse('property operation', $e);
         }
     }
 
@@ -229,7 +231,7 @@ class PropertyController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'property validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -261,8 +263,10 @@ class PropertyController extends Controller
             $property->update($validatedData);
             return $this->successResponse($property, 'Property updated successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'property operation', 'property');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to update property');
+            return $this->serverErrorResponse('property operation', $e);
         }
     }
 
@@ -286,8 +290,10 @@ class PropertyController extends Controller
             $property->delete();
             return $this->successResponse(null, 'Property deleted successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'property operation', 'property');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to delete property');
+            return $this->serverErrorResponse('property operation', $e);
         }
     }
 
@@ -400,8 +406,10 @@ class PropertyController extends Controller
             $property = $this->mockDataService->createProperty($propertyData);
             return $this->successResponse($property, 'Property created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'property operation', 'property');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create property');
+            return $this->serverErrorResponse('property operation', $e);
         }
     }
 

@@ -87,7 +87,7 @@ class DealMilestoneController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'dealmilestone validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -102,8 +102,10 @@ class DealMilestoneController extends Controller
 
             return $this->successResponse($milestone, 'Deal milestone created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'dealmilestone operation', 'dealmilestone');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create deal milestone');
+            return $this->serverErrorResponse('dealmilestone operation', $e);
         }
     }
 
@@ -147,7 +149,7 @@ class DealMilestoneController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'dealmilestone validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -173,8 +175,10 @@ class DealMilestoneController extends Controller
             
             return $this->successResponse($milestone, 'Deal milestone updated successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'dealmilestone operation', 'dealmilestone');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to update deal milestone');
+            return $this->serverErrorResponse('dealmilestone operation', $e);
         }
     }
 
@@ -203,8 +207,10 @@ class DealMilestoneController extends Controller
             $milestone->delete();
             return $this->successResponse(null, 'Deal milestone deleted successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'dealmilestone operation', 'dealmilestone');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to delete deal milestone');
+            return $this->serverErrorResponse('dealmilestone operation', $e);
         }
     }
 
@@ -243,8 +249,10 @@ class DealMilestoneController extends Controller
             
             return $this->successResponse($milestone, 'Deal milestone completed successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'dealmilestone operation', 'dealmilestone');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to complete deal milestone');
+            return $this->serverErrorResponse('dealmilestone operation', $e);
         }
     }
 
@@ -270,8 +278,10 @@ class DealMilestoneController extends Controller
             $milestone = $this->mockDataService->createDealMilestone($milestoneData);
             return $this->successResponse($milestone, 'Deal milestone created successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'dealmilestone operation', 'dealmilestone');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create deal milestone');
+            return $this->serverErrorResponse('dealmilestone operation', $e);
         }
     }
 

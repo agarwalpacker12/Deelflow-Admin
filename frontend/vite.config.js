@@ -1,6 +1,10 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { createErrorHandler } from "./vite-error-handler.js";
+import { defineConfig, loadEnv } from 'vite'
+import react from '@vitejs/plugin-react'
+import { createErrorHandler } from './vite-error-handler.js'
+import dotenv from 'dotenv'
+
+// Load .env file
+dotenv.config()
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,6 +21,15 @@ export default defineConfig({
     }, 
     proxy: {
       "/api": {
+        target: "https://develop.monorepo-backend.dealflow.pro.kurious.dev",
+        changeOrigin: true,
+        secure: true,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      },
+      "/sanctum": {
         target: "https://develop.monorepo-backend.dealflow.pro.kurious.dev",
         changeOrigin: true,
         secure: true,

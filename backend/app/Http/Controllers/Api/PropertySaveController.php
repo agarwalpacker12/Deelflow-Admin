@@ -57,7 +57,7 @@ class PropertySaveController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'propertysave validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -84,8 +84,10 @@ class PropertySaveController extends Controller
 
             return $this->successResponse($save, 'Property saved successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'propertysave operation', 'propertysave');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to save property');
+            return $this->serverErrorResponse('propertysave operation', $e);
         }
     }
 
@@ -130,8 +132,10 @@ class PropertySaveController extends Controller
             $save->delete();
             return $this->successResponse(null, 'Property removed from saved list successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'propertysave operation', 'propertysave');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to remove saved property');
+            return $this->serverErrorResponse('propertysave operation', $e);
         }
     }
 
@@ -173,8 +177,10 @@ class PropertySaveController extends Controller
             $save = $this->mockDataService->createPropertySave($saveData);
             return $this->successResponse($save, 'Property saved successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'propertysave operation', 'propertysave');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to save property');
+            return $this->serverErrorResponse('propertysave operation', $e);
         }
     }
 

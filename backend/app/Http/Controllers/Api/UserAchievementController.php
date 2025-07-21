@@ -84,7 +84,7 @@ class UserAchievementController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'userachievement validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -102,8 +102,10 @@ class UserAchievementController extends Controller
 
             return $this->successResponse($achievement, 'Achievement earned successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'userachievement operation', 'userachievement');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create achievement');
+            return $this->serverErrorResponse('userachievement operation', $e);
         }
     }
 
@@ -159,8 +161,10 @@ class UserAchievementController extends Controller
             $achievement->delete();
             return $this->successResponse(null, 'Achievement deleted successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'userachievement operation', 'userachievement');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to delete achievement');
+            return $this->serverErrorResponse('userachievement operation', $e);
         }
     }
 
@@ -200,8 +204,10 @@ class UserAchievementController extends Controller
             $achievement = $this->mockDataService->createUserAchievement($achievementData);
             return $this->successResponse($achievement, 'Achievement earned successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'userachievement operation', 'userachievement');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to create achievement');
+            return $this->serverErrorResponse('userachievement operation', $e);
         }
     }
 

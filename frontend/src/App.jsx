@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -11,6 +12,13 @@ import { AnimatePresence } from "framer-motion";
 
 // Store
 import { store } from "./store/store";
+
+// Environment test
+import { testEnvVars } from "./utils/envTest";
+
+// API utilities
+import { fetchCsrfCookie } from "./services/api";
+import { testCsrfSetup } from "./utils/csrfTest";
 
 // Contexts
 import { AuthProvider } from "./contexts/AuthContext.jsx";
@@ -65,6 +73,29 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  // Initialize app on load
+  useEffect(() => {
+    const initializeApp = async () => {
+      // Test environment variables
+      testEnvVars();
+      
+      // Initialize and test CSRF setup for Laravel Sanctum
+      try {
+        await fetchCsrfCookie();
+        console.log('CSRF cookie initialized successfully');
+        
+        // Run CSRF test in development
+        if (process.env.NODE_ENV === 'development') {
+          await testCsrfSetup();
+        }
+      } catch (error) {
+        console.error('Failed to initialize CSRF cookie:', error);
+      }
+    };
+
+    initializeApp();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>

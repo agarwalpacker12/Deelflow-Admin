@@ -34,7 +34,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'user registration');
         }
 
         if ($this->isMockEnabled()) {
@@ -81,8 +81,10 @@ class AuthController extends Controller
                 'updated_at' => $user->updated_at->toISOString()
             ], 'User registered successfully', 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'user registration', 'user');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Registration failed');
+            return $this->serverErrorResponse('user registration', $e);
         }
     }
 
@@ -97,7 +99,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'user login');
         }
 
         if ($this->isMockEnabled()) {
@@ -108,11 +110,32 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return $this->unauthorizedResponse('Invalid credentials');
+            return $this->businessLogicErrorResponse(
+                'Login failed. The email address or password you entered is incorrect.',
+                'INVALID_CREDENTIALS',
+                [
+                    'authentication_failed' => true,
+                    'email_exists' => $user ? true : false
+                ],
+                [
+                    'Double-check your email address for typos',
+                    'Ensure your password is entered correctly',
+                    'Use the password reset feature if you\'ve forgotten your password',
+                    'Contact support if you continue to have issues'
+                ]
+            );
         }
 
         if (!$user->is_active) {
-            return $this->forbiddenResponse('Account is deactivated');
+            return $this->forbiddenResponse(
+                'access your account because it has been deactivated',
+                null,
+                [
+                    'account_status' => 'inactive',
+                    'user_id' => $user->id,
+                    'deactivation_reason' => 'Account has been deactivated by an administrator'
+                ]
+            );
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;

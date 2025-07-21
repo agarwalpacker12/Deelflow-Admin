@@ -102,7 +102,7 @@ class CampaignRecipientController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'campaignrecipient validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -156,8 +156,10 @@ class CampaignRecipientController extends Controller
 
             return $this->successResponse($recipients, $message, 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'campaignrecipient operation', 'campaignrecipient');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to add campaign recipients');
+            return $this->serverErrorResponse('campaignrecipient operation', $e);
         }
     }
 
@@ -202,7 +204,7 @@ class CampaignRecipientController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors());
+            return $this->validationErrorResponse($validator->errors(), 'campaignrecipient validation');
         }
 
         if ($this->isMockEnabled()) {
@@ -226,8 +228,10 @@ class CampaignRecipientController extends Controller
             
             return $this->successResponse($recipient, 'Campaign recipient updated successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'campaignrecipient operation', 'campaignrecipient');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to update campaign recipient');
+            return $this->serverErrorResponse('campaignrecipient operation', $e);
         }
     }
 
@@ -264,8 +268,10 @@ class CampaignRecipientController extends Controller
 
             return $this->successResponse(null, 'Campaign recipient removed successfully');
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'campaignrecipient operation', 'campaignrecipient');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to remove campaign recipient');
+            return $this->serverErrorResponse('campaignrecipient operation', $e);
         }
     }
 
@@ -315,8 +321,10 @@ class CampaignRecipientController extends Controller
 
             return $this->successResponse($recipients, $message, 201);
 
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'campaignrecipient operation', 'campaignrecipient');
         } catch (\Exception $e) {
-            return $this->serverErrorResponse('Failed to add campaign recipients');
+            return $this->serverErrorResponse('campaignrecipient operation', $e);
         }
     }
 
