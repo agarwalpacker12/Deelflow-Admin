@@ -161,7 +161,7 @@ const AddDealsForm = ({ propertyId, propertyDetails }) => {
         setSubmitMessage("Deal created successfully!");
         setFormData(DefaultValues);
         setErrors({});
-        navigate("/app/properties");
+        navigate("/app/profile?activeTab=deal-property");
       } else {
         throw new Error(response.data.message || "Failed to create deal");
       }

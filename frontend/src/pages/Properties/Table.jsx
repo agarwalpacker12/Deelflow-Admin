@@ -1,16 +1,7 @@
-import React, { useState } from "react";
-import {
-  Home,
-  BedDouble,
-  Bath,
-  DollarSign,
-  Eye,
-  Edit,
-  Trash2,
-  Bookmark,
-} from "lucide-react";
+import { useState } from "react";
+import { Home, BedDouble, Bath, DollarSign, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { propertiesAPI, propertySaveAPI } from "../../services/api";
+import { propertySaveAPI } from "../../services/api";
 
 const Table = ({
   properties = [],
