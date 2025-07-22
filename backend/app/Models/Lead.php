@@ -12,6 +12,8 @@ class Lead extends Model
 
     protected $fillable = [
         'user_id',
+        'lead_type',
+        'client_id',
         'uuid',
         'first_name',
         'last_name',
@@ -59,6 +61,14 @@ class Lead extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the client associated with this lead.
+     */
+    public function client(): BelongsTo
+    {
+        return $this->belongsTo(Client::class);
     }
 
     /**

@@ -36,6 +36,10 @@ class LeadController extends Controller
             $query->where('status', $request->status);
         }
 
+        if ($request->has('lead_type')) {
+            $query->where('lead_type', $request->lead_type);
+        }
+
         if ($request->has('ai_score_min')) {
             $query->where('ai_score', '>=', $request->ai_score_min);
         }
@@ -71,6 +75,7 @@ class LeadController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'lead_type' => 'required|in:buyer,seller',
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
             'email' => 'nullable|email',
@@ -86,6 +91,8 @@ class LeadController extends Controller
             'asking_price' => 'nullable|numeric|min:0',
             'preferred_contact_method' => 'nullable|in:phone,email,text'
         ], [
+            'lead_type.required' => 'The lead type is required.',
+            'lead_type.in' => 'The lead type must be either buyer or seller.',
             'property_type.in' => 'The property type must be one of the following: single_family, townhouse, condo, duplex, multi_family, mobile_home.',
             'preferred_contact_method.in' => 'The preferred contact method must be one of the following: phone, email, text.',
         ]);
