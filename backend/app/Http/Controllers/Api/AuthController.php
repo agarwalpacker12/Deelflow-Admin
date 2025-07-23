@@ -29,8 +29,7 @@ class AuthController extends Controller
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
             'company_name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|in:wholesaler,investor,funder,admin'
+            'phone' => 'nullable|string|max:20'
         ]);
 
         if ($validator->fails()) {
@@ -51,7 +50,7 @@ class AuthController extends Controller
                 'last_name' => $request->last_name,
                 'company_name' => $request->company_name,
                 'phone' => $request->phone,
-                'role' => $request->role,
+                'role' => 'wholesaler', // All users are wholesalers
                 'level' => 1,
                 'points' => 0,
                 'subscription_tier' => 'starter',
@@ -206,7 +205,7 @@ class AuthController extends Controller
                 'last_name' => $request->last_name,
                 'company_name' => $request->company_name,
                 'phone' => $request->phone,
-                'role' => $request->role,
+                'role' => 'wholesaler', // All users are wholesalers
                 'level' => 1,
                 'points' => 0,
                 'subscription_tier' => 'starter',

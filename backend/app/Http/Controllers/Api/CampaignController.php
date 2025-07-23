@@ -68,7 +68,7 @@ class CampaignController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'campaign_type' => 'required|in:lead_generation,nurture,follow_up,promotional',
+            'campaign_type' => 'required|in:seller_finder,buyer_finder',
             'channel' => 'required|in:email,sms,voice,direct_mail',
             'target_criteria' => 'nullable|array',
             'subject_line' => 'required_if:channel,email|string|max:255',
@@ -143,7 +143,7 @@ class CampaignController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|string|max:255',
-            'campaign_type' => 'sometimes|in:lead_generation,nurture,follow_up,promotional',
+            'campaign_type' => 'sometimes|in:seller_finder,buyer_finder',
             'channel' => 'sometimes|in:email,sms,voice,direct_mail',
             'target_criteria' => 'sometimes|array',
             'subject_line' => 'sometimes|string|max:255',

@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\DealMilestoneController;
 use App\Http\Controllers\Api\AiConversationController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\CampaignRecipientController;
+use App\Http\Controllers\Api\ClientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,6 +63,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Campaign recipient routes
     Route::apiResource('campaign-recipients', CampaignRecipientController::class);
+    
+    // Client routes
+    Route::apiResource('clients', ClientController::class);
     
     // User achievement routes
     Route::apiResource('user-achievements', UserAchievementController::class);

@@ -59,7 +59,7 @@ class CampaignControllerTest extends TestCase
     {
         $campaignData = [
             'name' => 'Test Campaign',
-            'campaign_type' => 'lead_generation',
+            'campaign_type' => 'seller_finder',
             'channel' => 'email',
             'subject_line' => 'Test Subject',
             'email_content' => 'Test email content',
@@ -200,7 +200,7 @@ class CampaignControllerTest extends TestCase
     {
         $campaignData = [
             'name' => 'Test Campaign',
-            'campaign_type' => 'lead_generation',
+            'campaign_type' => 'buyer_finder',
             'channel' => 'email'
             // Missing subject_line and email_content
         ];
@@ -218,7 +218,7 @@ class CampaignControllerTest extends TestCase
     {
         $campaignData = [
             'name' => 'Test SMS Campaign',
-            'campaign_type' => 'lead_generation',
+            'campaign_type' => 'seller_finder',
             'channel' => 'sms'
             // Missing sms_content
         ];
