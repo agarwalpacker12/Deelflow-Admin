@@ -40,7 +40,7 @@ trait MockableController
 
     protected function validationErrorResponse($errors, string $operation = 'data validation'): JsonResponse
     {
-        return ApiErrorHelper::validationError($errors, $operation);
+        return ApiErrorHelper::validationError($errors->all(), $operation);
     }
 
     protected function notFoundResponse(string $resourceType = 'resource', $resourceId = null): JsonResponse
