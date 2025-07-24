@@ -9,7 +9,16 @@ import {
   RefreshCw,
   Plus,
   Sparkles,
+  Eye,
+  Edit,
+  Trash2,
+  Calendar,
+  DollarSign,
+  TrendingUp,
+  Users,
+  Mail,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const CampaignsPage = () => {
   const navigate = useNavigate();
@@ -30,14 +39,31 @@ const CampaignsPage = () => {
     const fetchCampaigns = async () => {
       setLoading(true);
       setError(null);
+
       try {
         const params = {
           page: currentPage,
           per_page: perPage,
         };
-        if (typeFilter) params.campaign_type = typeFilter;
+
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
+
+        if (typeFilter) {
+          params.campaign_type = typeFilter;
+        }
+
+        if (statusFilter) {
+          params.status = statusFilter;
+        }
+
+        if (channelFilter) {
+          params.channel = channelFilter;
+        }
 
         const response = await campaignsAPI.getCampaigns(params);
+
         if (response.data.status === "success") {
           setCampaigns(response.data.data.data);
           setTotal(response.data.data.meta.total);
@@ -46,29 +72,45 @@ const CampaignsPage = () => {
           setError("Failed to fetch campaigns");
         }
       } catch (err) {
+        console.error("Error fetching campaigns:", err);
         setError(err.response?.data?.message || "Failed to fetch campaigns");
       } finally {
         setLoading(false);
       }
     };
+
     fetchCampaigns();
   }, [
+    searchTerm,
     typeFilter,
-    // statusFilter,
-    // channelFilter,
-    // perPage,
-    // currentPage,
+    statusFilter,
+    channelFilter,
+    perPage,
+    currentPage,
   ]);
 
   const resetFilters = () => {
+    setSearchTerm("");
     setTypeFilter("");
+    setStatusFilter("");
+    setChannelFilter("");
+    setCurrentPage(1);
   };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
+      minimumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   const getStatusColor = (status) => {
@@ -101,286 +143,338 @@ const CampaignsPage = () => {
     return ((conversion_count / sent_count) * 100).toFixed(1);
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this campaign?"))
+      return;
+    try {
+      await campaignsAPI.deleteCampaign(id);
+      setCampaigns((prevCampaigns) =>
+        prevCampaigns.filter((campaign) => campaign.id !== id)
+      );
+      // setSuccess("Campaign deleted successfully");
+      toast.success("Campaign deleted successfully");
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to delete campaign");
+    }
+  };
+
   return (
-    <div className="min-h-screen p-6">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-white">Marketing Campaigns</h1>
-          <div className="flex items-center gap-3">
-            {/* Add Campaign Button */}
-            <button
-              onClick={() => navigate("/app/campaigns/add")}
-              className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-white">Marketing Campaigns</h1>
+        <div className="flex items-center gap-3">
+          {/* Add Campaign Button */}
+          <button
+            onClick={() => navigate("/app/campaigns/add")}
+            className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <Sparkles className="h-4 w-4 group-hover:animate-pulse" />
+            <Plus className="h-5 w-5" />
+            <span className="relative z-10">Add Campaign</span>
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></div>
+          </button>
+          <div className="text-sm text-gray-400">Total: {total} campaigns</div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          {/* Campaign Type Filter */}
+          <div className="relative">
+            <Filter className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <Sparkles className="h-4 w-4 group-hover:animate-pulse" />
-              <Plus className="h-5 w-5" />
-              <span className="relative z-10">Add Campaign</span>
-              <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></div>
+              <option value="">All Types</option>
+              <option value="seller_finder">Seller Finder</option>
+              <option value="buyer_finder">Buyer Finder</option>
+            </select>
+          </div>
+
+          {/* Reset Button */}
+          <div>
+            <button
+              onClick={resetFilters}
+              className="w-full px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-colors flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Reset
             </button>
-            <div className="text-sm text-gray-400">
-              Total: {total} campaigns
-            </div>
           </div>
         </div>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search campaigns..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            {/* Campaign Type Filter */}
-            <div className="relative">
-              <Filter className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-              <select
-                value={typeFilter}
-                onChange={(e) => setTypeFilter(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white"
-              >
-                <option value="">All Types</option>
-                <option value="seller_finder">Seller Finder</option>
-                <option value="buyer_finder">Buyer Finder</option>
-              </select>
-            </div>
-
-            {/* Reset Button */}
-            <div>
-              <button
-                onClick={resetFilters}
-                className="w-full px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-colors flex items-center justify-center gap-2"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Reset
-              </button>
-            </div>
-          </div>
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4">
+          <p className="text-red-300">{error}</p>
         </div>
+      )}
+      {success && (
+        <div className="bg-green-500/20 border border-green-500/30 rounded-xl p-4">
+          <p className="text-green-300">{success}</p>
+        </div>
+      )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4">
-            <p className="text-red-300">{error}</p>
+      {/* Table */}
+      <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center text-gray-400">
+            Loading campaigns...
           </div>
-        )}
-        {success && (
-          <div className="bg-green-500/20 border border-green-500/30 rounded-xl p-4">
-            <p className="text-green-300">{success}</p>
+        ) : campaigns.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">
+            No campaigns found
           </div>
-        )}
-
-        {/* Table */}
-        <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
-          {loading ? (
-            <div className="p-8 text-center text-gray-400">
-              Loading campaigns...
-            </div>
-          ) : campaigns.length === 0 ? (
-            <div className="p-8 text-center text-gray-400">
-              No campaigns found
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-white/10 border-b border-white/10">
-                  <tr>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Campaign
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Channel
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Recipients
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Open Rate
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Click Rate
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Conversions
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Budget
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Spent
-                    </th>
-                    <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10">
-                  {campaigns.map((campaign) => (
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-white/10 border-b border-white/10">
+                <tr>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Campaign Info
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Details
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Performance
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Budget & Spend
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Status
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Schedule
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.length > 0 &&
+                  campaigns?.map((campaign) => (
                     <tr
                       key={campaign.id}
-                      className="hover:bg-white/5 transition-colors"
+                      className="border-b border-white/10 hover:bg-white/5"
                     >
-                      <td className="px-4 py-4">
-                        <div>
-                          <div className="text-white text-sm font-medium">
+                      <td className="p-4">
+                        <div className="space-y-2">
+                          <div className="text-white font-medium">
                             {campaign.name}
                           </div>
-                          <div className="text-gray-400 text-xs">
+                          <div className="text-gray-400 text-sm">
                             {campaign.target_criteria?.location}
+                          </div>
+                          <div className="text-xs text-gray-500 capitalize">
+                            {campaign.campaign_type?.replace("_", " ")}
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-white text-xs capitalize">
-                        {campaign.campaign_type?.replace("_", " ")}
-                      </td>
-                      <td className="px-4 py-4 text-white text-xs capitalize">
-                        {campaign.channel?.replace("_", " ")}
-                      </td>
-                      <td className="px-4 py-4">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border capitalize ${getStatusColor(
-                            campaign.status
-                          )}`}
-                        >
-                          {campaign.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="text-white text-xs">
-                          {campaign.sent_count}/{campaign.total_recipients}
+
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-gray-300 text-sm">
+                            <Mail className="h-3 w-3" />
+                            {campaign.channel?.replace("_", " ")}
+                          </div>
+                          <div className="text-gray-400 text-sm capitalize">
+                            {campaign.target_criteria?.property_type?.replace(
+                              "_",
+                              " "
+                            )}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Min Equity:{" "}
+                            {formatCurrency(
+                              campaign.target_criteria?.equity_min || 0
+                            )}
+                          </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="text-white text-xs">
-                          {calculateOpenRate(
-                            campaign.open_count,
-                            campaign.sent_count
+
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Users className="h-3 w-3 text-gray-400" />
+                            <span className="text-sm text-white">
+                              {campaign.sent_count}/{campaign.total_recipients}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="h-3 w-3 text-green-400" />
+                            <span className="text-sm text-green-400">
+                              {calculateOpenRate(
+                                campaign.open_count,
+                                campaign.sent_count
+                              )}
+                              % open
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {calculateClickRate(
+                              campaign.click_count,
+                              campaign.sent_count
+                            )}
+                            % click
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {calculateConversionRate(
+                              campaign.conversion_count,
+                              campaign.sent_count
+                            )}
+                            % convert
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-white text-sm">
+                            <DollarSign className="h-3 w-3" />
+                            {formatCurrency(campaign.budget)}
+                          </div>
+                          <div className="text-gray-400 text-sm">
+                            Spent: {formatCurrency(campaign.spent)}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {((campaign.spent / campaign.budget) * 100).toFixed(
+                              0
+                            )}
+                            % used
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-1">
+                            <div
+                              className="bg-blue-500 h-1 rounded-full"
+                              style={{
+                                width: `${Math.min(
+                                  100,
+                                  (campaign.spent / campaign.budget) * 100
+                                )}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="space-y-2">
+                          <span
+                            className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border capitalize ${getStatusColor(
+                              campaign.status
+                            )}`}
+                          >
+                            {campaign.status}
+                          </span>
+                          {campaign.use_ai_personalization && (
+                            <div className="flex items-center gap-1">
+                              <Sparkles className="h-3 w-3 text-purple-400" />
+                              <span className="text-xs text-purple-400">
+                                AI Enhanced
+                              </span>
+                            </div>
                           )}
-                          %
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          {campaign.open_count} opens
                         </div>
                       </td>
-                      <td className="px-4 py-4">
-                        <div className="text-white text-xs">
-                          {calculateClickRate(
-                            campaign.click_count,
-                            campaign.sent_count
-                          )}
-                          %
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          {campaign.click_count} clicks
-                        </div>
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="text-white text-xs">
-                          {calculateConversionRate(
-                            campaign.conversion_count,
-                            campaign.sent_count
-                          )}
-                          %
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          {campaign.conversion_count} conversions
+
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-gray-400 text-xs">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(campaign.scheduled_at)}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Created: {formatDate(campaign.created_at)}
+                          </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-white text-xs">
-                        {formatCurrency(campaign.budget)}
-                      </td>
-                      <td className="px-4 py-4">
-                        <div className="text-white text-xs">
-                          {formatCurrency(campaign.spent)}
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          {((campaign.spent / campaign.budget) * 100).toFixed(
-                            0
-                          )}
-                          % used
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 text-sm font-medium">
-                        <div className="flex space-x-2">
-                          <button className="text-blue-400 hover:text-blue-300 transition-colors px-2 py-1 rounded text-xs">
-                            View
+
+                      <td className="p-4">
+                        <div className="flex gap-2">
+                          {/* <button
+                            className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
+                            onClick={() =>
+                              navigate(`/app/campaigns/${campaign.id}`)
+                            }
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button> */}
+                          <button
+                            className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"
+                            onClick={() =>
+                              navigate(`/app/campaigns/${campaign.id}`)
+                            }
+                          >
+                            <Edit className="h-4 w-4" />
                           </button>
-                          <button className="text-green-400 hover:text-green-300 transition-colors px-2 py-1 rounded text-xs">
-                            Edit
-                          </button>
-                          <button className="text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded text-xs">
-                            Delete
+                          <button
+                            className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                            onClick={() => handleDelete(campaign.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
                     </tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-400">
-                Showing {(currentPage - 1) * perPage + 1} to{" "}
-                {Math.min(currentPage * perPage, total)} of {total} campaigns
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(1, prev - 1))
-                  }
-                  disabled={currentPage === 1}
-                  className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <div className="flex items-center gap-1">
-                  {[...Array(totalPages)].map((_, i) => (
-                    <button
-                      key={i + 1}
-                      onClick={() => setCurrentPage(i + 1)}
-                      className={`px-3 py-1 rounded-lg text-sm transition-colors ${
-                        currentPage === i + 1
-                          ? "bg-blue-500 text-white"
-                          : "text-gray-400 hover:text-white hover:bg-white/10"
-                      }`}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                </div>
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
+              </tbody>
+            </table>
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-400">
+              Showing {(currentPage - 1) * perPage + 1} to{" "}
+              {Math.min(currentPage * perPage, total)} of {total} campaigns
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <div className="flex items-center gap-1">
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

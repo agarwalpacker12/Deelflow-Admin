@@ -1,14 +1,29 @@
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { campaignSchema, DefaultValues } from "./utility"; // make sure to import this
+import {
+  campaignSchema,
+  campaignTypes,
+  channels,
+  DefaultValues,
+  propertyTypes,
+} from "./utility"; // make sure to import this
 import { useMutation } from "@tanstack/react-query";
 import { campaignsAPI } from "../../../services/api";
 import toast from "react-hot-toast";
 import { Text } from "@radix-ui/themes";
 import ButtonLoader from "../../../components/UI/ButtonLoader";
 import { Save } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux"; // Add useDispatch import
+import { setCampaigns } from "../../../store/slices/campaignsSlice";
 
 const CreateCampaignForm = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch(); // Initialize dispatch hook
+
+  // Get current campaigns from Redux store
+  const campaigns = useSelector((state) => state.campaigns.campaigns || []);
+
   const {
     register,
     handleSubmit,
@@ -26,49 +41,26 @@ const CreateCampaignForm = () => {
       return res;
     },
     onSuccess: (data) => {
-      if (!data.data.is_error) {
-        toast.success("Campaign created successfully! We'll contact you soon.");
+      if (data.data.status == "success") {
+        toast.success(data.data.message);
         console.log("response_Data", data);
 
-        dispatch(setCampaigns([...leads, newLead]));
+        // Fixed: Use campaigns instead of undefined campaign variable
+        dispatch(setCampaigns([...campaigns, data.data.data]));
+
+        // Navigate to campaigns page
         navigate("/app/campaigns");
-      } else {
-        const resMsg = translateRes(data?.data?.message?.replaceAll(".", "_"));
-        toast.error(resMsg);
       }
     },
     onError: (error) => {
-      console.log("error", error.response.data.message);
-      toast.error(error.response.data.message);
+      console.log("error", error.response?.data?.message || error.message);
+      toast.error(error.response?.data?.message || "An error occurred");
     },
   });
 
   const onSubmit = (data) => {
     mutation.mutate(data);
   };
-
-  const campaignTypes = [
-    { value: "lead_generation", label: "Lead Generation" },
-    { value: "nurture", label: "Nurture Campaign" },
-    { value: "retargeting", label: "Retargeting" },
-    { value: "brand_awareness", label: "Brand Awareness" },
-  ];
-
-  const channels = [
-    { value: "email", label: "Email" },
-    { value: "sms", label: "SMS" },
-    { value: "direct_mail", label: "Direct Mail" },
-    { value: "social_media", label: "Social Media" },
-  ];
-
-  const propertyTypes = [
-    { value: "single_family", label: "Single Family" },
-    { value: "multi_family", label: "Multi Family" },
-    { value: "condo", label: "Condo" },
-    { value: "townhouse", label: "Townhouse" },
-    { value: "land", label: "Land" },
-    { value: "commercial", label: "Commercial" },
-  ];
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -262,10 +254,6 @@ const CreateCampaignForm = () => {
                     />
                     <p className="text-sm text-red-500">
                       {errors.email_content?.message}
-                    </p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      You can use placeholders like [FIRST_NAME], [LAST_NAME],
-                      [ADDRESS] for personalization
                     </p>
                   </div>
                 </div>

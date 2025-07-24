@@ -46,3 +46,22 @@ export const campaignSchema = yup.object().shape({
       .min(0, "Equity must be non-negative"),
   }),
 });
+export const campaignTypes = [
+  { value: "seller_finder", label: "Seller Finder" },
+  { value: "buyer_finder", label: "Buyer Finder" },
+];
+
+export const channels = [
+  { value: "email", label: "Email" },
+  { value: "sms", label: "SMS" },
+  { value: "voice", label: "Voice" },
+];
+
+export const propertyTypes = [
+  { value: "single_family", label: "Single Family" },
+  { value: "multi_family", label: "Multi Family" },
+  { value: "condo", label: "Condo" },
+  { value: "townhouse", label: "Townhouse" },
+  { value: "land", label: "Land" },
+  { value: "commercial", label: "Commercial" },
+];

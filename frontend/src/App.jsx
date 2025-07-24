@@ -59,6 +59,7 @@ import AddAchievement from "./pages/Achievement/add/index.jsx";
 import EditProperty from "./pages/Properties/[id]/index.jsx";
 import VycentraPaymentGateway from "./pages/Payment.jsx";
 import BidIndex from "./pages/Properties/[id]/bid/BidIndex.jsx";
+import EditCampaign from "./pages/Campaigns/[id]/index.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -174,6 +175,11 @@ function App() {
                             path="campaigns/add"
                             element={<AddCampaign />}
                           />
+                          <Route
+                            path="campaigns/:id"
+                            element={<EditCampaign />}
+                          />
+
                           <Route
                             path="recipients"
                             element={<CampaignsRecipientPage />}
