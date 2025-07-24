@@ -3,14 +3,14 @@ import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 
 const navLinks = [
   { to: "/app/dashboard", label: "Dashboard" },
+  { to: "/app/campaigns", label: "Campaigns" },
   { to: "/app/leads", label: "Leads" },
   { to: "/app/properties", label: "Properties" },
   // { to: "/app/deals", label: "Deals" },
-  { to: "/app/campaigns", label: "Campaigns" },
-  { to: "/app/milestone", label: "Milestone" },
-  { to: "/app/ai-assistant", label: "AI-Assistant" },
-  { to: "/app/recipients", label: "Recipients" },
-  { to: "/app/achievements", label: "Achievements" },
+  // { to: "/app/milestone", label: "Milestone" },
+  // { to: "/app/ai-assistant", label: "AI-Assistant" },
+  // { to: "/app/recipients", label: "Recipients" },
+  // { to: "/app/achievements", label: "Achievements" },
 ];
 
 const Layout = () => {
