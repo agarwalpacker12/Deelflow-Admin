@@ -66,7 +66,7 @@ class CampaignController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'name' => 'required|string|max:255',
             'campaign_type' => 'required|in:seller_finder,buyer_finder',
             'channel' => 'required|in:email,sms,voice,direct_mail',
@@ -79,7 +79,13 @@ class CampaignController extends Controller
             'budget' => 'nullable|numeric|min:0',
             'use_ai_personalization' => 'nullable|boolean',
             'ai_tone' => 'nullable|in:professional,friendly,urgent,casual',
-        ]);
+        ];
+
+        $messages = [
+            'campaign_type.in' => 'The selected campaign type is invalid. Allowed values are: seller_finder, buyer_finder.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             return $this->validationErrorResponse($validator->errors(), 'campaign validation');
@@ -141,7 +147,7 @@ class CampaignController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'name' => 'sometimes|string|max:255',
             'campaign_type' => 'sometimes|in:seller_finder,buyer_finder',
             'channel' => 'sometimes|in:email,sms,voice,direct_mail',
@@ -155,7 +161,13 @@ class CampaignController extends Controller
             'status' => 'sometimes|in:draft,scheduled,active,paused,completed,cancelled',
             'use_ai_personalization' => 'sometimes|boolean',
             'ai_tone' => 'sometimes|in:professional,friendly,urgent,casual',
-        ]);
+        ];
+
+        $messages = [
+            'campaign_type.in' => 'The selected campaign type is invalid. Allowed values are: seller_finder, buyer_finder.',
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
             return $this->validationErrorResponse($validator->errors(), 'campaign validation');

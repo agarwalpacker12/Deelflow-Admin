@@ -17,7 +17,7 @@
                 "id": 1,
                 "user_id": 1,
                 "name": "Austin Distressed Properties Q3",
-                "campaign_type": "lead_generation",
+                "campaign_type": "seller_finder",
                 "channel": "email",
                 "target_criteria": {
                     "location": "Austin, TX",
@@ -52,7 +52,7 @@
     ```json
     {
         "name": "Austin Distressed Properties Q3",
-        "campaign_type": "lead_generation",
+        "campaign_type": "seller_finder",
         "channel": "email",
         "target_criteria": {
             "location": "Austin, TX",
@@ -66,6 +66,8 @@
         "use_ai_personalization": true
     }
     ```
+*   **Field Restrictions:**
+    - `campaign_type`: Allowed values are `seller_finder`, `buyer_finder`.
 *   **Response (Success):**
 
     ```json
@@ -76,7 +78,7 @@
             "id": 2,
             "user_id": 1,
             "name": "Austin Distressed Properties Q3",
-            "campaign_type": "lead_generation",
+            "campaign_type": "seller_finder",
             "channel": "email",
             "target_criteria": {
                 "location": "Austin, TX",
@@ -115,7 +117,7 @@
             "id": 1,
             "user_id": 1,
             "name": "Austin Distressed Properties Q3",
-            "campaign_type": "lead_generation",
+            "campaign_type": "seller_finder",
             "channel": "email",
             "target_criteria": {
                 "location": "Austin, TX",
@@ -163,7 +165,7 @@
             "id": 1,
             "user_id": 1,
             "name": "Updated Campaign Name",
-            "campaign_type": "lead_generation",
+            "campaign_type": "seller_finder",
             "channel": "email",
             "target_criteria": {
                 "location": "Austin, TX",
