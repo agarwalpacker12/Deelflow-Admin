@@ -45,8 +45,12 @@ class CampaignControllerTest extends TestCase
     {
         $response = $this->postJson('/api/campaigns', []);
 
-        $response->assertStatus(422)
-            ->assertJsonValidationErrors(['name', 'campaign_type', 'channel']);
+        $response->assertStatus(422);
+        $json = $response->json();
+        $errors = $json['error']['details']['field_errors'];
+        $this->assertContains('The name field is required.', $errors);
+        $this->assertContains('The campaign type field is required.', $errors);
+        $this->assertContains('The channel field is required.', $errors);
     }
 
     /** @test */
@@ -54,7 +58,7 @@ class CampaignControllerTest extends TestCase
     {
         $campaignData = [
             'name' => 'Test Campaign',
-            'campaign_type' => 'lead_generation',
+            'campaign_type' => 'seller_finder',
             'channel' => 'email',
             'subject_line' => 'Test Subject',
             'email_content' => 'Test Content'
@@ -71,6 +75,26 @@ class CampaignControllerTest extends TestCase
 
         $this->assertDatabaseHas('campaigns', [
             'name' => 'Test Campaign',
+            'user_id' => $this->user->id
+        ]);
+    }
+
+    /** @test */
+    public function store_method_creates_buyer_finder_campaign_successfully()
+    {
+        $campaignData = [
+            'name' => 'Test Buyer Campaign',
+            'campaign_type' => 'buyer_finder',
+            'channel' => 'sms',
+            'sms_content' => 'Test sms content'
+        ];
+
+        $response = $this->postJson('/api/campaigns', $campaignData);
+
+        $response->assertStatus(201);
+
+        $this->assertDatabaseHas('campaigns', [
+            'name' => 'Test Buyer Campaign',
             'user_id' => $this->user->id
         ]);
     }
