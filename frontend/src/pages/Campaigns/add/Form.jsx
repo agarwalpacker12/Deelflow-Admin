@@ -1,11 +1,12 @@
-import React from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { campaignSchema, DefaultValues } from "./utility"; // make sure to import this
 import { useMutation } from "@tanstack/react-query";
-import { campaignsAPI, leadsAPI } from "../../../services/api";
-import { setLeads } from "../../../store/slices/leadsSlice";
+import { campaignsAPI } from "../../../services/api";
 import toast from "react-hot-toast";
+import { Text } from "@radix-ui/themes";
+import ButtonLoader from "../../../components/UI/ButtonLoader";
+import { Save } from "lucide-react";
 
 const CreateCampaignForm = () => {
   const {
@@ -69,8 +70,6 @@ const CreateCampaignForm = () => {
     { value: "commercial", label: "Commercial" },
   ];
 
-  const useAI = watch("use_ai_personalization");
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       {/* Keep your exact layout */}
@@ -86,7 +85,8 @@ const CreateCampaignForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Campaign Name *
+                      Campaign Name
+                      <Text className="text-red-700">* </Text>
                     </label>
                     <input
                       {...register("name")}
@@ -101,7 +101,7 @@ const CreateCampaignForm = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Campaign Type *
+                      Campaign Type <Text className="text-red-700">* </Text>
                     </label>
                     <select
                       {...register("campaign_type")}
@@ -121,7 +121,7 @@ const CreateCampaignForm = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Channel *
+                      Channel <Text className="text-red-700">* </Text>
                     </label>
                     <select
                       {...register("channel")}
@@ -140,7 +140,7 @@ const CreateCampaignForm = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Budget *
+                      Budget <Text className="text-red-700">* </Text>
                     </label>
                     <input
                       {...register("budget")}
@@ -156,7 +156,8 @@ const CreateCampaignForm = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Scheduled Date & Time *
+                      Scheduled Date & Time{" "}
+                      <Text className="text-red-700">* </Text>
                     </label>
                     <input
                       {...register("scheduled_at")}
@@ -178,7 +179,7 @@ const CreateCampaignForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Location *
+                      Location <Text className="text-red-700">* </Text>
                     </label>
                     <input
                       {...register("target_criteria.location")}
@@ -193,7 +194,7 @@ const CreateCampaignForm = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Property Type *
+                      Property Type <Text className="text-red-700">* </Text>
                     </label>
                     <select
                       {...register("target_criteria.property_type")}
@@ -213,7 +214,7 @@ const CreateCampaignForm = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Minimum Equity *
+                      Minimum Equity <Text className="text-red-700">* </Text>
                     </label>
                     <input
                       {...register("target_criteria.equity_min")}
@@ -236,7 +237,7 @@ const CreateCampaignForm = () => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Subject Line *
+                      Subject Line <Text className="text-red-700">* </Text>
                     </label>
                     <input
                       {...register("subject_line")}
@@ -251,7 +252,7 @@ const CreateCampaignForm = () => {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Content *
+                      Email Content <Text className="text-red-700">* </Text>
                     </label>
                     <textarea
                       {...register("email_content")}
@@ -298,10 +299,20 @@ const CreateCampaignForm = () => {
               {/* Submit */}
               <div className="flex justify-center pt-6">
                 <button
+                  className={`flex px-8 py-4 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg transition-opacity ${
+                    mutation.isPending
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:brightness-110"
+                  }`}
                   type="submit"
-                  className="px-8 py-4 rounded-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg"
+                  disabled={mutation.isPending}
                 >
-                  Create Campaign
+                  {mutation.isPending ? (
+                    <ButtonLoader className="mr-2" />
+                  ) : (
+                    <Save className="mr-2" />
+                  )}
+                  {mutation.isPending ? "Creating Campaign" : "Create Campaign"}
                 </button>
               </div>
             </div>
