@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import EditLeadForm from "./Form";
 import { leadsAPI } from "../../../services/api";
+import UpdateLeadForm from "./Form";
 
 function EditLead() {
   const { id } = useParams();
   const [lead, setLead] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); 
-  
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchLead = async () => {
@@ -35,16 +35,13 @@ function EditLead() {
           <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-8">
             <h2 className="text-3xl font-bold text-white mb-2">Update Lead</h2>
             <p className="text-purple-100">
-              Fill out the form below to add a new lead to your pipeline.
+              Fill out the form below to upload a lead to your pipeline.
             </p>
           </div>
 
           <div className="p-6 md:p-8">
-            {/* Success Message */}
-            {/* Error Message */}
-
             <div className="space-y-6">
-              <EditLeadForm leadRes={lead} />
+              <UpdateLeadForm leadRes={lead} />
             </div>
           </div>
         </div>

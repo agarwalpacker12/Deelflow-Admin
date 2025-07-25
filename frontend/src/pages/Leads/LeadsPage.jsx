@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -8,8 +8,6 @@ import {
   Mail,
   MapPin,
   DollarSign,
-  Calendar,
-  Eye,
   Edit,
   Trash2,
   RefreshCw,
@@ -37,7 +35,7 @@ const LeadsPage = () => {
     const fetchLeads = async () => {
       setLoading(true);
       setError(null);
-      
+
       try {
         // Prepare API parameters
         const params = {
@@ -58,19 +56,18 @@ const LeadsPage = () => {
         }
 
         const response = await leadsAPI.getLeads(params);
-        console.log(response.data.data);
-        
+
         // Handle the API response format
-        if (response.data.status === 'success') {
+        if (response.data.status === "success") {
           setLeads(response.data.data.data); // leads array
           setTotal(response.data.data.meta.total);
           setTotalPages(response.data.data.meta.last_page);
         } else {
-          setError('Failed to fetch leads');
+          setError("Failed to fetch leads");
         }
       } catch (err) {
-        console.error('Error fetching leads:', err);
-        setError(err.response?.data?.message || 'Failed to fetch leads');
+        console.error("Error fetching leads:", err);
+        setError(err.response?.data?.message || "Failed to fetch leads");
       } finally {
         setLoading(false);
       }
@@ -129,10 +126,10 @@ const LeadsPage = () => {
     try {
       await leadsAPI.deleteLead(id);
       setLeads((prevLeads) => prevLeads.filter((lead) => lead.id !== id));
-      setSuccess('Lead deleted successfully');
+      setSuccess("Lead deleted successfully");
       setTimeout(() => setSuccess(null), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to delete lead');
+      setError(err.response?.data?.message || "Failed to delete lead");
     }
   };
 
@@ -143,7 +140,7 @@ const LeadsPage = () => {
         <div className="flex items-center gap-3">
           {/* Add Lead Button */}
           <button
-            onClick={() => navigate('/app/leads/add')}
+            onClick={() => navigate("/app/leads/add")}
             className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
           >
             {/* Animated background effect */}
@@ -266,159 +263,162 @@ const LeadsPage = () => {
                   <th className="text-left p-4 text-white font-semibold">
                     Status
                   </th>
-                  <th className="text-left p-4 text-white font-semibold">
-                    Next Action
-                  </th>
+                  {/* <th    */}
                   <th className="text-left p-4 text-white font-semibold">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {leads.length > 0 && leads?.map((lead) => (
-                  <tr
-                    key={lead.id}
-                    className="border-b border-white/10 hover:bg-white/5"
-                  >
-                    <td className="p-4">
-                      <div className="space-y-2">
-                        <div className="text-white font-medium">
-                          {lead.first_name} {lead.last_name}
+                {leads.length > 0 &&
+                  leads?.map((lead) => (
+                    <tr
+                      key={lead.id}
+                      className="border-b border-white/10 hover:bg-white/5"
+                    >
+                      <td className="p-4">
+                        <div className="space-y-2">
+                          <div className="text-white font-medium">
+                            {lead.first_name} {lead.last_name}
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-400 text-sm">
+                            <Mail className="h-3 w-3" />
+                            {lead.email}
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-400 text-sm">
+                            <Phone className="h-3 w-3" />
+                            {lead.phone}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Source: {lead.source}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-400 text-sm">
-                          <Mail className="h-3 w-3" />
-                          {lead.email}
+                      </td>
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-gray-300 text-sm">
+                            <MapPin className="h-3 w-3" />
+                            {lead.property_address}
+                          </div>
+                          <div className="text-gray-400 text-sm">
+                            {lead.property_city}, {lead.property_state}{" "}
+                            {lead.property_zip}
+                          </div>
+                          <div className="text-xs text-gray-500 capitalize">
+                            {lead.property_type?.replace("_", " ")}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2 text-gray-400 text-sm">
-                          <Phone className="h-3 w-3" />
-                          {lead.phone}
+                      </td>
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-400">AI:</span>
+                            <span
+                              className={`text-sm font-medium ${getScoreColor(
+                                lead.ai_score
+                              )}`}
+                            >
+                              {lead.ai_score}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-400">
+                              Motivation:
+                            </span>
+                            <span
+                              className={`text-sm font-medium ${getScoreColor(
+                                lead.motivation_score
+                              )}`}
+                            >
+                              {lead.motivation_score}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-400">
+                              Urgency:
+                            </span>
+                            <span
+                              className={`text-sm font-medium ${getScoreColor(
+                                lead.urgency_score
+                              )}`}
+                            >
+                              {lead.urgency_score}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-gray-400">
+                              Financial:
+                            </span>
+                            <span
+                              className={`text-sm font-medium ${getScoreColor(
+                                lead.financial_score
+                              )}`}
+                            >
+                              {lead.financial_score}
+                            </span>
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-500">
-                          Source: {lead.source}
+                      </td>
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-green-400 text-sm">
+                            <DollarSign className="h-3 w-3" />
+                            {formatCurrency(lead.estimated_value)}
+                          </div>
+                          <div className="text-gray-400 text-xs">
+                            Mortgage: {formatCurrency(lead.mortgage_balance)}
+                          </div>
+                          <div className="text-gray-400 text-xs">
+                            Asking: {formatCurrency(lead.asking_price)}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-gray-300 text-sm">
-                          <MapPin className="h-3 w-3" />
-                          {lead.property_address}
-                        </div>
-                        <div className="text-gray-400 text-sm">
-                          {lead.property_city}, {lead.property_state}{" "}
-                          {lead.property_zip}
-                        </div>
-                        <div className="text-xs text-gray-500 capitalize">
-                          {lead.property_type?.replace("_", " ")}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-400">AI:</span>
+                      </td>
+                      <td className="p-4">
+                        <div className="space-y-2">
                           <span
-                            className={`text-sm font-medium ${getScoreColor(
-                              lead.ai_score
+                            className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
+                              lead.status
                             )}`}
                           >
-                            {lead.ai_score}
+                            {lead.status}
                           </span>
+                          <div className="text-xs text-gray-500">
+                            Contact: {lead.preferred_contact_method}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-400">
-                            Motivation:
-                          </span>
-                          <span
-                            className={`text-sm font-medium ${getScoreColor(
-                              lead.motivation_score
-                            )}`}
+                      </td>
+                      {/* <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="text-sm text-gray-300">
+                            {lead.next_action}
+                          </div>
+                          <div className="flex items-center gap-2 text-gray-400 text-xs">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(lead.next_action_date)}
+                          </div>
+                        </div>
+                      </td> */}
+                      <td className="p-4">
+                        <div className="flex gap-2">
+                          {/* <button className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors">
+                            <Eye className="h-4 w-4" />
+                          </button> */}
+                          <button
+                            className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"
+                            onClick={() => navigate(`/app/leads/${lead.id}`)}
                           >
-                            {lead.motivation_score}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-400">
-                            Urgency:
-                          </span>
-                          <span
-                            className={`text-sm font-medium ${getScoreColor(
-                              lead.urgency_score
-                            )}`}
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                            onClick={() => handleDelete(lead.id)}
                           >
-                            {lead.urgency_score}
-                          </span>
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-400">
-                            Financial:
-                          </span>
-                          <span
-                            className={`text-sm font-medium ${getScoreColor(
-                              lead.financial_score
-                            )}`}
-                          >
-                            {lead.financial_score}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 text-green-400 text-sm">
-                          <DollarSign className="h-3 w-3" />
-                          {formatCurrency(lead.estimated_value)}
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          Mortgage: {formatCurrency(lead.mortgage_balance)}
-                        </div>
-                        <div className="text-gray-400 text-xs">
-                          Asking: {formatCurrency(lead.asking_price)}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="space-y-2">
-                        <span
-                          className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(
-                            lead.status
-                          )}`}
-                        >
-                          {lead.status}
-                        </span>
-                        <div className="text-xs text-gray-500">
-                          Contact: {lead.preferred_contact_method}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="space-y-1">
-                        <div className="text-sm text-gray-300">
-                          {lead.next_action}
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-400 text-xs">
-                          <Calendar className="h-3 w-3" />
-                          {formatDate(lead.next_action_date)}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex gap-2">
-                        <button className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors">
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"
-                          onClick={() =>navigate(`/app/leads/${lead.id}`)}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </button>
-                        <button className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors" onClick={() => handleDelete(lead.id)}>
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

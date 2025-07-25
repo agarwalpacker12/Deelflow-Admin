@@ -1,3 +1,5 @@
+import * as yup from "yup";
+
 // Default form values
 export const DefaultValues = {
   first_name: "",
@@ -124,89 +126,22 @@ export const stateList = [
 ];
 
 // Validation function
-export const validateField = (name, value) => {
-  switch (name) {
-    case "first_name":
-    case "last_name":
-      if (!value) return `${name.replace("_", " ")} is required`;
-      if (!/^[a-zA-Z\s]*$/.test(value)) return "Must be alphabetic value";
-      if (value.length < 2)
-        return `${name.replace("_", " ")} must be at least 2 characters`;
-      return "";
-
-    case "email":
-      if (!value) return "Email is required";
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-        return "Must be a valid email";
-      return "";
-
-    case "phone":
-      if (!value) return "Phone is required";
-      if (!/^[\+]?[1-9][\d\s\-\(\)]{8,15}$/.test(value))
-        return "Must be a valid phone number";
-      return "";
-
-    case "property_address":
-      if (!value) return "Property address is required";
-      if (value.length < 5)
-        return "Property address must be at least 5 characters";
-      return "";
-
-    case "property_city":
-      if (!value) return "Property city is required";
-      if (!/^[a-zA-Z\s]*$/.test(value)) return "Must be alphabetic value";
-      if (value.length < 2)
-        return "Property city must be at least 2 characters";
-      return "";
-
-    case "property_state":
-      if (!value) return "Property state is required";
-      return "";
-
-    case "property_zip":
-      if (!value) return "Property zip is required";
-      // if (!/^\d{5}(-\d{4})?$/.test(value)) return "Must be a valid zip code";
-      return "";
-
-    case "property_type":
-      if (!value) return "Property type is required";
-      return "";
-
-    case "source":
-      if (!value) return "Source is required";
-      return "";
-
-    case "estimated_value":
-      if (!value || value.toString().trim() === "")
-        return "Estimated value is required";
-      const estNum = parseFloat(value);
-      if (isNaN(estNum) || estNum <= 0) return "Must be a positive number";
-      return "";
-
-    case "mortgage_balance":
-      if (!value || value.toString().trim() === "")
-        return "Mortgage balance is required";
-      const mortNum = parseFloat(value);
-      if (isNaN(mortNum) || mortNum < 0) return "Must be a non-negative number";
-      return "";
-
-    case "asking_price":
-      if (!value || value.toString().trim() === "")
-        return "Asking price is required";
-      const askNum = parseFloat(value);
-      if (isNaN(askNum) || askNum <= 0) return "Must be a positive number";
-      return "";
-
-    case "preferred_contact_method":
-      if (!value) return "Preferred contact method is required";
-      return "";
-    case "status":
-      if (!value) return "Status is required";
-      return "";
-    case "lead_type":
-      if (!value) return "Lead type is required";
-      return "";
-    default:
-      return "";
-  }
-};
+export const leadSchema = yup.object().shape({
+  first_name: yup.string().required("First name is required"),
+  last_name: yup.string().required("Last name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  phone: yup.string().required("Phone number is required"),
+  property_address: yup.string().required("Property address is required"),
+  property_city: yup.string().required("City is required"),
+  property_state: yup.string().required("State is required"),
+  property_zip: yup.string().required("ZIP code is required"),
+  property_type: yup.string().required("Property type is required"),
+  lead_type: yup.string().required("Lead type is required"),
+  source: yup.string().required("Lead source is required"),
+  preferred_contact_method: yup
+    .string()
+    .required("Preferred contact method is required"),
+  estimated_value: yup.string().optional(),
+  mortgage_balance: yup.string().optional(),
+  asking_price: yup.string().optional(),
+});
