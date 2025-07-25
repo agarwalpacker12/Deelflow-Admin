@@ -11,6 +11,7 @@ const Table = ({
   getStatusColor,
   savedPropertyIds,
   onPropertySaved, // <-- add this prop
+  onDelete,
 }) => {
   const navigate = useNavigate();
   const [deletingId, setDeletingId] = useState(null);
