@@ -18,6 +18,16 @@ import { setCampaigns } from "../../../store/slices/campaignsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
+// Status options for the dropdown
+const statusOptions = [
+  { value: "draft", label: "Draft" },
+  { value: "scheduled", label: "Scheduled" },
+  { value: "active", label: "Active" },
+  { value: "paused", label: "Paused" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
 const UpdateCampaignForm = ({ campaignRes }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -47,6 +57,7 @@ const UpdateCampaignForm = ({ campaignRes }) => {
       channel: campaign.channel || "",
       budget: campaign.budget || "",
       scheduled_at: formatDateTimeLocal(campaign.scheduled_at),
+      status: campaign.status || "draft", // Add status field
       target_criteria: {
         location: campaign.target_criteria?.location || "",
         property_type: campaign.target_criteria?.property_type || "",
@@ -148,7 +159,8 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     </label>
                     <select
                       {...register("campaign_type")}
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
+                      disabled
                     >
                       <option value="">Select</option>
                       {campaignTypes.map((type) => (
@@ -168,7 +180,8 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     </label>
                     <select
                       {...register("channel")}
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
+                      disabled
                     >
                       {channels.map((channel) => (
                         <option key={channel.value} value={channel.value}>
@@ -205,10 +218,31 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     <input
                       {...register("scheduled_at")}
                       type="datetime-local"
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
+                      disabled
                     />
                     <p className="text-sm text-red-500">
                       {errors.scheduled_at?.message}
+                    </p>
+                  </div>
+
+                  {/* Status Dropdown */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Campaign Status <Text className="text-red-700">* </Text>
+                    </label>
+                    <select
+                      {...register("status")}
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                    >
+                      {statusOptions.map((status) => (
+                        <option key={status.value} value={status.value}>
+                          {status.label}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-sm text-red-500">
+                      {errors.status?.message}
                     </p>
                   </div>
                 </div>
@@ -227,8 +261,9 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     <input
                       {...register("target_criteria.location")}
                       type="text"
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
                       placeholder="e.g., Austin, TX"
+                      readOnly
                     />
                     <p className="text-sm text-red-500">
                       {errors.target_criteria?.location?.message}
@@ -241,7 +276,8 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     </label>
                     <select
                       {...register("target_criteria.property_type")}
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
+                      disabled
                     >
                       <option value="">Select</option>
                       {propertyTypes.map((type) => (
@@ -262,8 +298,9 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     <input
                       {...register("target_criteria.equity_min")}
                       type="number"
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
                       placeholder="50000"
+                      readOnly
                     />
                     <p className="text-sm text-red-500">
                       {errors.target_criteria?.equity_min?.message}
@@ -285,8 +322,9 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     <input
                       {...register("subject_line")}
                       type="text"
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
                       placeholder="We Buy Houses Fast - Cash Offer in 24 Hours"
+                      readOnly
                     />
                     <p className="text-sm text-red-500">
                       {errors.subject_line?.message}
@@ -300,8 +338,9 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     <textarea
                       {...register("email_content")}
                       rows={6}
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
                       placeholder="Hello [FIRST_NAME], we specialize in buying houses..."
+                      readOnly
                     />
                     <p className="text-sm text-red-500">
                       {errors.email_content?.message}
@@ -320,11 +359,12 @@ const UpdateCampaignForm = ({ campaignRes }) => {
                     {...register("use_ai_personalization")}
                     type="checkbox"
                     id="use_ai_personalization"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded cursor-not-allowed"
+                    disabled
                   />
                   <label
                     htmlFor="use_ai_personalization"
-                    className="text-sm font-medium text-gray-700"
+                    className="text-sm font-medium text-gray-500"
                   >
                     Use AI Personalization
                   </label>
