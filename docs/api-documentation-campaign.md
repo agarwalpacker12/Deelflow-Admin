@@ -155,6 +155,8 @@
         "budget": 1500.00
     }
     ```
+*   **Field Restrictions:**
+    - `status`: Allowed values are `draft`, `scheduled`, `active`, `paused`, `completed`, `cancelled`.
 *   **Response (Success):**
 
     ```json
