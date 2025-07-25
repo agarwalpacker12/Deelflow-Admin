@@ -8,12 +8,14 @@ export const DefaultValues = {
   property_city: "",
   property_state: "",
   property_zip: "",
-  property_type: "",
+  property_type: "single_family",
   source: "",
   estimated_value: "",
   mortgage_balance: "",
   asking_price: "",
   preferred_contact_method: "",
+  lead_type: "",
+  status: "new",
 };
 
 // Property type options
@@ -23,8 +25,27 @@ export const propertyTypeList = [
   { value: "condo", label: "Condo" },
   { value: "townhouse", label: "Townhouse" },
   { value: "multi_family", label: "Multi Family" },
-  { value: "land", label: "Land" },
-  { value: "commercial", label: "Commercial" },
+  { value: "duplex", label: "Duplex" },
+  { value: "mobile_home", label: "Mobile Home" },
+];
+
+// status options
+export const statusList = [
+  { value: "", label: "Select Status" },
+  { value: "new", label: "new" },
+  { value: "contacted", label: "Contacted" },
+  { value: "qualified", label: "Qualified" },
+  { value: "negotiating", label: "Negotiating" },
+  { value: "contract", label: "Contract" },
+  { value: "closed", label: "Closed" },
+  { value: "dead", label: "Dead" },
+];
+
+// Lead type options
+export const LeadTypeList = [
+  { value: "", label: "Select Lead Type" },
+  { value: "buyer", label: "Buyer" },
+  { value: "seller", label: "Seller" },
 ];
 
 // Source options
@@ -156,19 +177,22 @@ export const validateField = (name, value) => {
       return "";
 
     case "estimated_value":
-      if (!value || value.toString().trim() === "") return "Estimated value is required";
+      if (!value || value.toString().trim() === "")
+        return "Estimated value is required";
       const estNum = parseFloat(value);
       if (isNaN(estNum) || estNum <= 0) return "Must be a positive number";
       return "";
 
     case "mortgage_balance":
-      if (!value || value.toString().trim() === "") return "Mortgage balance is required";
+      if (!value || value.toString().trim() === "")
+        return "Mortgage balance is required";
       const mortNum = parseFloat(value);
       if (isNaN(mortNum) || mortNum < 0) return "Must be a non-negative number";
       return "";
 
     case "asking_price":
-      if (!value || value.toString().trim() === "") return "Asking price is required";
+      if (!value || value.toString().trim() === "")
+        return "Asking price is required";
       const askNum = parseFloat(value);
       if (isNaN(askNum) || askNum <= 0) return "Must be a positive number";
       return "";
@@ -176,8 +200,13 @@ export const validateField = (name, value) => {
     case "preferred_contact_method":
       if (!value) return "Preferred contact method is required";
       return "";
-
+    case "status":
+      if (!value) return "Status is required";
+      return "";
+    case "lead_type":
+      if (!value) return "Lead type is required";
+      return "";
     default:
       return "";
   }
-}; 
+};

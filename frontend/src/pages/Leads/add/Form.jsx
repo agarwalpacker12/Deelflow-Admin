@@ -16,15 +16,16 @@ import {
   contactMethodList,
   stateList,
   validateField,
+  LeadTypeList,
+  statusList,
 } from "./utilities";
 
 import { useNavigate } from "react-router-dom";
 
-
 // Remove the mock API function and replace with real API call
 const LeadForm = () => {
-    const navigate = useNavigate();
-  
+  const navigate = useNavigate();
+
   // Redux hooks
   const dispatch = useDispatch();
   const { leads, loading } = useSelector((state) => state.leads);
@@ -112,7 +113,7 @@ const LeadForm = () => {
         setSubmitMessage("Lead created successfully! We'll contact you soon.");
         setFormData(DefaultValues);
         setErrors({});
-        navigate('/app/leads');
+        navigate("/app/leads");
       } else {
         throw new Error(response.data.message || "Failed to create lead");
       }
@@ -341,32 +342,83 @@ const LeadForm = () => {
                     )}
                   </div>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Property Type *
+                    </label>
+                    <select
+                      name="property_type"
+                      value={formData.property_type}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                        errors.property_type
+                          ? "border-red-500"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {propertyTypeList.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.property_type && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.property_type}
+                      </p>
+                    )}
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Property Type *
-                  </label>
-                  <select
-                    name="property_type"
-                    value={formData.property_type}
-                    onChange={handleInputChange}
-                    className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                      errors.property_type
-                        ? "border-red-500"
-                        : "border-gray-300"
-                    }`}
-                  >
-                    {propertyTypeList.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.property_type && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {errors.property_type}
-                    </p>
-                  )}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Status
+                    </label>
+                    <select
+                      name="status"
+                      value={formData.status}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                        errors.status ? "border-red-500" : "border-gray-300"
+                      }`}
+                    >
+                      {statusList.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.status && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.status}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Lead Type *
+                    </label>
+                    <select
+                      name="lead_type"
+                      value={formData.lead_type}
+                      onChange={handleInputChange}
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                        errors.lead_type ? "border-red-500" : "border-gray-300"
+                      }`}
+                    >
+                      {LeadTypeList.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.lead_type && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.lead_type}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
