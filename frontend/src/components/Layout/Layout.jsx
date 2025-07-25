@@ -21,7 +21,8 @@ const Layout = () => {
       {/* Sidebar */}
       <aside className="bg-[#18192a] flex flex-col items-start px-8 py-6 min-h-screen">
         <Link to="/" className="text-white text-2xl font-bold mb-8">
-          DealFlow
+          {/* DealFlow */}
+          <img src="../../public/logo.jpeg" alt="Logo" />
         </Link>
         {/* Vertical Navbar */}
         <nav className="flex flex-col gap-3 w-full">
