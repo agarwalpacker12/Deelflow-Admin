@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\BelongsToTenant;
 
 class Lead extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $fillable = [
         'user_id',
@@ -43,6 +44,7 @@ class Lead extends Model
         'next_action',
         'next_action_date',
         'last_contact_at',
+        'organization_id',
     ];
 
     protected $casts = [

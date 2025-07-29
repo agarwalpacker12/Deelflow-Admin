@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Traits\BelongsToTenant;
 
 /**
  * Client Model
@@ -17,7 +18,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
  */
 class Client extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $fillable = [
         'user_id',
@@ -59,6 +60,7 @@ class Client extends Model
         'next_followup_at',
         'custom_fields',
         'tags',
+        'organization_id',
     ];
 
     protected $casts = [

@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Organization;
+use App\Models\Invitation;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -28,7 +31,7 @@ class AuthController extends Controller
             'password' => 'required|min:8|confirmed',
             'first_name' => 'required|string|max:100',
             'last_name' => 'required|string|max:100',
-            'company_name' => 'nullable|string|max:255',
+            'organization_name' => 'required|string|max:255|unique:organizations,name',
             'phone' => 'nullable|string|max:20'
         ]);
 
@@ -42,15 +45,20 @@ class AuthController extends Controller
 
         // Real implementation
         try {
+            $organization = Organization::create([
+                'name' => $request->organization_name,
+                'uuid' => Str::uuid(),
+            ]);
+
             $user = User::create([
-                'uuid' => \Illuminate\Support\Str::uuid(),
+                'uuid' => Str::uuid(),
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
-                'company_name' => $request->company_name,
+                'organization_id' => $organization->id,
                 'phone' => $request->phone,
-                'role' => 'wholesaler', // All users are wholesalers
+                'role' => 'admin', // First user is admin
                 'level' => 1,
                 'points' => 0,
                 'subscription_tier' => 'starter',
@@ -67,7 +75,71 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
-                'company_name' => $user->company_name,
+                'organization' => $organization,
+                'phone' => $user->phone,
+                'role' => $user->role,
+                'level' => $user->level,
+                'points' => $user->points,
+                'subscription_tier' => $user->subscription_tier,
+                'subscription_status' => $user->subscription_status,
+                'is_verified' => $user->is_verified,
+                'is_active' => $user->is_active,
+                'created_at' => $user->created_at->toISOString(),
+                'updated_at' => $user->updated_at->toISOString()
+            ], 'User registered successfully', 201);
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'user registration', 'user');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('user registration', $e);
+        }
+    }
+
+    public function registerInvitedUser(Request $request, $token)
+    {
+        $invitation = Invitation::where('token', $token)->firstOrFail();
+
+        $validator = Validator::make(array_merge($request->all(), ['email' => $invitation->email]), [
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:8|confirmed',
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'phone' => 'nullable|string|max:20'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors(), 'user registration');
+        }
+
+        try {
+            $user = User::create([
+                'uuid' => Str::uuid(),
+                'email' => $invitation->email,
+                'password' => Hash::make($request->password),
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'organization_id' => $invitation->organization_id,
+                'phone' => $request->phone,
+                'role' => $invitation->role,
+                'level' => 1,
+                'points' => 0,
+                'subscription_tier' => 'starter',
+                'subscription_status' => 'active',
+                'is_verified' => false,
+                'is_active' => true,
+            ]);
+
+            $invitation->delete();
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return $this->successResponse([
+                'id' => $user->id,
+                'uuid' => $user->uuid,
+                'email' => $user->email,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'organization' => $user->organization,
                 'phone' => $user->phone,
                 'role' => $user->role,
                 'level' => $user->level,

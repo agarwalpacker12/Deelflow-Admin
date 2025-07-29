@@ -9,20 +9,16 @@ import { Eye, EyeOff } from "lucide-react";
 const schema = yup.object().shape({
   first_name: yup.string().required("First name is required"),
   last_name: yup.string().required("Last name is required"),
-  company_name: yup.string().required("Company name is required"),
+  organization_name: yup.string().required("Organization name is required"),
   phone: yup
     .string()
     .matches(/^\+?[0-9]{7,15}$/, "Phone number is not valid")
     .required("Phone number is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
-  role: yup
-    .string()
-    .oneOf(["wholesaler", "investor", "agent"])
-    .required("Role is required"),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
-    .required("Password is required"), 
+    .required("Password is required"),
   password_confirmation: yup
     .string()
     .oneOf([yup.ref("password"), null], "Passwords must match")
@@ -45,10 +41,9 @@ const RegisterPage = () => {
     defaultValues: {
       first_name: "",
       last_name: "",
-      company_name: "",
+      organization_name: "",
       phone: "",
       email: "",
-      role: "wholesaler",
       password: "",
       password_confirmation: "",
     },
@@ -141,18 +136,18 @@ const onSubmit = async (data) => {
           </div>
           <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
-              Company Name
+              Organization Name
             </label>
             <input
               type="text"
-              {...register("company_name")}
+              {...register("organization_name")}
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-              placeholder="Company name"
+              placeholder="Organization name"
               autoComplete="organization"
             />
-            {errors.company_name && (
+            {errors.organization_name && (
               <p className="text-red-400 text-xs mt-1">
-                {errors.company_name.message}
+                {errors.organization_name.message}
               </p>
             )}
           </div>
@@ -188,22 +183,6 @@ const onSubmit = async (data) => {
               <p className="text-red-400 text-xs mt-1">
                 {errors.email.message}
               </p>
-            )}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white/80 mb-2">
-              Role
-            </label>
-            <select
-              {...register("role")}
-              className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-2 text-white [&>option]:text-black [&>option]:bg-white  focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-            >
-              <option value="wholesaler">Wholesaler</option>
-              <option value="investor">Investor</option>
-              <option value="agent">Agent</option>
-            </select>
-            {errors.role && (
-              <p className="text-red-400 text-xs mt-1">{errors.role.message}</p>
             )}
           </div>
           <div>
