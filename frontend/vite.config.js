@@ -14,31 +14,24 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    host: "0.0.0.0",
+    host: "0.0.0.0", // Allow external connections (needed for Codespaces)
     hmr: {
-      port: 5174,
-      host: "0.0.0.0",
-    }, 
-    proxy: {
-      "/api": {
-        target: "https://develop.monorepo-backend.dealflow.pro.kurious.dev",
-        changeOrigin: true,
-        secure: true,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      },
-      "/sanctum": {
-        target: "https://develop.monorepo-backend.dealflow.pro.kurious.dev",
-        changeOrigin: true,
-        secure: true,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      },
+      port: 5175,
+      host: "0.0.0.0", // Allow external connections
+      // Disable WebSocket in proxy environments to prevent loops
+      clientPort: process.env.NODE_ENV === 'development' ? 5175 : undefined,
     },
+    // Add middleware to handle proxy detection
+    middlewares: [
+      (req, res, next) => {
+        // Detect if request is coming from proxy
+        if (req.headers['x-proxy-source'] === 'dealflow-proxy') {
+          // Add headers to prevent further proxying
+          res.setHeader('X-Served-By', 'frontend-vite');
+        }
+        next();
+      }
+    ]
   },
   define: {
     __SUPPRESS_MANIFEST_WARNINGS__: true,

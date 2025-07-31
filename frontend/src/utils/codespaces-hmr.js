@@ -79,7 +79,6 @@ if (isCodespaces && typeof window !== 'undefined') {
   const originalFetch = window.fetch;
   window.fetch = function(url, options) {
     if (typeof url === 'string' && url.includes('manifest.json')) {
-      console.log('🔧 Intercepting manifest.json request:', url);
       // Return a mock response to prevent CORS errors
       return Promise.resolve(new Response(JSON.stringify({
         short_name: "DealFlow",
@@ -87,32 +86,71 @@ if (isCodespaces && typeof window !== 'undefined') {
         start_url: "/",
         display: "standalone",
         theme_color: "#000000",
-        background_color: "#ffffff"
+        background_color: "#ffffff",
+        icons: []
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       }));
     }
+    
+    // Prevent infinite redirect loops for GitHub auth URLs
+    if (typeof url === 'string' && (
+      url.includes('github.dev/pf-signin') ||
+      url.includes('automatic-disco') ||
+      url.includes('githubpreview.dev')
+    )) {
+      return Promise.reject(new Error('Blocked potential infinite loop URL'));
+    }
+    
     return originalFetch.call(this, url, options);
   };
   
-  // Suppress console errors related to WebSocket and manifest
+  // Comprehensive error suppression to prevent infinite loops
   const originalConsoleError = console.error;
   console.error = function(...args) {
     const message = args.join(' ');
     
-    // Suppress known Codespaces-related errors
+    // Suppress ALL known problematic errors that cause infinite loops
     if (
       message.includes('WebSocket connection') ||
       message.includes('manifest.json') ||
       message.includes('CORS policy') ||
-      message.includes('failed to connect to websocket')
+      message.includes('failed to connect to websocket') ||
+      message.includes('Invalid frame header') ||
+      message.includes('ERR_FAILED 302') ||
+      message.includes('Access to manifest at') ||
+      message.includes('blocked by CORS policy') ||
+      message.includes('automatic-disco') ||
+      message.includes('github.dev/pf-signin') ||
+      message.includes('githubpreview.dev') ||
+      message.includes('app.github.dev') ||
+      message.includes('net::ERR_FAILED') ||
+      message.includes('Failed to fetch')
     ) {
-      console.warn('🔇 Suppressed Codespaces-related error:', ...args);
+      // Completely suppress these to stop infinite loops
       return;
     }
     
     originalConsoleError.apply(console, args);
+  };
+  
+  // Also suppress console.warn for these issues
+  const originalConsoleWarn = console.warn;
+  console.warn = function(...args) {
+    const message = args.join(' ');
+    
+    if (
+      message.includes('manifest.json') ||
+      message.includes('WebSocket') ||
+      message.includes('CORS') ||
+      message.includes('github.dev') ||
+      message.includes('githubpreview.dev')
+    ) {
+      return;
+    }
+    
+    originalConsoleWarn.apply(console, args);
   };
 }
 

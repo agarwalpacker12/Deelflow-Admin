@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, clearError, selectAuth } from '../../store/slices/authSlice';
+import { getCsrfToken } from '../../services/api';
 import LoadingSpinner from '../../components/UI/LoadingSpinner';
 
 const LoginPage = () => {
@@ -23,9 +24,15 @@ const LoginPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(login(formData));
+    try {
+      await getCsrfToken(); // Fetch CSRF token before logging in
+      dispatch(login(formData));
+    } catch (error) {
+      console.error('Failed to get CSRF token:', error);
+      // Optionally, handle the error, e.g., show a message to the user
+    }
   };
 
   return (

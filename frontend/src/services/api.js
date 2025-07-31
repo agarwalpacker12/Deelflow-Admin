@@ -2,8 +2,8 @@
 import axios from "axios";
 
 const API_BASE_URL = process.env.NODE_ENV === 'development'
-  ? (import.meta.env.VITE_API_URL || `/api`)
-  : (import.meta.env.VITE_API_URL || 'https://develop.monorepo-backend.dealflow.pro.kurious.dev/api');
+  ? (`${import.meta.env.VITE_API_HOST}/api` || `/api`)
+  : (`${import.meta.env.VITE_API_HOST}/api` || 'https://develop.monorepo-backend.dealflow.pro.kurious.dev/api');
 
 // Get the base URL without /api for CSRF cookie requests
 const BASE_URL = API_BASE_URL.replace('/api', '');
@@ -19,104 +19,41 @@ const api = axios.create({
   },
 });
 
-// Function to get CSRF token from cookies
-const getCsrfToken = () => {
-  const name = 'XSRF-TOKEN';
-  const value = `; ${document.cookie}`;
-  const parts = value.split(`; ${name}=`);
-  if (parts.length === 2) {
-    return decodeURIComponent(parts.pop().split(';').shift());
-  }
-  return null;
-};
-
-// Function to fetch CSRF cookie
-const fetchCsrfCookie = async () => {
+// Function to get CSRF token. This should be called before making any state-changing requests.
+export const getCsrfToken = async () => {
   try {
+    // Use axios directly instead of the api instance to avoid the /api prefix
     await axios.get(`${BASE_URL}/sanctum/csrf-cookie`, {
       withCredentials: true,
+      headers: {
+        "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      }
     });
+    console.log("CSRF cookie fetched successfully.");
   } catch (error) {
-    console.error('Failed to fetch CSRF cookie:', error);
+    console.error("Failed to fetch CSRF cookie:", error);
   }
 };
 
-// Request interceptor to add auth token, CSRF token, and debug
+// Request interceptor to add auth token
 api.interceptors.request.use(
-  async (config) => {
-    // Add Bearer token if available
+  (config) => {
     const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
-    // For state-changing requests (POST, PUT, PATCH, DELETE), ensure CSRF token is available
-    if (['post', 'put', 'patch', 'delete'].includes(config.method.toLowerCase())) {
-      let csrfToken = getCsrfToken();
-      
-      // If no CSRF token found, fetch it first
-      if (!csrfToken) {
-        await fetchCsrfCookie();
-        csrfToken = getCsrfToken();
-      }
-      
-      // Add CSRF token to headers
-      if (csrfToken) {
-        config.headers['X-XSRF-TOKEN'] = csrfToken;
-      }
-    }
-
-    // Debug logging
-    console.log("API Request:", {
-      method: config.method,
-      url: config.url,
-      baseURL: config.baseURL,
-      headers: config.headers,
-      data: config.data,
-    });
-
     return config;
   },
   (error) => {
-    console.error("Request interceptor error:", error);
     return Promise.reject(error);
   }
 );
 
-// Response interceptor to handle errors and debug
+// Response interceptor to handle 401 Unauthorized errors
 api.interceptors.response.use(
-  (response) => {
-    console.log("API Response:", {
-      status: response.status,
-      statusText: response.statusText,
-      headers: response.headers,
-      data: response.data,
-    });
-    return response;
-  },
-  async (error) => {
-    console.error("API Error:", {
-      status: error.response?.status,
-      statusText: error.response?.statusText,
-      headers: error.response?.headers,
-      data: error.response?.data,
-      message: error.message,
-    });
-
-    // Handle CSRF token mismatch (419 status)
-    if (error.response?.status === 419) {
-      console.log("CSRF token mismatch, refreshing token and retrying...");
-      await fetchCsrfCookie();
-      
-      // Retry the original request
-      const originalRequest = error.config;
-      const csrfToken = getCsrfToken();
-      if (csrfToken) {
-        originalRequest.headers['X-XSRF-TOKEN'] = csrfToken;
-      }
-      return api.request(originalRequest);
-    }
-
+  (response) => response,
+  (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -187,8 +124,5 @@ export const propertySaveAPI = {
   updatePropertySave: (id, data) => api.put(`/property-saves/${id}`, data),
   deletePropertySave: (id) => api.delete(`/property-saves/${id}`),
 };
-
-// Export CSRF functions for use in app initialization
-export { fetchCsrfCookie, getCsrfToken };
 
 export default api;
