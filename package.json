@@ -1,0 +1,12 @@
+{
+  "name": "dealflow-proxy-server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "proxy": "vite --config proxy-server.config.js"
+  },
+  "devDependencies": {
+    "vite": "^6.2.4"
+  }
+}

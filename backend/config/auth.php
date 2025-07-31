@@ -112,4 +112,20 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Super Admin
+    |--------------------------------------------------------------------------
+    |
+    | The credentials for the super admin user. This is used for development
+    | purposes to allow for easy login without having to register a new
+    | user every time.
+    |
+    */
+
+    'super_admin' => [
+        'email' => env('SUPER_ADMIN_EMAIL', 'superadmin@example.com'),
+        'password' => env('SUPER_ADMIN_PASSWORD', 'password'),
+    ],
+
 ];

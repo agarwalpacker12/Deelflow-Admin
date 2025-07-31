@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use App\Traits\BelongsToTenant;
 
 class Property extends Model
 {
-    use HasFactory;
+    use HasFactory, BelongsToTenant;
 
     protected $fillable = [
         'user_id',
@@ -57,6 +58,7 @@ class Property extends Model
         'view_count',
         'save_count',
         'inquiry_count',
+        'organization_id',
     ];
 
     protected $casts = [
