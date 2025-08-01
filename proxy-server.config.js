@@ -1,6 +1,17 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    // Completely disable all dependency optimization and processing
+    optimizeDeps: {
+        noDiscovery: true,
+        include: []
+    },
+    // Disable build features since this is just a proxy
+    build: {
+        rollupOptions: {
+            input: {}
+        }
+    },
     server: {
         port: 3000,
         host: '0.0.0.0',
@@ -74,12 +85,12 @@ export default defineConfig({
                     });
                 }
             },
-            // Proxy frontend assets and pages (but exclude problematic paths)
-            '^(?!/api|/sanctum|/@vite|/__vite_ping|/resources|/build|/manifest\\.json|/node_modules).*': {
+            // Proxy ALL other requests to the frontend (including Vite HMR and assets)
+            '^(?!/api|/sanctum).*': {
                 target: 'http://localhost:5173',
                 changeOrigin: true,
                 secure: false,
-                ws: false, // Disable WebSocket to prevent connection issues
+                ws: true, // Enable WebSocket for Vite HMR
                 configure: (proxy, options) => {
                     proxy.on('error', (err, req, res) => {
                         console.log('Frontend Proxy error:', err.message);
