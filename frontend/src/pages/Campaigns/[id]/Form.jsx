@@ -6,7 +6,7 @@ import {
   channels,
   DefaultValues,
   propertyTypes,
-} from "./utility"; // make sure to import this
+} from "./utilities"; // make sure to import this
 import { useMutation } from "@tanstack/react-query";
 import { campaignsAPI } from "../../../services/api";
 import toast from "react-hot-toast";
@@ -14,15 +14,60 @@ import { Text } from "@radix-ui/themes";
 import ButtonLoader from "../../../components/UI/ButtonLoader";
 import { Save } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux"; // Add useDispatch import
 import { setCampaigns } from "../../../store/slices/campaignsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 
-const CreateCampaignForm = () => {
+// Status options for the dropdown
+const statusOptions = [
+  { value: "draft", label: "Draft" },
+  { value: "scheduled", label: "Scheduled" },
+  { value: "active", label: "Active" },
+  { value: "paused", label: "Paused" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+];
+
+const UpdateCampaignForm = ({ campaignRes }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Initialize dispatch hook
+  const dispatch = useDispatch();
 
   // Get current campaigns from Redux store
   const campaigns = useSelector((state) => state.campaigns.campaigns || []);
+
+  // Helper function to format datetime for datetime-local input
+  const formatDateTimeLocal = (isoString) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  // Prepare default values from campaign data
+  const getDefaultValues = (campaign) => {
+    if (!campaign) return DefaultValues;
+
+    return {
+      name: campaign.name || "",
+      campaign_type: campaign.campaign_type || "",
+      channel: campaign.channel || "",
+      budget: campaign.budget || "",
+      scheduled_at: formatDateTimeLocal(campaign.scheduled_at),
+      status: campaign.status || "draft", // Add status field
+      target_criteria: {
+        location: campaign.target_criteria?.location || "",
+        property_type: campaign.target_criteria?.property_type || "",
+        equity_min: campaign.target_criteria?.equity_min || "",
+      },
+      subject_line: campaign.subject_line || "",
+      email_content: campaign.email_content || "", // This field seems missing from API
+      use_ai_personalization: campaign.use_ai_personalization || false,
+    };
+  };
 
   const {
     register,
@@ -30,14 +75,23 @@ const CreateCampaignForm = () => {
     control,
     formState: { errors },
     watch,
+    reset,
   } = useForm({
     resolver: yupResolver(campaignSchema),
-    defaultValues: DefaultValues,
+    defaultValues: getDefaultValues(campaignRes),
   });
+
+  // Reset form when campaign data changes
+  useEffect(() => {
+    if (campaignRes) {
+      reset(getDefaultValues(campaignRes));
+    }
+  }, [campaignRes, reset]);
 
   const mutation = useMutation({
     mutationFn: async (data) => {
-      const res = await campaignsAPI.createCampaign(data);
+      // Use updateCampaign instead of createCampaign
+      const res = await campaignsAPI.updateCampaign(campaignRes.id, data);
       return res;
     },
     onSuccess: (data) => {
@@ -45,8 +99,11 @@ const CreateCampaignForm = () => {
         toast.success(data.data.message);
         console.log("response_Data", data);
 
-        // Fixed: Use campaigns instead of undefined campaign variable
-        dispatch(setCampaigns([...campaigns, data.data.data]));
+        // Update the campaign in the Redux store
+        const updatedCampaigns = campaigns.map((campaign) =>
+          campaign.id === campaignRes.id ? data.data.data : campaign
+        );
+        dispatch(setCampaigns(updatedCampaigns));
 
         // Navigate to campaigns page
         navigate("/app/campaigns");
@@ -61,6 +118,11 @@ const CreateCampaignForm = () => {
   const onSubmit = (data) => {
     mutation.mutate(data);
   };
+
+  // Show loading if no campaign data
+  if (!campaignRes) {
+    return <div>Loading campaign data...</div>;
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -97,7 +159,8 @@ const CreateCampaignForm = () => {
                     </label>
                     <select
                       {...register("campaign_type")}
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
+                      disabled
                     >
                       <option value="">Select</option>
                       {campaignTypes.map((type) => (
@@ -117,7 +180,8 @@ const CreateCampaignForm = () => {
                     </label>
                     <select
                       {...register("channel")}
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
+                      disabled
                     >
                       {channels.map((channel) => (
                         <option key={channel.value} value={channel.value}>
@@ -154,10 +218,31 @@ const CreateCampaignForm = () => {
                     <input
                       {...register("scheduled_at")}
                       type="datetime-local"
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
+                      disabled
                     />
                     <p className="text-sm text-red-500">
                       {errors.scheduled_at?.message}
+                    </p>
+                  </div>
+
+                  {/* Status Dropdown */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Campaign Status <Text className="text-red-700">* </Text>
+                    </label>
+                    <select
+                      {...register("status")}
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                    >
+                      {statusOptions.map((status) => (
+                        <option key={status.value} value={status.value}>
+                          {status.label}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-sm text-red-500">
+                      {errors.status?.message}
                     </p>
                   </div>
                 </div>
@@ -176,8 +261,9 @@ const CreateCampaignForm = () => {
                     <input
                       {...register("target_criteria.location")}
                       type="text"
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
                       placeholder="e.g., Austin, TX"
+                      readOnly
                     />
                     <p className="text-sm text-red-500">
                       {errors.target_criteria?.location?.message}
@@ -190,7 +276,8 @@ const CreateCampaignForm = () => {
                     </label>
                     <select
                       {...register("target_criteria.property_type")}
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
+                      disabled
                     >
                       <option value="">Select</option>
                       {propertyTypes.map((type) => (
@@ -211,8 +298,9 @@ const CreateCampaignForm = () => {
                     <input
                       {...register("target_criteria.equity_min")}
                       type="number"
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
                       placeholder="50000"
+                      readOnly
                     />
                     <p className="text-sm text-red-500">
                       {errors.target_criteria?.equity_min?.message}
@@ -234,8 +322,9 @@ const CreateCampaignForm = () => {
                     <input
                       {...register("subject_line")}
                       type="text"
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
                       placeholder="We Buy Houses Fast - Cash Offer in 24 Hours"
+                      readOnly
                     />
                     <p className="text-sm text-red-500">
                       {errors.subject_line?.message}
@@ -249,8 +338,9 @@ const CreateCampaignForm = () => {
                     <textarea
                       {...register("email_content")}
                       rows={6}
-                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300"
+                      className="w-full px-4 py-3 border rounded-lg text-black border-gray-300 bg-gray-100 cursor-not-allowed"
                       placeholder="Hello [FIRST_NAME], we specialize in buying houses..."
+                      readOnly
                     />
                     <p className="text-sm text-red-500">
                       {errors.email_content?.message}
@@ -269,11 +359,12 @@ const CreateCampaignForm = () => {
                     {...register("use_ai_personalization")}
                     type="checkbox"
                     id="use_ai_personalization"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded cursor-not-allowed"
+                    disabled
                   />
                   <label
                     htmlFor="use_ai_personalization"
-                    className="text-sm font-medium text-gray-700"
+                    className="text-sm font-medium text-gray-500"
                   >
                     Use AI Personalization
                   </label>
@@ -300,7 +391,7 @@ const CreateCampaignForm = () => {
                   ) : (
                     <Save className="mr-2" />
                   )}
-                  {mutation.isPending ? "Creating Campaign" : "Create Campaign"}
+                  {mutation.isPending ? "Updating Campaign" : "Update Campaign"}
                 </button>
               </div>
             </div>
@@ -311,4 +402,4 @@ const CreateCampaignForm = () => {
   );
 };
 
-export default CreateCampaignForm;
+export default UpdateCampaignForm;

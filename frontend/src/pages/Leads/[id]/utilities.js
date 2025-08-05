@@ -1,3 +1,5 @@
+import * as yup from "yup";
+
 // Default form values
 export const DefaultValues = {
   first_name: "",
@@ -8,12 +10,14 @@ export const DefaultValues = {
   property_city: "",
   property_state: "",
   property_zip: "",
-  property_type: "",
+  property_type: "single_family",
   source: "",
   estimated_value: "",
   mortgage_balance: "",
   asking_price: "",
   preferred_contact_method: "",
+  lead_type: "",
+  status: "new",
 };
 
 // Property type options
@@ -23,8 +27,27 @@ export const propertyTypeList = [
   { value: "condo", label: "Condo" },
   { value: "townhouse", label: "Townhouse" },
   { value: "multi_family", label: "Multi Family" },
-  { value: "land", label: "Land" },
-  { value: "commercial", label: "Commercial" },
+  { value: "duplex", label: "Duplex" },
+  { value: "mobile_home", label: "Mobile Home" },
+];
+
+// status options
+export const statusList = [
+  { value: "", label: "Select Status" },
+  { value: "new", label: "new" },
+  { value: "contacted", label: "Contacted" },
+  { value: "qualified", label: "Qualified" },
+  { value: "negotiating", label: "Negotiating" },
+  { value: "contract", label: "Contract" },
+  { value: "closed", label: "Closed" },
+  { value: "dead", label: "Dead" },
+];
+
+// Lead type options
+export const LeadTypeList = [
+  { value: "", label: "Select Lead Type" },
+  { value: "buyer", label: "Buyer" },
+  { value: "seller", label: "Seller" },
 ];
 
 // Source options
@@ -103,81 +126,22 @@ export const stateList = [
 ];
 
 // Validation function
-export const validateField = (name, value) => {
-  switch (name) {
-    case "first_name":
-    case "last_name":
-      if (!value) return `${name.replace("_", " ")} is required`;
-      if (!/^[a-zA-Z\s]*$/.test(value)) return "Must be alphabetic value";
-      if (value.length < 2)
-        return `${name.replace("_", " ")} must be at least 2 characters`;
-      return "";
-
-    case "email":
-      if (!value) return "Email is required";
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
-        return "Must be a valid email";
-      return "";
-
-    case "phone":
-      if (!value) return "Phone is required";
-      if (!/^[\+]?[1-9][\d\s\-\(\)]{8,15}$/.test(value))
-        return "Must be a valid phone number";
-      return "";
-
-    case "property_address":
-      if (!value) return "Property address is required";
-      if (value.length < 5)
-        return "Property address must be at least 5 characters";
-      return "";
-
-    case "property_city":
-      if (!value) return "Property city is required";
-      if (!/^[a-zA-Z\s]*$/.test(value)) return "Must be alphabetic value";
-      if (value.length < 2)
-        return "Property city must be at least 2 characters";
-      return "";
-
-    case "property_state":
-      if (!value) return "Property state is required";
-      return "";
-
-    case "property_zip":
-      if (!value) return "Property zip is required";
-      // if (!/^\d{5}(-\d{4})?$/.test(value)) return "Must be a valid zip code";
-      return "";
-
-    case "property_type":
-      if (!value) return "Property type is required";
-      return "";
-
-    case "source":
-      if (!value) return "Source is required";
-      return "";
-
-    case "estimated_value":
-      if (!value || value.toString().trim() === "") return "Estimated value is required";
-      const estNum = parseFloat(value);
-      if (isNaN(estNum) || estNum <= 0) return "Must be a positive number";
-      return "";
-
-    case "mortgage_balance":
-      if (!value || value.toString().trim() === "") return "Mortgage balance is required";
-      const mortNum = parseFloat(value);
-      if (isNaN(mortNum) || mortNum < 0) return "Must be a non-negative number";
-      return "";
-
-    case "asking_price":
-      if (!value || value.toString().trim() === "") return "Asking price is required";
-      const askNum = parseFloat(value);
-      if (isNaN(askNum) || askNum <= 0) return "Must be a positive number";
-      return "";
-
-    case "preferred_contact_method":
-      if (!value) return "Preferred contact method is required";
-      return "";
-
-    default:
-      return "";
-  }
-}; 
+export const leadSchema = yup.object().shape({
+  first_name: yup.string().required("First name is required"),
+  last_name: yup.string().required("Last name is required"),
+  email: yup.string().email("Invalid email").required("Email is required"),
+  phone: yup.string().required("Phone number is required"),
+  property_address: yup.string().required("Property address is required"),
+  property_city: yup.string().required("City is required"),
+  property_state: yup.string().required("State is required"),
+  property_zip: yup.string().required("ZIP code is required"),
+  property_type: yup.string().required("Property type is required"),
+  lead_type: yup.string().required("Lead type is required"),
+  source: yup.string().required("Lead source is required"),
+  preferred_contact_method: yup
+    .string()
+    .required("Preferred contact method is required"),
+  estimated_value: yup.string().optional(),
+  mortgage_balance: yup.string().optional(),
+  asking_price: yup.string().optional(),
+});

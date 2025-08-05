@@ -23,11 +23,8 @@ const PropertiesPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
-  // const [zipFilter, setZipFilter] = useState("");
   const [priceMin, setPriceMin] = useState("");
-  // const [priceMax, setPriceMax] = useState("");
   const [bedrooms, setBedrooms] = useState("");
-  // const [bathrooms, setBathrooms] = useState("");
   const [transactionType, setTransactionType] = useState("");
   const [minAiScore, setMinAiScore] = useState("");
   const [error, setError] = useState(null);
@@ -41,11 +38,6 @@ const PropertiesPage = () => {
           per_page: 100,
         }); // adjust per_page as needed
         if (response.data.status === "success") {
-          console.log(
-            "response.data.data",
-            JSON.stringify(response.data.data.data)
-          );
-
           setSavedPropertyIds(
             response.data.data.data.map((item) => item.property_id)
           );
@@ -197,9 +189,13 @@ const PropertiesPage = () => {
     // Refetch saved properties and properties list
     try {
       // Refetch saved properties
-      const savedResponse = await propertySaveAPI.getPropertySave({ per_page: 100 });
+      const savedResponse = await propertySaveAPI.getPropertySave({
+        per_page: 100,
+      });
       if (savedResponse.data.status === "success") {
-        setSavedPropertyIds(savedResponse.data.data.data.map((item) => item.property_id));
+        setSavedPropertyIds(
+          savedResponse.data.data.data.map((item) => item.property_id)
+        );
       }
       // Refetch properties
       const params = {
@@ -227,7 +223,9 @@ const PropertiesPage = () => {
         setError("Failed to fetch properties");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to refresh after saving property");
+      setError(
+        err.response?.data?.message || "Failed to refresh after saving property"
+      );
     }
   };
 

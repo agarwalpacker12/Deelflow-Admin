@@ -1,16 +1,7 @@
-import React, { useState } from "react";
-import {
-  Home,
-  BedDouble,
-  Bath,
-  DollarSign,
-  Eye,
-  Edit,
-  Trash2,
-  Bookmark,
-} from "lucide-react";
+import { useState } from "react";
+import { Home, BedDouble, Bath, DollarSign, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { propertiesAPI, propertySaveAPI } from "../../services/api";
+import { propertySaveAPI } from "../../services/api";
 
 const Table = ({
   properties = [],
@@ -20,6 +11,7 @@ const Table = ({
   getStatusColor,
   savedPropertyIds,
   onPropertySaved, // <-- add this prop
+  onDelete,
 }) => {
   const navigate = useNavigate();
   const [deletingId, setDeletingId] = useState(null);
@@ -28,8 +20,6 @@ const Table = ({
   const [savingId, setSavingId] = useState(null);
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState(null);
-
-  console.log("savedPropertyIds", savedPropertyIds);
 
   // Remove direct API call, just handle loading/error UI
   const handleDeleteClick = async (property) => {
@@ -257,14 +247,16 @@ const Table = ({
                       >
                         <Edit className="h-4 w-4" />
                       </button>
-                      {/* <button
+
+                      <button
                         className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
-                        onClick={() => handleSaveClick(property)}
-                        title="Save Property"
-                        disabled={savingId === property.id || (savedPropertyIds && savedPropertyIds.includes(property.id))}
+                        onClick={() =>
+                          navigate(`/app/properties/${property.id}/bid`)
+                        }
                       >
-                        <Bookmark className="h-4 w-4" />
-                      </button> */}
+                        Bid
+                      </button>
+
                       <button
                         className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
                         onClick={() => handleDeleteClick(property)}

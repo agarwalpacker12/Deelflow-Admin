@@ -1,141 +1,116 @@
-const CampaignsTable = () => {
-  // Mock data for campaigns
-  const mockCampaigns = [
-    {
-      id: 1,
-      user_id: 1,
-      name: "Austin Distressed Properties Q3",
-      campaign_type: "lead_generation",
-      channel: "email",
-      target_criteria: {
-        location: "Austin, TX",
-        property_type: "single_family",
-        equity_min: 50000,
-      },
-      subject_line: "We Buy Houses Fast - Cash Offer in 24 Hours",
-      status: "active",
-      scheduled_at: "2025-06-27T09:00:00.000000Z",
-      total_recipients: 500,
-      sent_count: 450,
-      open_count: 135,
-      click_count: 45,
-      response_count: 12,
-      conversion_count: 3,
-      budget: 1000.0,
-      spent: 750.0,
-      created_at: "2025-06-26T20:00:00.000000Z",
-      updated_at: "2025-06-26T20:00:00.000000Z",
-    },
-    {
-      id: 2,
-      user_id: 1,
-      name: "Dallas Investment Opportunities",
-      campaign_type: "nurture",
-      channel: "sms",
-      target_criteria: {
-        location: "Dallas, TX",
-        property_type: "multi_family",
-        equity_min: 75000,
-      },
-      subject_line: "Investment Properties in Dallas - Limited Time",
-      status: "paused",
-      scheduled_at: "2025-07-01T10:00:00.000000Z",
-      total_recipients: 300,
-      sent_count: 280,
-      open_count: 95,
-      click_count: 28,
-      response_count: 8,
-      conversion_count: 2,
-      budget: 800.0,
-      spent: 620.0,
-      created_at: "2025-06-25T15:30:00.000000Z",
-      updated_at: "2025-06-25T15:30:00.000000Z",
-    },
-    {
-      id: 3,
-      user_id: 1,
-      name: "Houston Foreclosure Alerts",
-      campaign_type: "lead_generation",
-      channel: "email",
-      target_criteria: {
-        location: "Houston, TX",
-        property_type: "single_family",
-        equity_min: 40000,
-      },
-      subject_line: "Foreclosure Alert - Act Fast on These Properties",
-      status: "completed",
-      scheduled_at: "2025-06-20T08:00:00.000000Z",
-      total_recipients: 750,
-      sent_count: 750,
-      open_count: 225,
-      click_count: 67,
-      response_count: 18,
-      conversion_count: 5,
-      budget: 1500.0,
-      spent: 1500.0,
-      created_at: "2025-06-19T12:00:00.000000Z",
-      updated_at: "2025-06-19T12:00:00.000000Z",
-    },
-    {
-      id: 4,
-      user_id: 1,
-      name: "San Antonio Rehab Projects",
-      campaign_type: "retargeting",
-      channel: "direct_mail",
-      target_criteria: {
-        location: "San Antonio, TX",
-        property_type: "single_family",
-        equity_min: 30000,
-      },
-      subject_line: "Transform Your Property Investment Today",
-      status: "draft",
-      scheduled_at: "2025-07-10T14:00:00.000000Z",
-      total_recipients: 0,
-      sent_count: 0,
-      open_count: 0,
-      click_count: 0,
-      response_count: 0,
-      conversion_count: 0,
-      budget: 1200.0,
-      spent: 0.0,
-      created_at: "2025-06-28T09:15:00.000000Z",
-      updated_at: "2025-06-28T09:15:00.000000Z",
-    },
-    {
-      id: 5,
-      user_id: 1,
-      name: "Fort Worth Cash Buyers",
-      campaign_type: "lead_generation",
-      channel: "email",
-      target_criteria: {
-        location: "Fort Worth, TX",
-        property_type: "condo",
-        equity_min: 25000,
-      },
-      subject_line: "Cash Buyers Looking for Condos in Fort Worth",
-      status: "active",
-      scheduled_at: "2025-06-30T11:00:00.000000Z",
-      total_recipients: 400,
-      sent_count: 350,
-      open_count: 98,
-      click_count: 31,
-      response_count: 9,
-      conversion_count: 2,
-      budget: 900.0,
-      spent: 650.0,
-      created_at: "2025-06-27T16:45:00.000000Z",
-      updated_at: "2025-06-27T16:45:00.000000Z",
-    },
-  ];
+import React, { useState, useEffect } from "react";
+import { campaignsAPI } from "../../services/api";
+import { useNavigate } from "react-router-dom";
+import {
+  Search,
+  Filter,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+  Plus,
+  Sparkles,
+  Eye,
+  Edit,
+  Trash2,
+  Calendar,
+  DollarSign,
+  TrendingUp,
+  Users,
+  Mail,
+} from "lucide-react";
+import toast from "react-hot-toast";
 
- 
-  
+const CampaignsPage = () => {
+  const navigate = useNavigate();
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [channelFilter, setChannelFilter] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const params = {
+          page: currentPage,
+          per_page: perPage,
+        };
+
+        if (searchTerm) {
+          params.search = searchTerm;
+        }
+
+        if (typeFilter) {
+          params.campaign_type = typeFilter;
+        }
+
+        if (statusFilter) {
+          params.status = statusFilter;
+        }
+
+        if (channelFilter) {
+          params.channel = channelFilter;
+        }
+
+        const response = await campaignsAPI.getCampaigns(params);
+
+        if (response.data.status === "success") {
+          setCampaigns(response.data.data.data);
+          setTotal(response.data.data.meta.total);
+          setTotalPages(response.data.data.meta.last_page);
+        } else {
+          setError("Failed to fetch campaigns");
+        }
+      } catch (err) {
+        console.error("Error fetching campaigns:", err);
+        setError(err.response?.data?.message || "Failed to fetch campaigns");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCampaigns();
+  }, [
+    searchTerm,
+    typeFilter,
+    statusFilter,
+    channelFilter,
+    perPage,
+    currentPage,
+  ]);
+
+  const resetFilters = () => {
+    setSearchTerm("");
+    setTypeFilter("");
+    setStatusFilter("");
+    setChannelFilter("");
+    setCurrentPage(1);
+  };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
+      minimumFractionDigits: 0,
     }).format(amount);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   const getStatusColor = (status) => {
@@ -168,255 +143,340 @@ const CampaignsTable = () => {
     return ((conversion_count / sent_count) * 100).toFixed(1);
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this campaign?"))
+      return;
+    try {
+      await campaignsAPI.deleteCampaign(id);
+      setCampaigns((prevCampaigns) =>
+        prevCampaigns.filter((campaign) => campaign.id !== id)
+      );
+      // setSuccess("Campaign deleted successfully");
+      toast.success("Campaign deleted successfully");
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to delete campaign");
+    }
+  };
+
   return (
-    <div className="min-h-screen p-6">
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-white">Marketing Campaigns</h1>
-          <div className="text-sm text-gray-400">
-            Total: {mockCampaigns.length} Campaigns
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-white">Marketing Campaigns</h1>
+        <div className="flex items-center gap-3">
+          {/* Add Campaign Button */}
+          <button
+            onClick={() => navigate("/app/campaigns/add")}
+            className="group relative inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 hover:from-blue-700 hover:via-purple-700 hover:to-indigo-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 border border-blue-500/30 hover:border-blue-400/50 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 via-purple-400/20 to-indigo-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <Sparkles className="h-4 w-4 group-hover:animate-pulse" />
+            <Plus className="h-5 w-5" />
+            <span className="relative z-10">Add Campaign</span>
+            <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-white group-hover:w-full transition-all duration-300"></div>
+          </button>
+          <div className="text-sm text-gray-400">Total: {total} campaigns</div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          {/* Campaign Type Filter */}
+          <div className="relative">
+            <Filter className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white"
+            >
+              <option value="">All Types</option>
+              <option value="seller_finder">Seller Finder</option>
+              <option value="buyer_finder">Buyer Finder</option>
+            </select>
+          </div>
+
+          {/* Reset Button */}
+          <div>
+            <button
+              onClick={resetFilters}
+              className="w-full px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-colors flex items-center justify-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Reset
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {/* Campaign Type */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">
-                Campaign Type
-              </label>
-              <select className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white">
-                <option value="">All Types</option>
-                <option value="lead_generation">Lead Generation</option>
-                <option value="nurture">Nurture</option>
-                <option value="retargeting">Retargeting</option>
-                <option value="brand_awareness">Brand Awareness</option>
-              </select>
-            </div>
-
-            {/* Status */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">Status</label>
-              <select className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white">
-                <option value="">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="paused">Paused</option>
-                <option value="completed">Completed</option>
-                <option value="draft">Draft</option>
-              </select>
-            </div>
-
-            {/* Channel */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">
-                Channel
-              </label>
-              <select className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white">
-                <option value="">All Channels</option>
-                <option value="email">Email</option>
-                <option value="sms">SMS</option>
-                <option value="direct_mail">Direct Mail</option>
-                <option value="social_media">Social Media</option>
-              </select>
-            </div>
-
-            {/* Per Page */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">
-                Per Page
-              </label>
-              <select className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 [&>option]:text-black [&>option]:bg-white">
-                <option value="10">10 per page</option>
-                <option value="25">25 per page</option>
-                <option value="50">50 per page</option>
-                <option value="100">100 per page</option>
-              </select>
-            </div>
-
-            {/* Reset Button */}
-            <div>
-              <label className="block text-xs text-gray-400 mb-1">
-                Actions
-              </label>
-              <button className="w-full px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-colors flex items-center justify-center gap-2">
-                <span>↻</span>
-                Reset
-              </button>
-            </div>
-          </div>
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4">
+          <p className="text-red-300">{error}</p>
         </div>
+      )}
+      {success && (
+        <div className="bg-green-500/20 border border-green-500/30 rounded-xl p-4">
+          <p className="text-green-300">{success}</p>
+        </div>
+      )}
 
-        {/* Table */}
-        <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
+      {/* Table */}
+      <div className="bg-white/5 backdrop-blur-md rounded-xl border border-white/10 overflow-hidden">
+        {loading ? (
+          <div className="p-8 text-center text-gray-400">
+            Loading campaigns...
+          </div>
+        ) : campaigns.length === 0 ? (
+          <div className="p-8 text-center text-gray-400">
+            No campaigns found
+          </div>
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-white/10 border-b border-white/10">
                 <tr>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Campaign
+                  <th className="text-left p-4 text-white font-semibold">
+                    Campaign Info
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Type
+                  <th className="text-left p-4 text-white font-semibold">
+                    Details
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Channel
+                  <th className="text-left p-4 text-white font-semibold">
+                    Performance
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="text-left p-4 text-white font-semibold">
+                    Budget & Spend
+                  </th>
+                  <th className="text-left p-4 text-white font-semibold">
                     Status
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Recipients
+                  <th className="text-left p-4 text-white font-semibold">
+                    Schedule
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Open Rate
-                  </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Click Rate
-                  </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Conversions
-                  </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Budget
-                  </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
-                    Spent
-                  </th>
-                  <th className="px-4 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                  <th className="text-left p-4 text-white font-semibold">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/10">
-                {mockCampaigns.map((campaign) => (
-                  <tr
-                    key={campaign.id}
-                    className="hover:bg-white/5 transition-colors"
-                  >
-                    <td className="px-4 py-4">
-                      <div>
-                        <div className="text-white text-sm font-medium">
-                          {campaign.name}
+              <tbody>
+                {campaigns.length > 0 &&
+                  campaigns?.map((campaign) => (
+                    <tr
+                      key={campaign.id}
+                      className="border-b border-white/10 hover:bg-white/5"
+                    >
+                      <td className="p-4">
+                        <div className="space-y-2">
+                          <div className="text-white font-medium">
+                            {campaign.name}
+                          </div>
+                          <div className="text-gray-400 text-sm">
+                            {campaign.target_criteria?.location}
+                          </div>
+                          <div className="text-xs text-gray-500 capitalize">
+                            {campaign.campaign_type?.replace("_", " ")}
+                          </div>
                         </div>
-                        <div className="text-gray-400 text-xs">
-                          {campaign.target_criteria.location}
+                      </td>
+
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-gray-300 text-sm">
+                            <Mail className="h-3 w-3" />
+                            {campaign.channel?.replace("_", " ")}
+                          </div>
+                          <div className="text-gray-400 text-sm capitalize">
+                            {campaign.target_criteria?.property_type?.replace(
+                              "_",
+                              " "
+                            )}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Min Equity:{" "}
+                            {formatCurrency(
+                              campaign.target_criteria?.equity_min || 0
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-white text-xs capitalize">
-                      {campaign.campaign_type.replace("_", " ")}
-                    </td>
-                    <td className="px-4 py-4 text-white text-xs capitalize">
-                      {campaign.channel.replace("_", " ")}
-                    </td>
-                    <td className="px-4 py-4">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border capitalize ${getStatusColor(
-                          campaign.status
-                        )}`}
-                      >
-                        {campaign.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-white text-xs">
-                        {campaign.sent_count}/{campaign.total_recipients}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-white text-xs">
-                        {calculateOpenRate(
-                          campaign.open_count,
-                          campaign.sent_count
-                        )}
-                        %
-                      </div>
-                      <div className="text-gray-400 text-xs">
-                        {campaign.open_count} opens
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-white text-xs">
-                        {calculateClickRate(
-                          campaign.click_count,
-                          campaign.sent_count
-                        )}
-                        %
-                      </div>
-                      <div className="text-gray-400 text-xs">
-                        {campaign.click_count} clicks
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-white text-xs">
-                        {calculateConversionRate(
-                          campaign.conversion_count,
-                          campaign.sent_count
-                        )}
-                        %
-                      </div>
-                      <div className="text-gray-400 text-xs">
-                        {campaign.conversion_count} conversions
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-white text-xs">
-                      {formatCurrency(campaign.budget)}
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="text-white text-xs">
-                        {formatCurrency(campaign.spent)}
-                      </div>
-                      <div className="text-gray-400 text-xs">
-                        {((campaign.spent / campaign.budget) * 100).toFixed(0)}%
-                        used
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button className="text-blue-400 hover:text-blue-300 transition-colors px-2 py-1 rounded text-xs">
-                          View
-                        </button>
-                        <button className="text-green-400 hover:text-green-300 transition-colors px-2 py-1 rounded text-xs">
-                          Edit
-                        </button>
-                        <button className="text-red-400 hover:text-red-300 transition-colors px-2 py-1 rounded text-xs">
-                          Delete
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                      </td>
+
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Users className="h-3 w-3 text-gray-400" />
+                            <span className="text-sm text-white">
+                              {campaign.sent_count}/{campaign.total_recipients}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <TrendingUp className="h-3 w-3 text-green-400" />
+                            <span className="text-sm text-green-400">
+                              {calculateOpenRate(
+                                campaign.open_count,
+                                campaign.sent_count
+                              )}
+                              % open
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {calculateClickRate(
+                              campaign.click_count,
+                              campaign.sent_count
+                            )}
+                            % click
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {calculateConversionRate(
+                              campaign.conversion_count,
+                              campaign.sent_count
+                            )}
+                            % convert
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-white text-sm">
+                            <DollarSign className="h-3 w-3" />
+                            {formatCurrency(campaign.budget)}
+                          </div>
+                          <div className="text-gray-400 text-sm">
+                            Spent: {formatCurrency(campaign.spent)}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {((campaign.spent / campaign.budget) * 100).toFixed(
+                              0
+                            )}
+                            % used
+                          </div>
+                          <div className="w-full bg-gray-700 rounded-full h-1">
+                            <div
+                              className="bg-blue-500 h-1 rounded-full"
+                              style={{
+                                width: `${Math.min(
+                                  100,
+                                  (campaign.spent / campaign.budget) * 100
+                                )}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="space-y-2">
+                          <span
+                            className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border capitalize ${getStatusColor(
+                              campaign.status
+                            )}`}
+                          >
+                            {campaign.status}
+                          </span>
+                          {campaign.use_ai_personalization && (
+                            <div className="flex items-center gap-1">
+                              <Sparkles className="h-3 w-3 text-purple-400" />
+                              <span className="text-xs text-purple-400">
+                                AI Enhanced
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 text-gray-400 text-xs">
+                            <Calendar className="h-3 w-3" />
+                            {formatDate(campaign.scheduled_at)}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Created: {formatDate(campaign.created_at)}
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="p-4">
+                        <div className="flex gap-2">
+                          {/* <button
+                            className="p-2 text-blue-400 hover:bg-blue-500/20 rounded-lg transition-colors"
+                            onClick={() =>
+                              navigate(`/app/campaigns/${campaign.id}`)
+                            }
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button> */}
+                          <button
+                            className="p-2 text-yellow-400 hover:bg-yellow-500/20 rounded-lg transition-colors"
+                            onClick={() =>
+                              navigate(`/app/campaigns/${campaign.id}`)
+                            }
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            className="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors"
+                            onClick={() => handleDelete(campaign.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>
-        </div>
+        )}
+      </div>
 
-        {/* Pagination */}
+      {/* Pagination */}
+      {totalPages > 1 && (
         <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-400">
-              Showing 1 to {mockCampaigns.length} of {mockCampaigns.length}{" "}
-              campaigns
+              Showing {(currentPage - 1) * perPage + 1} to{" "}
+              {Math.min(currentPage * perPage, total)} of {total} campaigns
             </div>
             <div className="flex items-center gap-2">
-              <button className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <span>‹</span>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
+                className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="h-4 w-4" />
               </button>
               <div className="flex items-center gap-1">
-                <button className="px-3 py-1 rounded-lg text-sm transition-colors bg-blue-500 text-white">
-                  1
-                </button>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i + 1}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-3 py-1 rounded-lg text-sm transition-colors ${
+                      currentPage === i + 1
+                        ? "bg-blue-500 text-white"
+                        : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
               </div>
-              <button className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                <span>›</span>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(totalPages, prev + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
-export default CampaignsTable;
+export default CampaignsPage;

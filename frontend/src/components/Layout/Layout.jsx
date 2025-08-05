@@ -56,7 +56,10 @@ const Layout = () => {
     <div className="min-h-screen grid grid-cols-[280px_1fr] bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900">
       {/* Sidebar */}
       <aside className="bg-[#18192a] flex flex-col items-start px-8 py-6 min-h-screen">
-        <div className="text-white text-2xl font-bold mb-8">DealFlow</div>
+        <Link to="/" className="text-white text-2xl font-bold mb-8">
+          {/* DealFlow */}
+          <img src="../../public/logo.jpeg" alt="Logo" />
+        </Link>
         {/* Vertical Navbar */}
         <nav className="flex flex-col gap-3 w-full">
           {/* Top Level Navigation Items */}
@@ -266,24 +269,58 @@ const Layout = () => {
         {/* Fixed Profile Icon Button */}
         <div className="absolute top-6 right-8 z-20">
           <button
-            onClick={() => navigate('/app/profile')}
+            onClick={() => navigate("/app/profile")}
             className="rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 shadow p-1 hover:scale-105 transition border border-slate-200"
             title="Go to Profile"
             aria-label="Go to Profile"
           >
             <span className="block bg-white rounded-full p-1">
               {/* Elegant User Avatar SVG */}
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8">
-                <circle cx="16" cy="16" r="15" stroke="url(#profile-gradient)" strokeWidth="2" fill="white" />
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-8 h-8"
+              >
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="15"
+                  stroke="url(#profile-gradient)"
+                  strokeWidth="2"
+                  fill="white"
+                />
                 <defs>
-                  <linearGradient id="profile-gradient" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+                  <linearGradient
+                    id="profile-gradient"
+                    x1="0"
+                    y1="0"
+                    x2="32"
+                    y2="32"
+                    gradientUnits="userSpaceOnUse"
+                  >
                     <stop stopColor="#a78bfa" />
                     <stop offset="1" stopColor="#6366f1" />
                   </linearGradient>
                 </defs>
-                <ellipse cx="16" cy="13" rx="5" ry="5.5" fill="#6366f1" fillOpacity="0.15" />
+                <ellipse
+                  cx="16"
+                  cy="13"
+                  rx="5"
+                  ry="5.5"
+                  fill="#6366f1"
+                  fillOpacity="0.15"
+                />
                 <ellipse cx="16" cy="13" rx="3.5" ry="3.5" fill="#6366f1" />
-                <path d="M8.5 24c1.5-3 5-4 7.5-4s6 1 7.5 4" stroke="#6366f1" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                <path
+                  d="M8.5 24c1.5-3 5-4 7.5-4s6 1 7.5 4"
+                  stroke="#6366f1"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  fill="none"
+                />
               </svg>
             </span>
           </button>
