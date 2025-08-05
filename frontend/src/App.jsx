@@ -17,7 +17,7 @@ import { store } from "./store/store";
 import { testEnvVars } from "./utils/envTest";
 
 // API utilities
-import { fetchCsrfCookie } from "./services/api";
+import { getCsrfToken } from "./services/api";
 import { testCsrfSetup } from "./utils/csrfTest";
 
 // Contexts
@@ -82,8 +82,8 @@ function App() {
 
       // Initialize and test CSRF setup for Laravel Sanctum
       try {
-        await fetchCsrfCookie();
-        console.log("CSRF cookie initialized successfully");
+        await getCsrfToken();
+        console.log('CSRF cookie initialized successfully');
 
         // Run CSRF test in development
         if (process.env.NODE_ENV === "development") {

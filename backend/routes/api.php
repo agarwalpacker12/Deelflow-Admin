@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\AiConversationController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\CampaignRecipientController;
 use App\Http\Controllers\Api\ClientController;
+use App\Http\Controllers\Api\InvitationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,12 +29,14 @@ use App\Http\Controllers\Api\ClientController;
 // Authentication routes (public)
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register/invitation/{token}', [AuthController::class, 'registerInvitedUser'])->name('register.invitation');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
     // User routes
     Route::get('/user', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/invitations', [InvitationController::class, 'store']);
     
     // Lead routes
     Route::apiResource('leads', LeadController::class);

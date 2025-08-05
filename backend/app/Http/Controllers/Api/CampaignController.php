@@ -165,6 +165,7 @@ class CampaignController extends Controller
 
         $messages = [
             'campaign_type.in' => 'The selected campaign type is invalid. Allowed values are: seller_finder, buyer_finder.',
+            'status.in' => 'The selected status is invalid. Allowed values are: draft, scheduled, active, paused, completed, cancelled.',
         ];
 
         $validator = Validator::make($request->all(), $rules, $messages);

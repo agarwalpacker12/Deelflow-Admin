@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 // CSRF Cookie route for Sanctum
 Route::get('/sanctum/csrf-cookie', function () {
     return response()->json(['message' => 'CSRF cookie set']);
-});
+})->middleware('web');
 
 // Route::get('/', function () {
 //     return view('welcome');

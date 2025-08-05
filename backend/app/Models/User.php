@@ -41,6 +41,7 @@ class User extends Authenticatable
         'preferences',
         'metadata',
         'last_login_at',
+        'organization_id',
     ];
 
     /**
@@ -151,5 +152,10 @@ class User extends Authenticatable
     public function clients(): HasMany
     {
         return $this->hasMany(Client::class);
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
     }
 }

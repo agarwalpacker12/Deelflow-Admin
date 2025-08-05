@@ -16,7 +16,11 @@ export function initializeErrorSuppression() {
         message.includes('localhost:5174') ||
         message.includes('WebSocket connection to') ||
         message.includes('Error: WebSocket') ||
-        message.includes('net::ERR_FAILED')
+        message.includes('net::ERR_FAILED') ||
+        message.includes('Failed to fetch CSRF cookie') ||
+        message.includes('net::ERR_BLOCKED_BY_CLIENT') ||
+        message.includes('sanctum/csrf-cookie') ||
+        message.includes('AxiosError')
       ) {
         console.warn('🔇 Suppressed development error:', message);
         return;

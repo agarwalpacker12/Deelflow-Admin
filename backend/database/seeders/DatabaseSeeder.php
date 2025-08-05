@@ -16,6 +16,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create super admin user for development
+        User::factory()->create([
+            'first_name' => 'Super',
+            'last_name' => 'Admin',
+            'email' => env('SUPER_ADMIN_EMAIL', 'superadmin@example.com'),
+            'password' => env('SUPER_ADMIN_PASSWORD', 'password'),
+            'role' => 'admin',
+            'is_active' => true,
+            'is_verified' => true,
+        ]);
+
         User::factory(10)->create()->each(function ($user) {
             Property::factory(5)->create(['user_id' => $user->id]);
             Lead::factory(5)->create(['user_id' => $user->id]);
