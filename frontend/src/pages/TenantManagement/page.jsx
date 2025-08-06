@@ -1,7 +1,7 @@
 import React from "react";
 import ComingSoonPage from "../comingsoon/page";
 
-const AnalyticsPage = () => {
+const TenantManagementPage = () => {
   return (
     <>
       <ComingSoonPage />
@@ -9,4 +9,4 @@ const AnalyticsPage = () => {
   );
 };
 
-export default AnalyticsPage;
+export default TenantManagementPage;

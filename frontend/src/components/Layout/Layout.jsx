@@ -2,44 +2,14 @@ import React, { useState } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import NotificationBar from "../UI/NotificationBar";
 
-// const topLevelNavLinks = [
-//   { to: "/app/dashboard", label: "Dashboard" },
-//   { to: "/app/analytics", label: "Analytics" },
-//   { to: "/app/content-management", label: "Content Management" },
-// ];
-
-// const marketplaceNavLinks = [
-//   { to: "/app/live-activity", label: "Live Feed" },
-//   { to: "/app/properties", label: "Properties" },
-//   { to: "/app/deals", label: "Deals" },
-// ];
-
-// const marketingHubNavLinks = [
-//   { to: "/app/campaigns", label: "Campaigns" },
-//   { to: "/app/leads", label: "Leads" },
-//   { to: "/app/clients", label: "Clients" },
-//   { to: "/app/marketing/advanced", label: "Advanced" },
-// ];
-
-// const settingsNavLinks = [
-//   { to: "/app/ai-features", label: "AI Settings" },
-//   { to: "/app/settings", label: "General Settings" },
-// ];
-
-// const saasSettingsNavLinks = [
-//   { to: "/app/tenant-management", label: "Tenant Management" },
-//   { to: "/app/user-management", label: "User Management" },
-//   { to: "/app/role-management", label: "Role Management" },
-// ];
-
 const topLevelNavLinks = [
   { to: "/app/dashboard", label: "Dashboard" },
-  { to: "/comingsoon", label: "Analytics" },
-  { to: "/comingsoon", label: "Content Management" },
+  { to: "/app/analytics", label: "Analytics" },
+  { to: "/app/content-management", label: "Content Management" },
 ];
 
 const marketplaceNavLinks = [
-  { to: "/comingsoon", label: "Live Feed" },
+  { to: "/app/live-activity", label: "Live Feed" },
   { to: "/app/properties", label: "Properties" },
   { to: "/app/deals", label: "Deals" },
 ];
@@ -47,19 +17,19 @@ const marketplaceNavLinks = [
 const marketingHubNavLinks = [
   { to: "/app/campaigns", label: "Campaigns" },
   { to: "/app/leads", label: "Leads" },
-  { to: "/comingsoon", label: "Clients" },
-  { to: "/comingsoon", label: "Advanced" },
+  { to: "/app/clients", label: "Clients" },
+  { to: "/app/marketing/advanced", label: "Advanced" },
 ];
 
 const settingsNavLinks = [
-  { to: "/comingsoon", label: "AI Settings" },
-  { to: "/comingsoon", label: "General Settings" },
+  { to: "/app/ai-settings", label: "AI Settings" },
+  { to: "/app/settings", label: "General Settings" },
 ];
 
 const saasSettingsNavLinks = [
-  { to: "/comingsoon", label: "Tenant Management" },
-  { to: "/comingsoon", label: "User Management" },
-  { to: "/comingsoon", label: "Role Management" },
+  { to: "/app/tenant-management", label: "Tenant Management" },
+  { to: "/app/user-management", label: "User Management" },
+  { to: "/app/role-management", label: "Role Management" },
 ];
 
 const Layout = () => {
