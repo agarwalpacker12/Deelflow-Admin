@@ -27,14 +27,14 @@ const LandingPage = () => {
             >
               Get Started Free
             </Link>
-            {!isAuthenticated && (
-              <Link
-                to="/login"
-                className="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 border border-white/20 hover:border-white/30"
-              >
-                Sign In
-              </Link>
-            )}
+            {/* {!isAuthenticated && ( */}
+            <Link
+              to="/login"
+              className="bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 border border-white/20 hover:border-white/30"
+            >
+              Sign In
+            </Link>
+            {/* )} */}
             <Link
               to="/pay"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
