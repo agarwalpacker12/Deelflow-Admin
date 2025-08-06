@@ -7,8 +7,8 @@ export default function NotificationBar() {
   if (!isVisible) return null;
 
   return (
-    <div className="bg-blue-600 text-white px-4 py-2 shadow-md relative">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <div className="bg-blue-600 text-white py-2 shadow-md relative">
+      <div className="mx-auto flex items-center justify-between px-2">
         <div className="flex items-center space-x-6">
           {/* Live Activity */}
           <div className="flex items-center space-x-2">
@@ -25,7 +25,8 @@ export default function NotificationBar() {
           </div>
         </div>
 
-        <div className="flex items-center space-x-6">
+        <div className="flex space-x-6">
+          {/* items-center */}
           {/* Active Users */}
           <div className="flex items-center space-x-1">
             <span className="text-sm">247 active users</span>
@@ -46,11 +47,6 @@ export default function NotificationBar() {
             <X className="w-4 h-4" />
           </button>
         </div>
-      </div>
-
-      {/* Optional pulse animation for live indicator */}
-      <div className="absolute top-2 left-8">
-        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
       </div>
     </div>
   );
