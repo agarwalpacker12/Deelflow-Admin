@@ -60,7 +60,6 @@ import EditProperty from "./pages/Properties/[id]/index.jsx";
 import VycentraPaymentGateway from "./pages/Payment.jsx";
 import BidIndex from "./pages/Properties/[id]/bid/BidIndex.jsx";
 import EditCampaign from "./pages/Campaigns/[id]/index.jsx";
-import NotificationBar from "./components/UI/NotificationBar.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -107,7 +106,6 @@ function App() {
               <AIProvider>
                 <Router>
                   <div className="App min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900">
-                    <NotificationBar />
                     <AnimatePresence mode="wait">
                       <Routes>
                         {/* Public Routes */}
