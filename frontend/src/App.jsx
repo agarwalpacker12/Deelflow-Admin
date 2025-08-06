@@ -60,6 +60,7 @@ import EditProperty from "./pages/Properties/[id]/index.jsx";
 import VycentraPaymentGateway from "./pages/Payment.jsx";
 import BidIndex from "./pages/Properties/[id]/bid/BidIndex.jsx";
 import EditCampaign from "./pages/Campaigns/[id]/index.jsx";
+import ComingSoonPage from "./pages/comingsoon/page.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -115,6 +116,10 @@ function App() {
                         <Route
                           path="/pay"
                           element={<VycentraPaymentGateway />}
+                        />
+                        <Route
+                          path="/comingsoon"
+                          element={<ComingSoonPage />}
                         />
                         {/* Protected Routes */}
                         <Route
