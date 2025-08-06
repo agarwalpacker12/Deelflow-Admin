@@ -59,18 +59,20 @@ const Layout = () => {
   const isSaasSettingsActive = saasSettingsNavLinks.some((link) =>
     location.pathname.startsWith(link.to)
   );
+
   return (
     <>
       <NotificationBar />
-      <div className="min-h-screen grid grid-cols-[280px_1fr] bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900">
+      <div className="h-screen grid grid-cols-[280px_1fr] bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900">
         {/* Sidebar */}
-        <aside className="bg-[#18192a] flex flex-col items-start px-8 py-6 min-h-screen">
+        <aside className="bg-[#18192a] flex flex-col px-8 py-6 h-screen">
           <Link to="/" className="text-white text-2xl font-bold mb-8">
             {/* DealFlow */}
             <img src="../../public/logo.jpeg" alt="Logo" />
           </Link>
-          {/* Vertical Navbar */}
-          <nav className="flex flex-col gap-3 w-full">
+
+          {/* Vertical Navbar - Takes up remaining space */}
+          <nav className="flex flex-col gap-3 w-full flex-1 overflow-y-auto">
             {/* Top Level Navigation Items */}
             {topLevelNavLinks.map((link) => (
               <Link
@@ -274,12 +276,10 @@ const Layout = () => {
               )}
             </div>
           </nav>
-        </aside>
 
-        {/* Main Content */}
-        <main className="relative flex flex-col items-center justify-center min-h-screen w-full">
-          {/* Fixed Profile Icon Button */}
-          <div className="absolute top-6 right-8 z-20">
+          {/* User icon at bottom */}
+
+          <span>
             <button
               onClick={() => navigate("/app/profile")}
               className="rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 shadow p-1 hover:scale-105 transition border border-slate-200"
@@ -336,9 +336,15 @@ const Layout = () => {
                 </svg>
               </span>
             </button>
-          </div>
+          </span>
+        </aside>
+
+        {/* Main Content */}
+        <main className="relative flex flex-col items-center justify-center h-screen w-full overflow-hidden">
+          {/* Fixed Profile Icon Button */}
+
           {/* Card-like wrapper for content */}
-          <div className="w-full p-6 pt-20">
+          <div className="w-full h-full p-6 overflow-y-auto">
             <Outlet />
           </div>
         </main>
