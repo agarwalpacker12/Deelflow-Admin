@@ -1,12 +1,14 @@
 // Updated services/api.js with CSRF token support
 import axios from "axios";
 
-const API_BASE_URL = process.env.NODE_ENV === 'development'
-  ? (`${import.meta.env.VITE_API_HOST}/api` || `/api`)
-  : (`${import.meta.env.VITE_API_HOST}/api` || 'https://develop.monorepo-backend.dealflow.pro.kurious.dev/api');
+const API_BASE_URL =
+  process.env.NODE_ENV === "development"
+    ? `${import.meta.env.VITE_API_HOST}/api` || `/api`
+    : `${import.meta.env.VITE_API_HOST}/api` ||
+      "https://develop.monorepo-backend.dealflow.pro.kurious.dev/api";
 
 // Get the base URL without /api for CSRF cookie requests
-const BASE_URL = API_BASE_URL.replace('/api', '');
+const BASE_URL = API_BASE_URL.replace("/api", "");
 
 // Create axios instance
 const api = axios.create({
@@ -26,9 +28,9 @@ export const getCsrfToken = async () => {
     await axios.get(`${BASE_URL}/sanctum/csrf-cookie`, {
       withCredentials: true,
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "X-Requested-With": "XMLHttpRequest",
-      }
+      },
     });
     console.log("CSRF cookie fetched successfully.");
   } catch (error) {
@@ -123,6 +125,13 @@ export const propertySaveAPI = {
   createPropertySave: (data) => api.post("/property-saves", data),
   updatePropertySave: (id, data) => api.put(`/property-saves/${id}`, data),
   deletePropertySave: (id) => api.delete(`/property-saves/${id}`),
+};
+export const TenantAPI = {
+  getTenants: (params) => api.get("/tenant", { params }),
+  getTenant: (id) => api.get(`/tenant/${id}`),
+  createTenant: (data) => api.post("/tenant", data),
+  updateTenant: (id, data) => api.put(`/tenant/${id}`, data),
+  deleteTenant: (id) => api.delete(`/tenant/${id}`),
 };
 
 export default api;
