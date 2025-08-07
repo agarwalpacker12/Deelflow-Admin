@@ -61,6 +61,16 @@ import VycentraPaymentGateway from "./pages/Payment.jsx";
 import BidIndex from "./pages/Properties/[id]/bid/BidIndex.jsx";
 import EditCampaign from "./pages/Campaigns/[id]/index.jsx";
 import ComingSoonPage from "./pages/comingsoon/page.jsx";
+import AnalyticsPage from "./pages/Analytics/AnalyticsPage.jsx";
+import ContentManagementPage from "./pages/Content_Management/page.jsx";
+import ClientPage from "./pages/Client/page.jsx";
+import AdvancedPage from "./pages/Advance/page.jsx";
+import AiSettingsPage from "./pages/Ai-settings/page.jsx";
+import GeneralSettingsPage from "./pages/General-settings/page.jsx";
+import LiveActivityPage from "./pages/LiveActivity/page.jsx";
+import TenantManagementPage from "./pages/TenantManagement/page.jsx";
+import UserManagementPage from "./pages/UserManagement/page.jsx";
+import RoleManagementPage from "./pages/RoleManagement/page.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -117,10 +127,10 @@ function App() {
                           path="/pay"
                           element={<VycentraPaymentGateway />}
                         />
-                        <Route
+                        {/* <Route
                           path="/comingsoon"
                           element={<ComingSoonPage />}
-                        />
+                        /> */}
                         {/* Protected Routes */}
                         <Route
                           path="/app"
@@ -199,6 +209,40 @@ function App() {
                             element={<AchievementsTable />}
                           />
                           <Route path="profile" element={<ProfilePage />} />
+                          <Route path="analytics" element={<AnalyticsPage />} />
+                          <Route
+                            path="content-management"
+                            element={<ContentManagementPage />}
+                          />
+                          <Route path="clients" element={<ClientPage />} />
+                          <Route
+                            path="marketing/advanced"
+                            element={<AdvancedPage />}
+                          />
+                          <Route
+                            path="ai-settings"
+                            element={<AiSettingsPage />}
+                          />
+                          <Route
+                            path="settings"
+                            element={<GeneralSettingsPage />}
+                          />
+                          <Route
+                            path="live-activity"
+                            element={<LiveActivityPage />}
+                          />
+                          <Route
+                            path="tenant-management"
+                            element={<TenantManagementPage />}
+                          />
+                          <Route
+                            path="user-management"
+                            element={<UserManagementPage />}
+                          />
+                          <Route
+                            path="role-management"
+                            element={<RoleManagementPage />}
+                          />
                           {/* <Route
                             path="marketplace"
                             element={<MarketplacePage />}
