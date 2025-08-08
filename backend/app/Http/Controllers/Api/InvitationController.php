@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Traits\MockableController;
 use App\Models\Invitation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -11,6 +12,13 @@ use Illuminate\Support\Facades\Validator;
 
 class InvitationController extends Controller
 {
+    use MockableController;
+
+    public function __construct()
+    {
+        $this->initializeMockDataService();
+    }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
