@@ -34,7 +34,7 @@ class InvitationController extends Controller
 
         Mail::to($request->email)->send(new InvitationMail($invitation));
 
-        return response()->json(['message' => 'Invitation sent successfully.']);
+        return $this->successResponse([],'Invitation sent successfully.', 200);
     }
 
      public function validateToken(Request $request)
@@ -47,11 +47,11 @@ class InvitationController extends Controller
             return response()->json(['message' => 'Invalid or expired token'], 400);
         }
 
-        return response()->json([
+        return $this->successResponse([
             'email' => $invitation->email,
             'role' => $invitation->role,
             'organization' => $invitation->organization->only('id', 'name'),
-        ]);
+        ],'Invitation validated successfully.', 200);
     }
 
 }
