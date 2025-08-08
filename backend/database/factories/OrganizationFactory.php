@@ -21,6 +21,7 @@ class OrganizationFactory extends Factory
             'uuid' => Str::uuid(),
             'name' => $this->faker->company,
             'slug' => $this->faker->slug,
+            'subscription_status' => 'new',
         ];
     }
 }

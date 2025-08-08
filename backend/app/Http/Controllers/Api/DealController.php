@@ -29,10 +29,9 @@ class DealController extends Controller
         // Real implementation
         [$page, $perPage] = $this->getPaginationParams($request);
         
-        $query = Deal::with(['property', 'lead', 'wholesaler', 'buyer', 'seller'])
+        $query = Deal::with(['property', 'lead', 'buyer', 'seller'])
             ->where(function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
+                $q->where('buyer_id', auth()->id())
                   ->orWhere('seller_id', auth()->id());
             });
 
@@ -106,12 +105,11 @@ class DealController extends Controller
         try {
             $validatedData = $validator->validated();
             $deal = Deal::create(array_merge($validatedData, [
-                'wholesaler_id' => auth()->id(),
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'status' => 'active'
             ]));
 
-            $deal->load(['property', 'lead', 'wholesaler', 'buyer', 'seller']);
+            $deal->load(['property', 'lead', 'buyer', 'seller']);
 
             return $this->successResponse($deal, 'Deal created successfully', 201);
 
@@ -132,10 +130,9 @@ class DealController extends Controller
         }
 
         // Real implementation - only show deals user is involved in
-        $deal = Deal::with(['property', 'lead', 'wholesaler', 'buyer', 'seller', 'milestones'])
+        $deal = Deal::with(['property', 'lead', 'buyer', 'seller', 'milestones'])
             ->where(function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
+                $q->where('buyer_id', auth()->id())
                   ->orWhere('seller_id', auth()->id());
             })
             ->find($id);
@@ -182,8 +179,7 @@ class DealController extends Controller
 
         // Real implementation - only update deals user is involved in
         $deal = Deal::where(function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
+                $q->where('buyer_id', auth()->id())
                   ->orWhere('seller_id', auth()->id());
             })
             ->find($id);
@@ -195,7 +191,7 @@ class DealController extends Controller
         try {
             $validatedData = $validator->validated();
             $deal->update($validatedData);
-            $deal->load(['property', 'lead', 'wholesaler', 'buyer', 'seller']);
+            $deal->load(['property', 'lead', 'buyer', 'seller']);
             
             return $this->successResponse($deal, 'Deal updated successfully');
 
@@ -217,8 +213,7 @@ class DealController extends Controller
 
         // Real implementation - only delete deals user is involved in
         $deal = Deal::where(function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
+                $q->where('buyer_id', auth()->id())
                   ->orWhere('seller_id', auth()->id());
             })
             ->find($id);
@@ -250,8 +245,7 @@ class DealController extends Controller
         // Real implementation - only show milestones for deals user is involved in
         $deal = Deal::with('milestones')
             ->where(function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
+                $q->where('buyer_id', auth()->id())
                   ->orWhere('seller_id', auth()->id());
             })
             ->find($id);
@@ -278,7 +272,6 @@ class DealController extends Controller
     {
         try {
             $dealData = array_merge($request->all(), [
-                'wholesaler_id' => 1, // Mock user ID
                 'uuid' => \Illuminate\Support\Str::uuid(),
                 'status' => 'active',
                 'created_at' => now()->format('Y-m-d\TH:i:s.u\Z'),

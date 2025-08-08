@@ -2,7 +2,7 @@
 
 ### Register User
 
-*   **Description:** Registers a new user with comprehensive profile information.
+*   **Description:** Registers a new user and organization.
 *   **Method:** POST
 *   **Endpoint:** `/api/register`
 *   **Request:**
@@ -14,9 +14,8 @@
         "password_confirmation": "password",
         "first_name": "John",
         "last_name": "Doe",
-        "company_name": "Real Estate Ventures LLC",
-        "phone": "+14155552671",
-        "role": "wholesaler"
+        "organization_name": "Real Estate Ventures LLC",
+        "phone": "+14155552671"
     }
     ```
 *   **Response (Success):**
@@ -31,15 +30,21 @@
             "email": "user@example.com",
             "first_name": "John",
             "last_name": "Doe",
-            "company_name": "Real Estate Ventures LLC",
+            "organization": {
+                "id": 1,
+                "name": "Real Estate Ventures LLC",
+                "slug": "real-estate-ventures-llc",
+                "subscription_status": "active",
+                "created_at": "2025-06-26T20:00:00.000000Z",
+                "updated_at": "2025-06-26T20:00:00.000000Z"
+            },
             "phone": "+14155552671",
-            "role": "wholesaler",
+            "role": "admin",
             "level": 1,
             "points": 0,
-            "subscription_tier": "starter",
-            "subscription_status": "active",
             "is_verified": false,
             "is_active": true,
+            "status": "active",
             "created_at": "2025-06-26T20:00:00.000000Z",
             "updated_at": "2025-06-26T20:00:00.000000Z"
         }
@@ -119,7 +124,7 @@
                 "email": "user@example.com",
                 "first_name": "John",
                 "last_name": "Doe",
-                "role": "wholesaler"
+                "role": "admin"
             }
         }
     }
@@ -143,15 +148,14 @@
             "email": "user@example.com",
             "first_name": "John",
             "last_name": "Doe",
-            "company_name": "Real Estate Ventures LLC",
+            "company_name": null,
             "phone": "+14155552671",
-            "role": "wholesaler",
+            "role": "admin",
             "level": 1,
             "points": 0,
-            "subscription_tier": "starter",
-            "subscription_status": "active",
             "is_verified": false,
             "is_active": true,
+            "status": "active",
             "created_at": "2025-06-26T20:00:00.000000Z",
             "updated_at": "2025-06-26T20:00:00.000000Z"
         }

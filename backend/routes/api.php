@@ -74,8 +74,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('clients', ClientController::class);
 
     // Organization routes
-    Route::get('/organization', [OrganizationController::class, 'show']);
-    Route::put('/organization', [OrganizationController::class, 'update']);
+    Route::get('organizations/status', [OrganizationController::class, 'getStatus']);
+    Route::apiResource('organizations', OrganizationController::class);
+    Route::patch('organizations/{organization}/subscription-status', [OrganizationController::class, 'updateSubscriptionStatus']);
+    Route::delete('organizations/{organization}/users/{user}', [OrganizationController::class, 'removeUser']);
+    Route::patch('organizations/{organization}/users/{user}/status', [OrganizationController::class, 'updateUserStatus']);
     
     // User achievement routes
     Route::apiResource('user-achievements', UserAchievementController::class);

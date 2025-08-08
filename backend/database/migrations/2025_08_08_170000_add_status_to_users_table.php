@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('organizations', function (Blueprint $table) {
-            $table->string('slug')->nullable()->after('name');
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('status', 50)->default('active')->after('is_active');
         });
     }
 
@@ -21,10 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('organizations', function (Blueprint $table) {
-            if (Schema::hasColumn('organizations', 'slug')) {
-                $table->dropColumn('slug');
-            }
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('status');
         });
     }
 };

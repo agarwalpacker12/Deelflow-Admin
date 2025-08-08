@@ -13,6 +13,7 @@ class Organization extends Model
         'name',
         'uuid',
         'slug',
+        'subscription_status',
         'industry',
         'organization_size',
         'business_email',

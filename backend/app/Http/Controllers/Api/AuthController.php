@@ -49,6 +49,7 @@ class AuthController extends Controller
                 'name' => $request->organization_name,
                 'uuid' => Str::uuid(),
                 'slug' => Str::slug($request->organization_name),
+                'subscription_status' => 'active',
             ]);
 
             $user = User::create([
@@ -62,8 +63,6 @@ class AuthController extends Controller
                 'role' => 'admin', // First user is admin
                 'level' => 1,
                 'points' => 0,
-                'subscription_tier' => 'starter',
-                'subscription_status' => 'active',
                 'is_verified' => false,
                 'is_active' => true,
             ]);
@@ -81,8 +80,6 @@ class AuthController extends Controller
                 'role' => $user->role,
                 'level' => $user->level,
                 'points' => $user->points,
-                'subscription_tier' => $user->subscription_tier,
-                'subscription_status' => $user->subscription_status,
                 'is_verified' => $user->is_verified,
                 'is_active' => $user->is_active,
                 'created_at' => $user->created_at->toISOString(),
@@ -129,8 +126,6 @@ class AuthController extends Controller
                 'role' => $invitation->role, // First user is admin
                 'level' => 1,
                 'points' => 0,
-                'subscription_tier' => 'starter',
-                'subscription_status' => 'active',
                 'is_verified' => false,
                 'is_active' => true,
             ]);
@@ -150,8 +145,6 @@ class AuthController extends Controller
                 'role' => $user->role,
                 'level' => $user->level,
                 'points' => $user->points,
-                'subscription_tier' => $user->subscription_tier,
-                'subscription_status' => $user->subscription_status,
                 'is_verified' => $user->is_verified,
                 'is_active' => $user->is_active,
                 'created_at' => $user->created_at->toISOString(),
@@ -260,8 +253,6 @@ class AuthController extends Controller
                     'role' => 'admin',
                     'level' => 99,
                     'points' => 9999,
-                    'subscription_tier' => 'premium',
-                    'subscription_status' => 'active',
                     'is_verified' => true,
                     'is_active' => true,
                 ]
@@ -312,9 +303,20 @@ class AuthController extends Controller
                 'access your account because it has been deactivated',
                 null,
                 [
+                    'account_status' => $user->status,
+                    'user_id' => $user->id,
+                ]
+            );
+        }
+
+        if ($user->organization->subscription_status !== 'active') {
+            return $this->forbiddenResponse(
+                'access your account because the organization subscription is not active',
+                null,
+                [
                     'account_status' => 'inactive',
                     'user_id' => $user->id,
-                    'deactivation_reason' => 'Account has been deactivated by an administrator'
+                    'deactivation_reason' => 'Organization subscription is not active'
                 ]
             );
         }
@@ -390,8 +392,6 @@ class AuthController extends Controller
                 'role' => 'admin',
                 'level' => 1,
                 'points' => 0,
-                'subscription_tier' => 'starter',
-                'subscription_status' => 'active',
                 'is_verified' => false,
                 'is_active' => true,
                 'created_at' => now()->format('Y-m-d\TH:i:s.u\Z'),
