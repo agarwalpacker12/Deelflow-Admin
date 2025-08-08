@@ -1,6 +1,6 @@
 import { Save } from "lucide-react";
 import { Text } from "@radix-ui/themes";
-import { DefaultValues, settingsSchema, tenantSchema } from "./utility";
+import { DefaultValues, settingsSchema } from "./utility";
 import { TenantAPI } from "../../../services/api";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
