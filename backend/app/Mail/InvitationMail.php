@@ -33,7 +33,7 @@ class InvitationMail extends Mailable
     {
         return $this->markdown('emails.invitation')
             ->with([
-                'url' => route('register.invitation', $this->invitation->token),
+                'url' => "http://localhost:3000/invitee-register/?token=" . urlencode($this->invitation->token),
             ]);
     }
 }

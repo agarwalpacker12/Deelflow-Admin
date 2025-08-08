@@ -31,7 +31,7 @@ use App\Http\Controllers\Api\OrganizationController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/invitee-register', [AuthController::class, 'inviteeRegister']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register/invitation/{token}', [AuthController::class, 'registerInvitedUser'])->name('register.invitation');
+// Route::post('/register/invitation/{token}', [AuthController::class, 'registerInvitedUser'])->name('register.invitation');
 Route::get('/validate-invitation', [InvitationController::class, 'validateToken'])->name('validate.invitation');
 
 // Protected routes
