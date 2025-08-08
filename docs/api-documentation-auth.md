@@ -175,7 +175,7 @@
 
 ### Invite User
 
-*   **Description:** Logs out the authenticated user and invalidates the token.
+*   **Description:** Invites users.
 *   **Method:** POST
 *   **Endpoint:** `/api/invitations`
 *   **Headers:** `Authorization: Bearer {token}`
@@ -199,7 +199,7 @@
 
 ### Validate Invitaion Token
 
-*   **Description:** Logs out the authenticated user and invalidates the token.
+*   **Description:** Validate the token.
 *   **Method:** GET
 *   **Endpoint:** `/api/validate-invitation?token={invitationtoken}`
 *   **Headers:** `Authorization: Bearer {token}`
