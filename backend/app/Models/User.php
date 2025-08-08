@@ -115,19 +115,27 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the deals for the user as a wholesaler.
+     * Get the deals for the user as a buyer.
      */
-    public function dealsAsWholesaler(): HasMany
+    public function dealsAsBuyer(): HasMany
     {
-        return $this->hasMany(Deal::class, 'wholesaler_id');
+        return $this->hasMany(Deal::class, 'buyer_id');
     }
 
     /**
-     * Get all deals managed by this wholesaler.
+     * Get the deals for the user as a seller.
      */
-    public function deals(): HasMany
+    public function dealsAsSeller(): HasMany
     {
-        return $this->hasMany(Deal::class, 'wholesaler_id');
+        return $this->hasMany(Deal::class, 'seller_id');
+    }
+
+    /**
+     * Get the deals for the user as a funder.
+     */
+    public function dealsAsFunder(): HasMany
+    {
+        return $this->hasMany(Deal::class, 'funder_id');
     }
 
     /**

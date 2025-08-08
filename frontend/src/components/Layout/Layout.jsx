@@ -23,12 +23,13 @@ const marketingHubNavLinks = [
 
 const settingsNavLinks = [
   { to: "/app/ai-settings", label: "AI Settings" },
-  { to: "/app/settings", label: "General Settings" },
+  { to: "/app/settings", label: "Organization Settings" },
+  { to: "/app/user-management", label: "User Management" },
+  { to: "/app/billing", label: "Billing & Subscription" },
 ];
 
-const saasSettingsNavLinks = [
+const saasManagementNavLinks = [
   { to: "/app/tenant-management", label: "Tenant Management" },
-  { to: "/app/user-management", label: "User Management" },
   { to: "/app/role-management", label: "Role Management" },
 ];
 
@@ -38,12 +39,19 @@ const Layout = () => {
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(false);
   const [isMarketplaceExpanded, setIsMarketplaceExpanded] = useState(false);
   const [isMarketingHubExpanded, setIsMarketingHubExpanded] = useState(false);
-  const [isSaasSettingsExpanded, setIsSaasSettingsExpanded] = useState(false);
+  const [isSaaSManagementExpanded, setIsSaaSManagementExpanded] =
+    useState(false);
 
   // Check if any of the "Settings" submenu items are currently active
   const isSettingsActive =
     settingsNavLinks.some((link) => location.pathname.startsWith(link.to)) ||
-    saasSettingsNavLinks.some((link) => location.pathname.startsWith(link.to));
+    saasManagementNavLinks.some((link) =>
+      location.pathname.startsWith(link.to)
+    );
+
+  const isSaaSManagementActive = saasManagementNavLinks.some((link) =>
+    location.pathname.startsWith(link.to)
+  );
 
   // Check if any of the "Marketplace" submenu items are currently active
   const isMarketplaceActive = marketplaceNavLinks.some((link) =>
@@ -52,11 +60,6 @@ const Layout = () => {
 
   // Check if any of the "Marketing Hub" submenu items are currently active
   const isMarketingHubActive = marketingHubNavLinks.some((link) =>
-    location.pathname.startsWith(link.to)
-  );
-
-  // Check if any of the "SaaS Settings" submenu items are currently active
-  const isSaasSettingsActive = saasSettingsNavLinks.some((link) =>
     location.pathname.startsWith(link.to)
   );
 
@@ -225,20 +228,20 @@ const Layout = () => {
                     </Link>
                   ))}
 
-                  {/* SaaS Settings Dropdown */}
+                  {/* SaaS Management Dropdown */}
                   <div className="flex flex-col">
                     <button
                       onClick={() =>
-                        setIsSaasSettingsExpanded(!isSaasSettingsExpanded)
+                        setIsSaaSManagementExpanded(!isSaaSManagementExpanded)
                       }
                       className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between text-sm ${
-                        isSaasSettingsActive ? "bg-indigo-600 text-white" : ""
+                        isSaaSManagementActive ? "bg-indigo-600 text-white" : ""
                       }`}
                     >
-                      <span>SaaS Settings</span>
+                      <span>SaaS Management</span>
                       <svg
-                        className={`w-3 h-3 transition-transform ${
-                          isSaasSettingsExpanded ? "rotate-180" : ""
+                        className={`w-4 h-4 transition-transform ${
+                          isSaaSManagementExpanded ? "rotate-180" : ""
                         }`}
                         fill="none"
                         stroke="currentColor"
@@ -253,10 +256,10 @@ const Layout = () => {
                       </svg>
                     </button>
 
-                    {/* SaaS Settings Submenu Items */}
-                    {isSaasSettingsExpanded && (
+                    {/* SaaS Management Submenu Items */}
+                    {isSaaSManagementExpanded && (
                       <div className="ml-4 mt-2 flex flex-col gap-2">
-                        {saasSettingsNavLinks.map((link) => (
+                        {saasManagementNavLinks.map((link) => (
                           <Link
                             key={link.to}
                             to={link.to}

@@ -20,6 +20,8 @@ class PropertyControllerTest extends TestCase
         parent::setUp();
         
         $this->user = User::factory()->create();
+        $this->user->organization_id = \App\Models\Organization::factory()->create()->id;
+        $this->user->save();
         $this->token = $this->user->createToken('test-token')->plainTextToken;
     }
 
