@@ -9,6 +9,7 @@ The `Organization` model contains the following fields:
 - `id` (integer, read-only): The unique identifier for the organization.
 - `name` (string, required): The name of the organization.
 - `slug` (string, unique, nullable): The slug for the organization.
+- `subscription_status` (string, nullable): The subscription status of the organization. Can be `new`, `active`, `suspended`, or `waiting`.
 - `industry` (string, nullable): The industry of the organization.
 - `organization_size` (string, nullable): The size of the organization.
 - `business_email` (string, nullable): The business email of the organization.
@@ -29,8 +30,8 @@ The `Organization` model contains the following fields:
 
 ### GET /api/organizations
 
-- **Description:** Retrieve a list of all organizations.
-- **Response:** A JSON array of organization objects.
+- **Description:** Retrieve the current user's organization.
+- **Response:** A JSON object representing the organization.
 
 ### GET /api/organizations/{id}
 
@@ -44,7 +45,6 @@ The `Organization` model contains the following fields:
 - **Description:** Create a new organization.
 - **Request Body:** A JSON object containing the organization's data.
   - `name` (string, required)
-  - `slug` (string, nullable)
   - `industry` (string, nullable)
   - `organization_size` (string, nullable)
   - `business_email` (string, nullable)
@@ -74,3 +74,35 @@ The `Organization` model contains the following fields:
 - **Parameters:**
   - `id` (integer, required): The ID of the organization to delete.
 - **Response:** A success message.
+
+### GET /api/organizations/status
+
+- **Description:** Get the subscription status of the current user's organization.
+- **Response:** A JSON object with the organization's subscription status.
+
+### PUT /api/organizations/{id}/subscription-status
+
+- **Description:** Update the subscription status of an organization.
+- **Parameters:**
+  - `id` (integer, required): The ID of the organization to update.
+- **Request Body:**
+  - `subscription_status` (string, required): The new subscription status. Can be `new`, `active`, `suspended`, or `waiting`.
+- **Response:** A JSON object representing the updated organization.
+
+### DELETE /api/organizations/{id}/users/{user_id}
+
+- **Description:** Remove a user from an organization.
+- **Parameters:**
+  - `id` (integer, required): The ID of the organization.
+  - `user_id` (integer, required): The ID of the user to remove.
+- **Response:** A success message.
+
+### PUT /api/organizations/{id}/users/{user_id}/status
+
+- **Description:** Update a user's status within an organization.
+- **Parameters:**
+  - `id` (integer, required): The ID of the organization.
+  - `user_id` (integer, required): The ID of the user to update.
+- **Request Body:**
+  - `status` (string, required): The new status for the user. Can be `active` or `inactive`.
+- **Response:** A JSON object representing the updated user.

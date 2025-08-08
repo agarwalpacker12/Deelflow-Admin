@@ -103,8 +103,74 @@ class OrganizationController extends Controller
      */
     public function destroy(Organization $organization)
     {
+        if ($organization->users()->where('role', 'admin')->count() > 0) {
+            return response()->json(['error' => 'Cannot delete an organization with an admin user.'], 403);
+        }
+
         $organization->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function getStatus(Request $request)
+    {
+        $user = $request->user();
+
+        if ($user->role === 'super_admin') {
+            return response()->json(['status' => 'super_admin']);
+        }
+
+        if ($user->organization) {
+            return response()->json(['status' => $user->organization->subscription_status]);
+        }
+
+        return response()->json(['status' => null], 404);
+    }
+
+    public function updateSubscriptionStatus(Request $request, Organization $organization)
+    {
+        $validator = Validator::make($request->all(), [
+            'subscription_status' => 'required|string|in:new,active,suspended,waiting',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $organization->update($validator->validated());
+
+        return response()->json($organization);
+    }
+
+    public function removeUser(Request $request, Organization $organization, User $user)
+    {
+        if ($user->role === 'admin' && $organization->users()->where('role', 'admin')->count() === 1) {
+            return response()->json(['error' => 'Cannot remove the only admin user from an organization.'], 403);
+        }
+
+        $user->update(['is_active' => false, 'status' => 'cancelled']);
+
+        return response()->json(null, 204);
+    }
+
+    public function updateUserStatus(Request $request, Organization $organization, User $user)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|string|in:active,inactive',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $newStatus = $validator->validated()['status'];
+        $isActive = $newStatus === 'active';
+
+        $user->update([
+            'status' => $newStatus,
+            'is_active' => $isActive,
+        ]);
+
+        return response()->json($user);
     }
 }
