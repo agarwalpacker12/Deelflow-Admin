@@ -96,6 +96,75 @@ class AuthController extends Controller
         }
     }
 
+    public function inviteeRegister(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'password' => 'required|min:8|confirmed',
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'phone' => 'nullable|string|max:20',
+            'invitation_token' => 'required|exists:invitations,token'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors(), 'user registration');
+        }
+
+        if ($this->isMockEnabled()) {
+            return $this->handleMockRegister($request);
+        }
+
+        // Real implementation
+        try {
+            $invitation = Invitation::where('token', $request->invitation_token)->firstOrFail();
+            $organization = Organization::find($request->organization_id);
+            $user = User::create([
+                'uuid' => Str::uuid(),
+                'email' => $invitation->email,
+                'password' => Hash::make($request->password),
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'organization_id' => $organization,
+                'phone' => $request->phone,
+                'role' => $invitation->role, // First user is admin
+                'level' => 1,
+                'points' => 0,
+                'subscription_tier' => 'starter',
+                'subscription_status' => 'active',
+                'is_verified' => false,
+                'is_active' => true,
+            ]);
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            $invitation->delete();
+
+            return $this->successResponse([
+                'id' => $user->id,
+                'uuid' => $user->uuid,
+                'email' => $user->email,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'organization' => $organization,
+                'phone' => $user->phone,
+                'role' => $user->role,
+                'level' => $user->level,
+                'points' => $user->points,
+                'subscription_tier' => $user->subscription_tier,
+                'subscription_status' => $user->subscription_status,
+                'is_verified' => $user->is_verified,
+                'is_active' => $user->is_active,
+                'created_at' => $user->created_at->toISOString(),
+                'updated_at' => $user->updated_at->toISOString()
+            ], 'User registered successfully', 201);
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'user registration', 'user');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('user registration', $e);
+        }
+    }
+
     public function registerInvitedUser(Request $request, $token)
     {
         $invitation = Invitation::where('token', $token)->firstOrFail();

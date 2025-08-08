@@ -21,7 +21,10 @@ class InvitationController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
+        $existingInvitation = Invitation::where('email', $request->email)->first();
+        if($existingInvitation){
+            return response()->json(['message' => 'An invitation has already been sent to this email address.'], 400);
+        }
         $invitation = Invitation::create([
             'email' => $request->email,
             'role' => $request->role,
@@ -33,4 +36,24 @@ class InvitationController extends Controller
 
         return response()->json(['message' => 'Invitation sent successfully.']);
     }
+
+     public function validateToken(Request $request)
+    {
+        $token = $request->query('token');
+        $invitation = Invitation::where('token', $token)->with('organization')
+            ->first();
+
+        if (!$invitation) {
+            return response()->json(['message' => 'Invalid or expired token'], 400);
+        }
+
+        return response()->json([
+            'email' => $invitation->email,
+            'role' => $invitation->role,
+            'organization' => $invitation->organization->only('id', 'name'),
+        ]);
+    }
+
 }
+
+
