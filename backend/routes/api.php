@@ -72,8 +72,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('clients', ClientController::class);
 
     // Organization routes
-    Route::get('/organization', [OrganizationController::class, 'show']);
-    Route::put('/organization', [OrganizationController::class, 'update']);
+    Route::apiResource('organizations', OrganizationController::class);
     
     // User achievement routes
     Route::apiResource('user-achievements', UserAchievementController::class);

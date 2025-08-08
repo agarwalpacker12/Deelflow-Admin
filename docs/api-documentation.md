@@ -6,6 +6,7 @@ This documentation is divided into the following sections:
 
 *   [Common Information](./api-documentation-common.md)
 *   [Auth API](./api-documentation-auth.md)
+*   [Organizations API](./api-documentation-organizations.md)
 *   [Leads API](./api-documentation-lead.md)
 *   [Deals API](./api-documentation-deal.md)
 *   [Campaigns API](./api-documentation-campaign.md)

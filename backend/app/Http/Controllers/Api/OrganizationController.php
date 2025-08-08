@@ -11,21 +11,61 @@ use Illuminate\Support\Str;
 class OrganizationController extends Controller
 {
     /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $user = $request->user();
+        return response()->json([$user->organization]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255|unique:organizations,name',
+            'industry' => 'nullable|string|max:255',
+            'organization_size' => 'nullable|string|max:255',
+            'business_email' => 'nullable|email|max:255',
+            'business_phone' => 'nullable|string|max:255',
+            'website' => 'nullable|url|max:255',
+            'support_email' => 'nullable|email|max:255',
+            'street_address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'state_province' => 'nullable|string|max:255',
+            'zip_postal_code' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
+            'timezone' => 'nullable|string|max:255',
+            'language' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $validatedData = $validator->validated();
+        $validatedData['slug'] = Str::slug($validatedData['name']);
+
+        $organization = Organization::create($validatedData);
+
+        return response()->json($organization, 201);
+    }
+
+    /**
      * Display the specified resource.
      */
-    public function show(Request $request)
+    public function show(Organization $organization)
     {
-        $organization = $request->user()->organization;
         return response()->json($organization);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(Request $request, Organization $organization)
     {
-        $organization = $request->user()->organization;
-
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255|unique:organizations,name,' . $organization->id,
             'industry' => 'nullable|string|max:255',
@@ -56,5 +96,15 @@ class OrganizationController extends Controller
         $organization->update($validatedData);
 
         return response()->json($organization);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Organization $organization)
+    {
+        $organization->delete();
+
+        return response()->json(null, 204);
     }
 }
