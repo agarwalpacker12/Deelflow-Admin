@@ -71,6 +71,7 @@ import LiveActivityPage from "./pages/LiveActivity/page.jsx";
 import TenantManagementPage from "./pages/TenantManagement/page.jsx";
 import UserManagementPage from "./pages/UserManagement/page.jsx";
 import RoleManagementPage from "./pages/RoleManagement/page.jsx";
+import BillingPage from "./pages/Billing/page.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -242,6 +243,10 @@ function App() {
                           <Route
                             path="role-management"
                             element={<RoleManagementPage />}
+                          />
+                          <Route
+                            path="billing"
+                            element={<BillingPage />}
                           />
                           {/* <Route
                             path="marketplace"

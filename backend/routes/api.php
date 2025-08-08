@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\CampaignRecipientController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\InvitationController;
+use App\Http\Controllers\Api\OrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,6 +70,10 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Client routes
     Route::apiResource('clients', ClientController::class);
+
+    // Organization routes
+    Route::get('/organization', [OrganizationController::class, 'show']);
+    Route::put('/organization', [OrganizationController::class, 'update']);
     
     // User achievement routes
     Route::apiResource('user-achievements', UserAchievementController::class);

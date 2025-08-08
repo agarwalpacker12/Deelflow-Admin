@@ -48,6 +48,7 @@ class AuthController extends Controller
             $organization = Organization::create([
                 'name' => $request->organization_name,
                 'uuid' => Str::uuid(),
+                'slug' => Str::slug($request->organization_name),
             ]);
 
             $user = User::create([
@@ -317,7 +318,7 @@ class AuthController extends Controller
                 'last_name' => $request->last_name,
                 'company_name' => $request->company_name,
                 'phone' => $request->phone,
-                'role' => 'wholesaler', // All users are wholesalers
+                'role' => 'admin',
                 'level' => 1,
                 'points' => 0,
                 'subscription_tier' => 'starter',

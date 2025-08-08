@@ -23,7 +23,6 @@ class DealFactory extends Factory
             'uuid' => \Illuminate\Support\Str::uuid(),
             'property_id' => Property::factory(),
             'lead_id' => Lead::factory(),
-            'wholesaler_id' => User::factory(),
             'buyer_id' => User::factory(),
             'seller_id' => User::factory(),
             'funder_id' => User::factory(),

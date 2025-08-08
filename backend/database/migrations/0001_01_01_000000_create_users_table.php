@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
             $table->string('company_name')->nullable();
-            $table->string('role', 50)->default('wholesaler');
+            $table->string('role', 50)->default('admin');
             $table->integer('level')->default(1);
             $table->integer('points')->default(0);
             $table->string('avatar_url', 500)->nullable();

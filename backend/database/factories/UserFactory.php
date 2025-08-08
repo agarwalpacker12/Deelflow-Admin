@@ -31,7 +31,7 @@ class UserFactory extends Factory
             'phone' => fake()->phoneNumber(),
             'password' => static::$password ??= Hash::make('password'),
             'company_name' => fake()->company(),
-            'role' => 'wholesaler',
+            'role' => 'admin',
             'level' => 1,
             'points' => 0,
             'avatar_url' => fake()->imageUrl(),
@@ -45,6 +45,7 @@ class UserFactory extends Factory
             'metadata' => '{}',
             'last_login_at' => now(),
             'email_verified_at' => now(),
+            'organization_id' => \App\Models\Organization::factory(),
         ];
     }
 
