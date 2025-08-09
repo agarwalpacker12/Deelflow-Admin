@@ -106,12 +106,6 @@ class PropertyControllerTest extends TestCase
         );
     }
 
-    // PLACEHOLDER_FOR_NEXT_METHOD
-                'address', 'city', 'state', 'zip', 'property_type', 
-                'purchase_price', 'arv', 'transaction_type'
-            ]);
-    }
-
     /** @test */
     public function store_method_validates_property_type()
     {
@@ -153,9 +147,6 @@ class PropertyControllerTest extends TestCase
             str_contains($errorString, "arv") ||
             str_contains($errorString, "transaction type")
         );
-    }
-
-    // PLACEHOLDER_FOR_NEXT_METHOD'property_type']);
     }
 
     /** @test */
@@ -201,9 +192,6 @@ class PropertyControllerTest extends TestCase
         );
     }
 
-    // PLACEHOLDER_FOR_NEXT_METHOD'transaction_type']);
-    }
-
     /** @test */
     public function store_method_validates_numeric_fields()
     {
@@ -245,9 +233,6 @@ class PropertyControllerTest extends TestCase
             str_contains($errorString, "arv") ||
             str_contains($errorString, "transaction type")
         );
-    }
-
-    // PLACEHOLDER_FOR_NEXT_METHOD'purchase_price', 'arv']);
     }
 
     /** @test */
@@ -380,9 +365,6 @@ class PropertyControllerTest extends TestCase
             str_contains($errorString, "arv") ||
             str_contains($errorString, "transaction type")
         );
-    }
-
-    // PLACEHOLDER_FOR_NEXT_METHOD'property_type']);
     }
 
     /** @test */

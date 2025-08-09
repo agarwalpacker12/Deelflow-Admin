@@ -4,19 +4,38 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
+use App\Models\User;
+use App\Traits\MockableController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class OrganizationController extends Controller
 {
+    use MockableController;
+
+    public function __construct()
+    {
+        $this->initializeMockDataService();
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
+        if ($this->isMockEnabled()) {
+            return $this->handleMockIndex($request);
+        }
+
+        // Real implementation
         $user = $request->user();
-        return response()->json([$user->organization]);
+        
+        if (!$user->organization) {
+            return $this->notFoundResponse('organization');
+        }
+
+        return $this->successResponse($user->organization, 'Organization retrieved successfully');
     }
 
     /**
@@ -42,15 +61,29 @@ class OrganizationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return $this->validationErrorResponse($validator->errors(), 'organization creation');
         }
 
-        $validatedData = $validator->validated();
-        $validatedData['slug'] = Str::slug($validatedData['name']);
+        if ($this->isMockEnabled()) {
+            return $this->handleMockStore($request);
+        }
 
-        $organization = Organization::create($validatedData);
+        // Real implementation
+        try {
+            $validatedData = $validator->validated();
+            $validatedData['uuid'] = Str::uuid();
+            $validatedData['slug'] = Str::slug($validatedData['name']);
+            $validatedData['subscription_status'] = 'new';
 
-        return response()->json($organization, 201);
+            $organization = Organization::create($validatedData);
+
+            return $this->successResponse($organization, 'Organization created successfully', 201);
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'organization creation', 'organization');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('organization creation', $e);
+        }
     }
 
     /**
@@ -58,7 +91,17 @@ class OrganizationController extends Controller
      */
     public function show(Organization $organization)
     {
-        return response()->json($organization);
+        if ($this->isMockEnabled()) {
+            return $this->handleMockShow($organization->id);
+        }
+
+        // Real implementation - check if user belongs to this organization
+        $user = auth()->user();
+        if ($user->organization_id !== $organization->id) {
+            return $this->forbiddenResponse('access this organization');
+        }
+
+        return $this->successResponse($organization, 'Organization retrieved successfully');
     }
 
     /**
@@ -84,18 +127,39 @@ class OrganizationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return $this->validationErrorResponse($validator->errors(), 'organization update');
         }
 
-        $validatedData = $validator->validated();
-
-        if (isset($validatedData['name'])) {
-            $validatedData['slug'] = Str::slug($validatedData['name']);
+        if ($this->isMockEnabled()) {
+            return $this->handleMockUpdate($request, $organization->id);
         }
 
-        $organization->update($validatedData);
+        // Real implementation - check if user belongs to this organization and has admin role
+        $user = auth()->user();
+        if ($user->organization_id !== $organization->id) {
+            return $this->forbiddenResponse('access this organization');
+        }
 
-        return response()->json($organization);
+        if ($user->role !== 'admin') {
+            return $this->forbiddenResponse('update organization details', 'admin');
+        }
+
+        try {
+            $validatedData = $validator->validated();
+
+            if (isset($validatedData['name'])) {
+                $validatedData['slug'] = Str::slug($validatedData['name']);
+            }
+
+            $organization->update($validatedData);
+
+            return $this->successResponse($organization, 'Organization updated successfully');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'organization update', 'organization');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('organization update', $e);
+        }
     }
 
     /**
@@ -103,30 +167,76 @@ class OrganizationController extends Controller
      */
     public function destroy(Organization $organization)
     {
-        if ($organization->users()->where('role', 'admin')->count() > 0) {
-            return response()->json(['error' => 'Cannot delete an organization with an admin user.'], 403);
+        if ($this->isMockEnabled()) {
+            return $this->handleMockDestroy($organization->id);
         }
 
-        $organization->delete();
+        // Real implementation - check if user belongs to this organization and has admin role
+        $user = auth()->user();
+        if ($user->organization_id !== $organization->id) {
+            return $this->forbiddenResponse('access this organization');
+        }
 
-        return response()->json(null, 204);
+        if ($user->role !== 'admin') {
+            return $this->forbiddenResponse('delete this organization', 'admin');
+        }
+
+        if ($organization->users()->where('role', 'admin')->count() > 0) {
+            return $this->businessLogicErrorResponse(
+                'Cannot delete an organization with admin users.',
+                'ORGANIZATION_HAS_ADMIN_USERS',
+                [
+                    'admin_count' => $organization->users()->where('role', 'admin')->count(),
+                    'organization_id' => $organization->id
+                ],
+                [
+                    'Remove or transfer admin users before deleting the organization',
+                    'Consider deactivating the organization instead of deleting it'
+                ]
+            );
+        }
+
+        try {
+            $organization->delete();
+            return $this->successResponse(null, 'Organization deleted successfully');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'organization deletion', 'organization');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('organization deletion', $e);
+        }
     }
 
+    /**
+     * Get the subscription status of the current user's organization
+     */
     public function getStatus(Request $request)
     {
+        if ($this->isMockEnabled()) {
+            return $this->handleMockGetStatus($request);
+        }
+
+        // Real implementation
         $user = $request->user();
 
         if ($user->role === 'super_admin') {
-            return response()->json(['status' => 'super_admin']);
+            return $this->successResponse(['status' => 'super_admin'], 'Status retrieved successfully');
         }
 
-        if ($user->organization) {
-            return response()->json(['status' => $user->organization->subscription_status]);
+        if (!$user->organization) {
+            return $this->notFoundResponse('organization');
         }
 
-        return response()->json(['status' => null], 404);
+        return $this->successResponse([
+            'status' => $user->organization->subscription_status,
+            'organization_id' => $user->organization->id,
+            'organization_name' => $user->organization->name
+        ], 'Organization status retrieved successfully');
     }
 
+    /**
+     * Update the subscription status of an organization
+     */
     public function updateSubscriptionStatus(Request $request, Organization $organization)
     {
         $validator = Validator::make($request->all(), [
@@ -134,25 +244,89 @@ class OrganizationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return $this->validationErrorResponse($validator->errors(), 'subscription status update');
         }
 
-        $organization->update($validator->validated());
+        if ($this->isMockEnabled()) {
+            return $this->handleMockUpdateSubscriptionStatus($request, $organization->id);
+        }
 
-        return response()->json($organization);
+        // Real implementation - check permissions
+        $user = auth()->user();
+        if ($user->role !== 'super_admin' && $user->organization_id !== $organization->id) {
+            return $this->forbiddenResponse('update subscription status for this organization');
+        }
+
+        if ($user->role !== 'super_admin' && $user->role !== 'admin') {
+            return $this->forbiddenResponse('update subscription status', 'admin');
+        }
+
+        try {
+            $organization->update($validator->validated());
+
+            return $this->successResponse($organization, 'Subscription status updated successfully');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'subscription status update', 'organization');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('subscription status update', $e);
+        }
     }
 
+    /**
+     * Remove a user from an organization
+     */
     public function removeUser(Request $request, Organization $organization, User $user)
     {
-        if ($user->role === 'admin' && $organization->users()->where('role', 'admin')->count() === 1) {
-            return response()->json(['error' => 'Cannot remove the only admin user from an organization.'], 403);
+        if ($this->isMockEnabled()) {
+            return $this->handleMockRemoveUser($request, $organization->id, $user->id);
         }
 
-        $user->update(['is_active' => false, 'status' => 'cancelled']);
+        // Real implementation - check permissions
+        $currentUser = auth()->user();
+        if ($currentUser->organization_id !== $organization->id) {
+            return $this->forbiddenResponse('access this organization');
+        }
 
-        return response()->json(null, 204);
+        if ($currentUser->role !== 'admin') {
+            return $this->forbiddenResponse('remove users from the organization', 'admin');
+        }
+
+        if ($user->organization_id !== $organization->id) {
+            return $this->notFoundResponse('user in this organization', $user->id);
+        }
+
+        if ($user->role === 'admin' && $organization->users()->where('role', 'admin')->count() === 1) {
+            return $this->businessLogicErrorResponse(
+                'Cannot remove the only admin user from an organization.',
+                'CANNOT_REMOVE_LAST_ADMIN',
+                [
+                    'user_id' => $user->id,
+                    'organization_id' => $organization->id,
+                    'admin_count' => 1
+                ],
+                [
+                    'Assign admin role to another user before removing this admin',
+                    'Consider deactivating the user instead of removing them'
+                ]
+            );
+        }
+
+        try {
+            $user->update(['is_active' => false, 'status' => 'cancelled']);
+
+            return $this->successResponse(null, 'User removed from organization successfully');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'user removal', 'user');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('user removal', $e);
+        }
     }
 
+    /**
+     * Update a user's status within an organization
+     */
     public function updateUserStatus(Request $request, Organization $organization, User $user)
     {
         $validator = Validator::make($request->all(), [
@@ -160,17 +334,144 @@ class OrganizationController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return $this->validationErrorResponse($validator->errors(), 'user status update');
         }
 
-        $newStatus = $validator->validated()['status'];
-        $isActive = $newStatus === 'active';
+        if ($this->isMockEnabled()) {
+            return $this->handleMockUpdateUserStatus($request, $organization->id, $user->id);
+        }
 
-        $user->update([
-            'status' => $newStatus,
-            'is_active' => $isActive,
-        ]);
+        // Real implementation - check permissions
+        $currentUser = auth()->user();
+        if ($currentUser->organization_id !== $organization->id) {
+            return $this->forbiddenResponse('access this organization');
+        }
 
-        return response()->json($user);
+        if ($currentUser->role !== 'admin') {
+            return $this->forbiddenResponse('update user status', 'admin');
+        }
+
+        if ($user->organization_id !== $organization->id) {
+            return $this->notFoundResponse('user in this organization', $user->id);
+        }
+
+        try {
+            $newStatus = $validator->validated()['status'];
+            $isActive = $newStatus === 'active';
+
+            $user->update([
+                'status' => $newStatus,
+                'is_active' => $isActive,
+            ]);
+
+            return $this->successResponse($user, 'User status updated successfully');
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->databaseErrorResponse($e, 'user status update', 'user');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('user status update', $e);
+        }
+    }
+
+    // Mock handlers
+    private function handleMockIndex(Request $request)
+    {
+        try {
+            $organization = $this->mockDataService->getOrganization(1); // Mock organization ID
+            return $this->successResponse($organization, 'Organization retrieved successfully');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('organization retrieval', $e);
+        }
+    }
+
+    private function handleMockStore(Request $request)
+    {
+        try {
+            $organizationData = array_merge($request->all(), [
+                'uuid' => Str::uuid(),
+                'slug' => Str::slug($request->name),
+                'subscription_status' => 'new',
+                'created_at' => now()->format('Y-m-d\TH:i:s.u\Z'),
+                'updated_at' => now()->format('Y-m-d\TH:i:s.u\Z'),
+            ]);
+
+            $organization = $this->mockDataService->createOrganization($organizationData);
+            return $this->successResponse($organization, 'Organization created successfully', 201);
+
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('organization creation', $e);
+        }
+    }
+
+    private function handleMockShow($id)
+    {
+        $organization = $this->mockDataService->getOrganization($id);
+
+        if (!$organization) {
+            return $this->notFoundResponse('organization', $id);
+        }
+
+        return $this->successResponse($organization, 'Organization retrieved successfully');
+    }
+
+    private function handleMockUpdate(Request $request, $id)
+    {
+        $organization = $this->mockDataService->updateOrganization($id, $request->all());
+
+        if (!$organization) {
+            return $this->notFoundResponse('organization', $id);
+        }
+
+        return $this->successResponse($organization, 'Organization updated successfully');
+    }
+
+    private function handleMockDestroy($id)
+    {
+        $deleted = $this->mockDataService->deleteOrganization($id);
+
+        if (!$deleted) {
+            return $this->notFoundResponse('organization', $id);
+        }
+
+        return $this->successResponse(null, 'Organization deleted successfully');
+    }
+
+    private function handleMockGetStatus(Request $request)
+    {
+        return $this->successResponse([
+            'status' => 'active',
+            'organization_id' => 1,
+            'organization_name' => 'Mock Organization'
+        ], 'Organization status retrieved successfully');
+    }
+
+    private function handleMockUpdateSubscriptionStatus(Request $request, $id)
+    {
+        $organization = $this->mockDataService->updateOrganization($id, $request->all());
+
+        if (!$organization) {
+            return $this->notFoundResponse('organization', $id);
+        }
+
+        return $this->successResponse($organization, 'Subscription status updated successfully');
+    }
+
+    private function handleMockRemoveUser(Request $request, $organizationId, $userId)
+    {
+        // Mock implementation
+        return $this->successResponse(null, 'User removed from organization successfully');
+    }
+
+    private function handleMockUpdateUserStatus(Request $request, $organizationId, $userId)
+    {
+        // Mock implementation
+        $mockUser = [
+            'id' => $userId,
+            'status' => $request->status,
+            'is_active' => $request->status === 'active',
+            'updated_at' => now()->format('Y-m-d\TH:i:s.u\Z')
+        ];
+
+        return $this->successResponse($mockUser, 'User status updated successfully');
     }
 }
