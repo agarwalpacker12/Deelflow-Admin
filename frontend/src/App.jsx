@@ -60,7 +60,6 @@ import EditProperty from "./pages/Properties/[id]/index.jsx";
 import VycentraPaymentGateway from "./pages/Payment.jsx";
 import BidIndex from "./pages/Properties/[id]/bid/BidIndex.jsx";
 import EditCampaign from "./pages/Campaigns/[id]/index.jsx";
-import ComingSoonPage from "./pages/comingsoon/page.jsx";
 import AnalyticsPage from "./pages/Analytics/AnalyticsPage.jsx";
 import ContentManagementPage from "./pages/Content_Management/page.jsx";
 import ClientPage from "./pages/Client/page.jsx";
@@ -74,7 +73,7 @@ import BillingPage from "./pages/Billing/page.jsx";
 import OrganizationSettingsPage from "./pages/Settings/SettingsPage.jsx";
 
 import InviteeRegister from "./pages/Auth/InviteRegister.jsx";
-import TestAfterLogin from "./pages/TestAfterLogin/page.jsx";
+import PaymentAfterLogin from "./pages/payment/page.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -135,6 +134,7 @@ function App() {
                           path="/comingsoon"
                           element={<ComingSoonPage />}
                         /> */}
+
                         {/* Protected Routes */}
                         <Route
                           path="/app"
@@ -253,7 +253,11 @@ function App() {
                             path="invitee-register"
                             element={<InviteeRegister />}
                           />
-                          <Route path="test" element={<TestAfterLogin />} />
+                          <Route
+                            path="payment"
+                            element={<PaymentAfterLogin />}
+                          />
+
                           {/* <Route
                             path="marketplace"
                             element={<MarketplacePage />}

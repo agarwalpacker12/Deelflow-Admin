@@ -137,5 +137,7 @@ export const TenantAPI = {
   updateTenant: (id, data) => api.put(`/tenant/${id}`, data),
   deleteTenant: (id) => api.delete(`/tenant/${id}`),
 };
-
+export const OrganizationAPI = {
+  getOrganizationStatus: () => api.get(`/organizations/status`),
+};
 export default api;
