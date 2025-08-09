@@ -42,20 +42,7 @@ const CreateOrganizationForm = ({ orgState }) => {
     onSuccess: (data) => {
       if (data.data.status == "success") {
         // Fixed: Make sure toast is imported or available
-        if (typeof toast !== "undefined") {
-          toast.success(data.data.message);
-        }
-
-        // Fixed: Use proper tenants array with fallback
-        const updatedTenants = Array.isArray(tenants)
-          ? [...tenants, data.data.data]
-          : [data.data.data];
-        dispatch(setTenants(updatedTenants));
-
-        // Fixed: Make sure navigate is imported or available
-        if (typeof navigate !== "undefined") {
-          navigate("/app/tenant-management");
-        }
+        toast.success(data.data.message);
       }
     },
     onError: (error) => {
