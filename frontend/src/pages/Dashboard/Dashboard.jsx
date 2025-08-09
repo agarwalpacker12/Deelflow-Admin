@@ -1,21 +1,14 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   Users,
   DollarSign,
   TrendingUp,
-  Activity,
   Target,
-  Clock,
-  Bell,
-  Search,
-  Filter,
   MoreVertical,
   ArrowUp,
   ArrowDown,
-  Calendar,
   MessageCircle,
-  Zap,
   Phone,
   Eye,
   Brain,
@@ -26,18 +19,12 @@ import {
   AlertTriangle,
   Home,
   FileText,
-  Award,
-  Star,
-  Flame,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Area,
   AreaChart,
@@ -45,8 +32,6 @@ import {
 import MainContentWrapper from "../../components/Layout/MainContentWrapper";
 
 const Dashboard = () => {
-  const [timeframe, setTimeframe] = useState("7d");
-
   // Chart data for Revenue & User Growth
   const chartData = [
     { month: "Jan", revenue: 180000, users: 12000 },
