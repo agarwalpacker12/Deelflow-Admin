@@ -72,8 +72,8 @@ import UserManagementPage from "./pages/UserManagement/page.jsx";
 import RoleManagementPage from "./pages/RoleManagement/page.jsx";
 import BillingPage from "./pages/Billing/page.jsx";
 import OrganizationSettingsPage from "./pages/Settings/SettingsPage.jsx";
-// import InvitationForm from "./pages/Auth/Invite.jsx";
-// import InviteeRegister from "./pages/Auth/InviteRegister.jsx";
+
+import InviteeRegister from "./pages/Auth/InviteRegister.jsx";
 import TestAfterLogin from "./pages/TestAfterLogin/page.jsx";
 
 // Create a client
@@ -249,11 +249,10 @@ function App() {
                             element={<RoleManagementPage />}
                           />
                           <Route path="billing" element={<BillingPage />} />
-                          {/* <Route path="invite" element={<InvitationForm />} />
                           <Route
                             path="invitee-register"
                             element={<InviteeRegister />}
-                          /> */}
+                          />
                           <Route path="test" element={<TestAfterLogin />} />
                           {/* <Route
                             path="marketplace"
