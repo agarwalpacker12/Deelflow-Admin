@@ -310,15 +310,17 @@ class AuthController extends Controller
         }
 
         if ($user->organization->subscription_status !== 'active') {
-            return $this->forbiddenResponse(
-                'access your account because the organization subscription is not active',
-                null,
-                [
-                    'account_status' => 'inactive',
-                    'user_id' => $user->id,
-                    'deactivation_reason' => 'Organization subscription is not active'
-                ]
-            );
+            if ($user->role !== 'admin') {
+                return $this->forbiddenResponse(
+                    'access your account because the organization subscription is not active',
+                    null,
+                    [
+                        'account_status' => 'inactive',
+                        'user_id' => $user->id,
+                        'deactivation_reason' => 'Organization subscription is not active'
+                    ]
+                );
+            }
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
