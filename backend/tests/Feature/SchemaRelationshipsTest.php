@@ -58,7 +58,7 @@ class SchemaRelationshipsTest extends TestCase
     public function test_user_has_many_deals_as_wholesaler()
     {
         $user = User::factory()->create();
-        Deal::factory()->create(['wholesaler_id' => $user->id]);
+        Deal::factory()->create(['buyer_id' => $user->id]);
 
         $this->assertInstanceOf(Deal::class, $user->dealsAsWholesaler->first());
     }

@@ -45,7 +45,16 @@ class AiConversationControllerTest extends TestCase
         $response = $this->postJson('/api/ai-conversations', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['channel']);
+            ->assertJson([
+                'status' => 'error',
+                'error' => [
+                    'code' => 'VALIDATION_ERROR'
+                ]
+            ])
+            ->assertJsonPath('error.details.field_errors', function ($errors) {
+                return is_array($errors) && count($errors) > 0 && 
+                       str_contains($errors[0], 'channel field is required');
+            });
     }
 
     /** @test */

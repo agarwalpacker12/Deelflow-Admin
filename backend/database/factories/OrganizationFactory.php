@@ -17,10 +17,12 @@ class OrganizationFactory extends Factory
      */
     public function definition(): array
     {
+        $name = $this->faker->unique()->company;
+        
         return [
             'uuid' => Str::uuid(),
-            'name' => $this->faker->company,
-            'slug' => $this->faker->slug,
+            'name' => $name,
+            'slug' => Str::slug($name) . '-' . $this->faker->unique()->randomNumber(5),
             'subscription_status' => 'new',
         ];
     }

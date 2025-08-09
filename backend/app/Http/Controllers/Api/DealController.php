@@ -29,10 +29,11 @@ class DealController extends Controller
         // Real implementation
         [$page, $perPage] = $this->getPaginationParams($request);
         
-        $query = Deal::with(['property', 'lead', 'buyer', 'seller'])
+        $query = Deal::with(['property', 'lead', 'buyer', 'seller', 'funder'])
             ->where(function($q) {
                 $q->where('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             });
 
         // Apply filters
@@ -130,10 +131,11 @@ class DealController extends Controller
         }
 
         // Real implementation - only show deals user is involved in
-        $deal = Deal::with(['property', 'lead', 'buyer', 'seller', 'milestones'])
+        $deal = Deal::with(['property', 'lead', 'buyer', 'seller', 'funder', 'milestones'])
             ->where(function($q) {
                 $q->where('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             })
             ->find($id);
 
@@ -180,7 +182,8 @@ class DealController extends Controller
         // Real implementation - only update deals user is involved in
         $deal = Deal::where(function($q) {
                 $q->where('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             })
             ->find($id);
 
@@ -214,7 +217,8 @@ class DealController extends Controller
         // Real implementation - only delete deals user is involved in
         $deal = Deal::where(function($q) {
                 $q->where('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             })
             ->find($id);
 
@@ -246,7 +250,8 @@ class DealController extends Controller
         $deal = Deal::with('milestones')
             ->where(function($q) {
                 $q->where('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             })
             ->find($id);
 

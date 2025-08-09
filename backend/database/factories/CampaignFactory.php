@@ -17,8 +17,13 @@ class CampaignFactory extends Factory
      */
     public function definition(): array
     {
+        $user = User::factory();
+        
         return [
-            'user_id' => User::factory(),
+            'user_id' => $user,
+            'organization_id' => function (array $attributes) {
+                return User::find($attributes['user_id'])->organization_id;
+            },
             'name' => $this->faker->company . ' Campaign',
             'campaign_type' => $this->faker->randomElement(['seller_finder', 'buyer_finder']),
             'channel' => $this->faker->randomElement(['email', 'sms', 'voice', 'direct_mail']),
