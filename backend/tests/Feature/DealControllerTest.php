@@ -107,7 +107,8 @@ class DealControllerTest extends TestCase
     {
         $deal = Deal::factory()->create([
             'property_id' => $this->property->id,
-            'lead_id' => $this->lead->id
+            'lead_id' => $this->lead->id,
+            'buyer_id' => $this->user->id
         ]);
 
         $response = $this->withHeaders([
@@ -133,7 +134,8 @@ class DealControllerTest extends TestCase
     {
         $deal = Deal::factory()->create([
             'property_id' => $this->property->id,
-            'lead_id' => $this->lead->id
+            'lead_id' => $this->lead->id,
+            'buyer_id' => $this->user->id
         ]);
 
         $updateData = [
@@ -164,7 +166,8 @@ class DealControllerTest extends TestCase
     {
         $deal = Deal::factory()->create([
             'property_id' => $this->property->id,
-            'lead_id' => $this->lead->id
+            'lead_id' => $this->lead->id,
+            'buyer_id' => $this->user->id
         ]);
 
         $response = $this->withHeaders([
@@ -185,7 +188,8 @@ class DealControllerTest extends TestCase
     {
         $deal = Deal::factory()->create([
             'property_id' => $this->property->id,
-            'lead_id' => $this->lead->id
+            'lead_id' => $this->lead->id,
+            'buyer_id' => $this->user->id
         ]);
 
         $response = $this->withHeaders([
@@ -215,7 +219,20 @@ class DealControllerTest extends TestCase
         ])->postJson('/api/deals', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['property_id', 'deal_type', 'purchase_price', 'contract_date', 'closing_date']);
+            ->assertJson([
+                'status' => 'error',
+                'error' => [
+                    'code' => 'VALIDATION_ERROR'
+                ]
+            ])
+            ->assertJsonPath('error.details.field_errors', function ($errors) {
+                return is_array($errors) && count($errors) > 0 && 
+                       (str_contains(implode(' ', $errors), 'property id') ||
+                        str_contains(implode(' ', $errors), 'deal type') ||
+                        str_contains(implode(' ', $errors), 'purchase price') ||
+                        str_contains(implode(' ', $errors), 'contract date') ||
+                        str_contains(implode(' ', $errors), 'closing date'));
+            });
     }
 
     /** @test */

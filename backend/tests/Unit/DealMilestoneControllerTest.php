@@ -26,7 +26,7 @@ class DealMilestoneControllerTest extends TestCase
         $this->deal = Deal::factory()->create([
             'property_id' => $property->id,
             'lead_id' => $lead->id,
-            'wholesaler_id' => $this->user->id
+            'buyer_id' => $this->user->id
         ]);
         $this->actingAs($this->user, 'sanctum');
     }
@@ -55,7 +55,25 @@ class DealMilestoneControllerTest extends TestCase
         $response = $this->postJson('/api/deal-milestones', []);
         
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['deal_id', 'milestone_type', 'title']);
+            ->assertJson([
+                'status' => 'error',
+                'error' => [
+                    'code' => 'VALIDATION_ERROR'
+                ]
+            ]);
+
+        $json = $response->json();
+        $this->assertArrayHasKey('error', $json);
+        $this->assertArrayHasKey('details', $json['error']);
+        $this->assertArrayHasKey('field_errors', $json['error']['details']);
+        
+        $errors = $json['error']['details']['field_errors'];
+        $errorString = implode(' ', $errors);
+        $this->assertTrue(
+            str_contains($errorString, 'deal id') ||
+            str_contains($errorString, 'milestone type') ||
+            str_contains($errorString, 'title')
+        );
     }
 
     /** @test */

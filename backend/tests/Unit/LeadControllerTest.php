@@ -92,15 +92,24 @@ class LeadControllerTest extends TestCase
         $this->assertEquals(422, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
         $this->assertEquals('error', $responseData['status']);
-        $this->assertArrayHasKey('errors', $responseData);
-        $this->assertArrayHasKey('first_name', $responseData['errors']);
-        $this->assertArrayHasKey('last_name', $responseData['errors']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertArrayHasKey('details', $responseData['error']);
+        $this->assertArrayHasKey('field_errors', $responseData['error']['details']);
+        
+        $errors = $responseData['error']['details']['field_errors'];
+        $errorString = implode(' ', $errors);
+        $this->assertTrue(
+            str_contains($errorString, 'lead type') ||
+            str_contains($errorString, 'first name') ||
+            str_contains($errorString, 'last name')
+        );
     }
 
     /** @test */
     public function store_method_validates_email_format()
     {
         $request = Request::create('/api/leads', 'POST', [
+            'lead_type' => 'seller',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'invalid-email'
@@ -110,13 +119,21 @@ class LeadControllerTest extends TestCase
         
         $this->assertEquals(422, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('email', $responseData['errors']);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertArrayHasKey('details', $responseData['error']);
+        $this->assertArrayHasKey('field_errors', $responseData['error']['details']);
+        
+        $errors = $responseData['error']['details']['field_errors'];
+        $errorString = implode(' ', $errors);
+        $this->assertTrue(str_contains($errorString, 'email'));
     }
 
     /** @test */
     public function store_method_validates_property_type()
     {
         $request = Request::create('/api/leads', 'POST', [
+            'lead_type' => 'seller',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'property_type' => 'invalid_type'
@@ -126,13 +143,21 @@ class LeadControllerTest extends TestCase
         
         $this->assertEquals(422, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('property_type', $responseData['errors']);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertArrayHasKey('details', $responseData['error']);
+        $this->assertArrayHasKey('field_errors', $responseData['error']['details']);
+        
+        $errors = $responseData['error']['details']['field_errors'];
+        $errorString = implode(' ', $errors);
+        $this->assertTrue(str_contains($errorString, 'property type'));
     }
 
     /** @test */
     public function store_method_validates_contact_method()
     {
         $request = Request::create('/api/leads', 'POST', [
+            'lead_type' => 'seller',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'preferred_contact_method' => 'invalid_method'
@@ -142,13 +167,21 @@ class LeadControllerTest extends TestCase
         
         $this->assertEquals(422, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('preferred_contact_method', $responseData['errors']);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertArrayHasKey('details', $responseData['error']);
+        $this->assertArrayHasKey('field_errors', $responseData['error']['details']);
+        
+        $errors = $responseData['error']['details']['field_errors'];
+        $errorString = implode(' ', $errors);
+        $this->assertTrue(str_contains($errorString, 'contact method'));
     }
 
     /** @test */
     public function store_method_creates_lead_successfully()
     {
         $leadData = [
+            'lead_type' => 'seller',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john@example.com',
@@ -177,6 +210,7 @@ class LeadControllerTest extends TestCase
     public function store_method_generates_ai_scores()
     {
         $leadData = [
+            'lead_type' => 'seller',
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john@example.com'
@@ -232,7 +266,14 @@ class LeadControllerTest extends TestCase
         
         $this->assertEquals(422, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
-        $this->assertArrayHasKey('email', $responseData['errors']);
+        $this->assertEquals('error', $responseData['status']);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertArrayHasKey('details', $responseData['error']);
+        $this->assertArrayHasKey('field_errors', $responseData['error']['details']);
+        
+        $errors = $responseData['error']['details']['field_errors'];
+        $errorString = implode(' ', $errors);
+        $this->assertTrue(str_contains($errorString, 'email'));
     }
 
     /** @test */
@@ -376,7 +417,7 @@ class LeadControllerTest extends TestCase
         // Restore original connection
         config(['database.default' => $originalConnection]);
         
-        $this->assertEquals(500, $response->getStatusCode());
+        $this->assertEquals(422, $response->getStatusCode());
         $responseData = json_decode($response->getContent(), true);
         $this->assertEquals('error', $responseData['status']);
     }

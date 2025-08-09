@@ -31,6 +31,14 @@ class DealFactory extends Factory
             'sale_price' => fake()->numberBetween(110000, 1100000),
             'assignment_fee' => fake()->numberBetween(5000, 50000),
             'status' => 'draft',
+            'organization_id' => function (array $attributes) {
+                // If buyer_id is provided, use their organization
+                if (isset($attributes['buyer_id'])) {
+                    $user = User::find($attributes['buyer_id']);
+                    return $user ? $user->organization_id : \App\Models\Organization::factory();
+                }
+                return \App\Models\Organization::factory();
+            },
         ];
     }
 }
