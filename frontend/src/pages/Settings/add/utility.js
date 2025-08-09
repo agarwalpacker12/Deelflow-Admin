@@ -1,14 +1,20 @@
-// utility.js for Tenant Form
 import * as yup from "yup";
 
+// Helper to allow empty string for optional fields
+const optionalString = () =>
+  yup
+    .string()
+    .transform((value) => (value === "" ? undefined : value))
+    .nullable()
+    .notRequired();
+
 export const DefaultValues = {
-  organization_name: "",
-  organization_id: "",
-  url_path: "",
+  name: "",
   industry: "",
   organization_size: "",
   business_email: "",
   business_phone: "",
+  website: "",
   support_email: "",
   street_address: "",
   city: "",
@@ -17,43 +23,26 @@ export const DefaultValues = {
   country: "",
   timezone: "",
   language: "",
-  // admin_first_name: "",
-  // admin_last_name: "",
-  // admin_email: "",
-  // subscription_plan: "",
-  // send_welcome_email: true,
 };
 
 export const settingsSchema = yup.object().shape({
-  organization_name: yup.string().required("Organization name is required"),
-  organization_id: yup.string().required("Organization ID is required"),
-  url_path: yup.string().required("URL path is required"),
-  industry: yup.string().required("Industry is required"),
-  organization_size: yup.string().required("Organization size is required"),
-  business_email: yup
-    .string()
-    .email("Please enter a valid email")
-    .required("Business email is required"),
-  business_phone: yup.string().required("Business phone is required"),
-  support_email: yup
-    .string()
-    .email("Please enter a valid email")
-    .required("Support email is required"),
-  street_address: yup.string().required("Street address is required"),
-  city: yup.string().required("City is required"),
-  state_province: yup.string().required("State/Province is required"),
-  zip_postal_code: yup.string().required("ZIP/Postal code is required"),
-  country: yup.string().required("Country is required"),
-  timezone: yup.string().required("Timezone is required"),
-  language: yup.string().required("Language is required"),
-  // admin_first_name: yup.string().required("First name is required"),
-  // admin_last_name: yup.string().required("Last name is required"),
-  // admin_email: yup
-  //   .string()
-  //   .email("Please enter a valid email")
-  //   .required("Admin email is required"),
-  // subscription_plan: yup.string().optional(),
-  // send_welcome_email: yup.boolean().optional(),
+  // Required field
+  name: yup.string().required("Organization name is required"),
+
+  // Optional fields (empty string allowed)
+  website: optionalString(),
+  industry: optionalString(),
+  organization_size: optionalString(),
+  business_email: optionalString().email("Please enter a valid email"),
+  business_phone: optionalString(),
+  support_email: optionalString().email("Please enter a valid email"),
+  street_address: optionalString(),
+  city: optionalString(),
+  state_province: optionalString(),
+  zip_postal_code: optionalString(),
+  country: optionalString(),
+  timezone: optionalString(),
+  language: optionalString(),
 });
 
 // Industry options

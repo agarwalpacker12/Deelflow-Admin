@@ -139,5 +139,7 @@ export const TenantAPI = {
 };
 export const OrganizationAPI = {
   getOrganizationStatus: () => api.get(`/organizations/status`),
+  getOrganization: () => api.get(`/organizations`),
+  UpdateOrganization: (id, data) => api.put(`/organizations/${id}`, data),
 };
 export default api;
