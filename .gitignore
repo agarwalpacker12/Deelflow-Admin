@@ -37,5 +37,4 @@ yarn-error.log
 /.fleet
 /storage/app/public
 /public/storage
-frontend/package-lock.json
 *.json
