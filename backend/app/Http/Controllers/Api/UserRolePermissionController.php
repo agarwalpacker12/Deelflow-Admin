@@ -10,7 +10,7 @@ use App\Models\Permission;
 
 class UserRolePermissionController extends Controller
 {
-    // ✅ List users within the same organization
+    
     public function index()
     {
         $orgId = auth()->user()->organization_id;
@@ -19,7 +19,7 @@ class UserRolePermissionController extends Controller
             ->where('organization_id', $orgId)
             ->get();
     }
-    // ✅ Show user only if from same organization
+    //  Show user only if from same organization
     public function show(User $user)
     {
         $this->authorizeUser($user);
@@ -27,7 +27,32 @@ class UserRolePermissionController extends Controller
         return $user->load('roles', 'permissions');
     }
 
-    // ✅ Update user's roles scoped to organization
+    // smae organization wise roles and its corresponding permissions
+    public function getOrganizationRolesWithPermissions()
+    {
+        $organizationId = auth()->user()->organization_id;
+
+        $roles = Role::with('permissions')
+            ->where('organization_id', $organizationId)
+            ->get();
+
+        return response()->json([
+            'roles' => $roles
+        ],200);
+    }
+    // same organization permissions only
+    public function getOrganizationPermissions()
+    {
+        $organizationId = auth()->user()->organization_id;
+
+        $permissions = Permission::where('organization_id', $organizationId)->get();
+
+        return response()->json([
+            'permissions' => $permissions
+        ]);
+    }
+
+    //  Update user's roles scoped to organization
     public function updateRoles(Request $request, User $user)
     {
         $this->authorizeUser($user);
@@ -39,7 +64,6 @@ class UserRolePermissionController extends Controller
             'roles.*' => 'string|exists:roles,name',
         ]);
 
-        // Only assign roles from the same organization
         $roleIds = Role::where('organization_id', $orgId)
             ->whereIn('name', $request->roles)
             ->pluck('id');
@@ -52,7 +76,7 @@ class UserRolePermissionController extends Controller
         ]);
     }
 
-    // ✅ Update user's direct permissions scoped to organization
+    // Update user's direct permissions scoped to organization
     public function updatePermissions(Request $request, User $user)
     {
         $this->authorizeUser($user);
@@ -76,7 +100,6 @@ class UserRolePermissionController extends Controller
         ]);
     }
 
-    // 🧱 Private helper to protect cross-org access
     private function authorizeUser(User $user)
     {
         if ($user->organization_id !== auth()->user()->organization_id) {
