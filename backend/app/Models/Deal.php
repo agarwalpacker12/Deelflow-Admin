@@ -16,7 +16,6 @@ class Deal extends Model
         'uuid',
         'property_id',
         'lead_id',
-        'wholesaler_id',
         'buyer_id',
         'seller_id',
         'funder_id',
@@ -74,11 +73,6 @@ class Deal extends Model
     public function lead(): BelongsTo
     {
         return $this->belongsTo(Lead::class);
-    }
-
-    public function wholesaler(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'wholesaler_id');
     }
 
     public function buyer(): BelongsTo

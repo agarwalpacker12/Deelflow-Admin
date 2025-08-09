@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Search,
   Filter,
@@ -14,11 +14,10 @@ import {
   User,
   Clock,
   TrendingUp,
-  Sparkles,
-  Plus,
 } from "lucide-react";
 import { dealsAPI } from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import MainContentWrapper from "../../components/Layout/MainContentWrapper";
 
 const DealsPage = () => {
   const navigate = useNavigate();
@@ -164,8 +163,8 @@ const DealsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-      <div className="space-y-6">
+    <MainContentWrapper>
+      <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-white">Deals Management</h1>
           <div className="flex items-center gap-3">
@@ -473,7 +472,7 @@ const DealsPage = () => {
           </div>
         )}
       </div>
-    </div>
+    </MainContentWrapper>
   );
 };
 

@@ -1,8 +1,8 @@
-## Users API
+## Invitaion API
 
 ### Register User
 
-*   **Description:** Registers a new user with comprehensive profile information.
+*   **Description:** Registers a new user and organization.
 *   **Method:** POST
 *   **Endpoint:** `/api/register`
 *   **Request:**
@@ -14,9 +14,8 @@
         "password_confirmation": "password",
         "first_name": "John",
         "last_name": "Doe",
-        "company_name": "Real Estate Ventures LLC",
-        "phone": "+14155552671",
-        "role": "wholesaler"
+        "organization_name": "Real Estate Ventures LLC",
+        "phone": "+14155552671"
     }
     ```
 *   **Response (Success):**
@@ -31,20 +30,72 @@
             "email": "user@example.com",
             "first_name": "John",
             "last_name": "Doe",
-            "company_name": "Real Estate Ventures LLC",
+            "organization": {
+                "id": 1,
+                "name": "Real Estate Ventures LLC",
+                "slug": "real-estate-ventures-llc",
+                "subscription_status": "active",
+                "created_at": "2025-06-26T20:00:00.000000Z",
+                "updated_at": "2025-06-26T20:00:00.000000Z"
+            },
             "phone": "+14155552671",
-            "role": "wholesaler",
+            "role": "admin",
+            "level": 1,
+            "points": 0,
+            "is_verified": false,
+            "is_active": true,
+            "status": "active",
+            "created_at": "2025-06-26T20:00:00.000000Z",
+            "updated_at": "2025-06-26T20:00:00.000000Z"
+        }
+    }
+    ```
+
+### Register Invitee User
+
+*   **Description:** Registers a new user with comprehensive profile information.
+*   **Method:** POST
+*   **Endpoint:** `/api/invitee-register`
+*   **Request:**
+
+    ```json
+    {
+        "password": "password",
+        "password_confirmation": "password",
+        "first_name": "John",
+        "last_name": "Doe",
+        "phone": "+14155552671",
+        "invitation_token":"2yWyOxiZHgqVcNVQTXYdzte7boypWh5tnaadaHSQ"
+    }
+    ```
+*   **Response (Success):**
+
+    ```json
+   {
+        "status": "success",
+        "message": "User registered successfully",
+        "data": {
+            "id": 74,
+            "uuid": "db7084a4-ded1-44c7-a690-6f7c7128997f",
+            "email": "Prosuntest@mailinator.com",
+            "first_name": "Prosun",
+            "last_name": "invitee",
+            "organization": null,
+            "phone": "9868985856",
+            "role": "staff",
             "level": 1,
             "points": 0,
             "subscription_tier": "starter",
             "subscription_status": "active",
             "is_verified": false,
             "is_active": true,
-            "created_at": "2025-06-26T20:00:00.000000Z",
-            "updated_at": "2025-06-26T20:00:00.000000Z"
+            "created_at": "2025-08-08T08:44:46.000000Z",
+            "updated_at": "2025-08-08T08:44:46.000000Z"
         }
     }
     ```
+    ```
+
 
 ### Login User
 
@@ -73,7 +124,7 @@
                 "email": "user@example.com",
                 "first_name": "John",
                 "last_name": "Doe",
-                "role": "wholesaler"
+                "role": "admin"
             }
         }
     }
@@ -97,15 +148,14 @@
             "email": "user@example.com",
             "first_name": "John",
             "last_name": "Doe",
-            "company_name": "Real Estate Ventures LLC",
+            "company_name": null,
             "phone": "+14155552671",
-            "role": "wholesaler",
+            "role": "admin",
             "level": 1,
             "points": 0,
-            "subscription_tier": "starter",
-            "subscription_status": "active",
             "is_verified": false,
             "is_active": true,
+            "status": "active",
             "created_at": "2025-06-26T20:00:00.000000Z",
             "updated_at": "2025-06-26T20:00:00.000000Z"
         }
@@ -125,3 +175,47 @@
         "status": "success",
         "message": "User logged out successfully"
     }
+
+
+### Invite User
+
+*   **Description:** Invites users.
+*   **Method:** POST
+*   **Endpoint:** `/api/invitations`
+*   **Headers:** `Authorization: Bearer {token}`
+    **Request:**
+
+        ```json
+        {
+            "email": "user@example.com",
+            "role": "staff"
+        }
+    ```
+*   **Response (Success):**
+
+    ```json
+    {
+        "message": "Invitation sent successfully."
+    }
+
+
+
+
+### Validate Invitaion Token
+
+*   **Description:** Validate the token.
+*   **Method:** GET
+*   **Endpoint:** `/api/validate-invitation?token={invitationtoken}`
+*   **Headers:** `Authorization: Bearer {token}`
+*   **Response (Success):**
+
+    ```json
+    {
+    "email": "example@mailinator.com",
+    "role": "staff",
+    "organization": {
+        "id": 1,
+        "name": "Unitech"
+    }
+    }
+    

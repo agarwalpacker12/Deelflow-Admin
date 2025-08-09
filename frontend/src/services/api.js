@@ -71,6 +71,10 @@ export const authAPI = {
   register: (userData) => api.post("/register", userData),
   logout: () => api.post("/logout"),
   getCurrentUser: () => api.get("/user"),
+  invite: (data) => api.post("/invitations", data),
+  getInvitation: (invitationtoken) =>
+    api.get(`/validate-invitation?token=${invitationtoken}`),
+  inviteeRegister: (userData) => api.post("/invitee-register", userData),
 };
 
 // Rest of your APIs...

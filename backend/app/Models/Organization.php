@@ -12,6 +12,21 @@ class Organization extends Model
     protected $fillable = [
         'name',
         'uuid',
+        'slug',
+        'subscription_status',
+        'industry',
+        'organization_size',
+        'business_email',
+        'business_phone',
+        'website',
+        'support_email',
+        'street_address',
+        'city',
+        'state_province',
+        'zip_postal_code',
+        'country',
+        'timezone',
+        'language',
     ];
 
     protected $casts = [

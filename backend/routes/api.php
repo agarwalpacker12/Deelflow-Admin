@@ -15,7 +15,7 @@ use App\Http\Controllers\Api\CampaignRecipientController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\UserRolePermissionController;
-;
+use App\Http\Controllers\Api\OrganizationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,8 +30,10 @@ use App\Http\Controllers\Api\UserRolePermissionController;
 
 // Authentication routes (public)
 Route::post('/register', [AuthController::class, 'register']);
+Route::post('/invitee-register', [AuthController::class, 'inviteeRegister']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register/invitation/{token}', [AuthController::class, 'registerInvitedUser'])->name('register.invitation');
+// Route::post('/register/invitation/{token}', [AuthController::class, 'registerInvitedUser'])->name('register.invitation');
+Route::get('/validate-invitation', [InvitationController::class, 'validateToken'])->name('validate.invitation');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -71,6 +73,13 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Client routes
     Route::apiResource('clients', ClientController::class);
+
+    // Organization routes
+    Route::get('organizations/status', [OrganizationController::class, 'getStatus']);
+    Route::apiResource('organizations', OrganizationController::class);
+    Route::patch('organizations/{organization}/subscription-status', [OrganizationController::class, 'updateSubscriptionStatus']);
+    Route::delete('organizations/{organization}/users/{user}', [OrganizationController::class, 'removeUser']);
+    Route::patch('organizations/{organization}/users/{user}/status', [OrganizationController::class, 'updateUserStatus']);
     
     // User achievement routes
     Route::apiResource('user-achievements', UserAchievementController::class);

@@ -31,9 +31,9 @@ class DealMilestoneController extends Controller
         
         $query = DealMilestone::with(['deal', 'completedBy'])
             ->whereHas('deal', function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                $q->where('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             });
 
         // Apply filters
@@ -121,9 +121,9 @@ class DealMilestoneController extends Controller
         // Real implementation - only show milestones for deals user is involved in
         $milestone = DealMilestone::with(['deal', 'completedBy'])
             ->whereHas('deal', function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                $q->where('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             })
             ->find($id);
 
@@ -158,9 +158,9 @@ class DealMilestoneController extends Controller
 
         // Real implementation - only update milestones for deals user is involved in
         $milestone = DealMilestone::whereHas('deal', function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                $q->where('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             })
             ->find($id);
 
@@ -193,9 +193,9 @@ class DealMilestoneController extends Controller
 
         // Real implementation - only delete milestones for deals user is involved in
         $milestone = DealMilestone::whereHas('deal', function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                $q->where('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             })
             ->find($id);
 
@@ -225,9 +225,9 @@ class DealMilestoneController extends Controller
 
         // Real implementation - only complete milestones for deals user is involved in
         $milestone = DealMilestone::whereHas('deal', function($q) {
-                $q->where('wholesaler_id', auth()->id())
-                  ->orWhere('buyer_id', auth()->id())
-                  ->orWhere('seller_id', auth()->id());
+                $q->where('buyer_id', auth()->id())
+                  ->orWhere('seller_id', auth()->id())
+                  ->orWhere('funder_id', auth()->id());
             })
             ->find($id);
 

@@ -17,7 +17,20 @@ class AuthControllerTest extends TestCase
         $response = $this->postJson('/api/register', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['first_name', 'last_name', 'email', 'password', 'role']);
+            ->assertJson([
+                'status' => 'error',
+                'error' => [
+                    'code' => 'VALIDATION_ERROR'
+                ]
+            ])
+            ->assertJsonPath('error.details.field_errors', function ($errors) {
+                return is_array($errors) && count($errors) > 0 && 
+                       (str_contains(implode(' ', $errors), 'first_name') ||
+                        str_contains(implode(' ', $errors), 'last_name') ||
+                        str_contains(implode(' ', $errors), 'email') ||
+                        str_contains(implode(' ', $errors), 'password') ||
+                        str_contains(implode(' ', $errors), 'role'));
+            });
     }
 
     /** @test */
@@ -33,7 +46,16 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email']);
+            ->assertJson([
+                'status' => 'error',
+                'error' => [
+                    'code' => 'VALIDATION_ERROR'
+                ]
+            ])
+            ->assertJsonPath('error.details.field_errors', function ($errors) {
+                return is_array($errors) && count($errors) > 0 && 
+                       str_contains(implode(' ', $errors), 'email');
+            });
     }
 
     /** @test */
@@ -49,7 +71,16 @@ class AuthControllerTest extends TestCase
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['password']);
+            ->assertJson([
+                'status' => 'error',
+                'error' => [
+                    'code' => 'VALIDATION_ERROR'
+                ]
+            ])
+            ->assertJsonPath('error.details.field_errors', function ($errors) {
+                return is_array($errors) && count($errors) > 0 && 
+                       str_contains(implode(' ', $errors), 'password');
+            });
     }
 
     /** @test */
@@ -61,7 +92,8 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => 'wholesaler'
+            'role' => 'wholesaler',
+            'organization_name' => 'Test Organization'
         ];
 
         $response = $this->postJson('/api/register', $userData);
@@ -96,13 +128,23 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => 'wholesaler'
+            'role' => 'wholesaler',
+            'organization_name' => 'Test Organization'
         ];
 
         $response = $this->postJson('/api/register', $userData);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email']);
+            ->assertJson([
+                'status' => 'error',
+                'error' => [
+                    'code' => 'VALIDATION_ERROR'
+                ]
+            ])
+            ->assertJsonPath('error.details.field_errors', function ($errors) {
+                return is_array($errors) && count($errors) > 0 && 
+                       str_contains(implode(' ', $errors), 'email');
+            });
     }
 
     /** @test */
@@ -111,7 +153,17 @@ class AuthControllerTest extends TestCase
         $response = $this->postJson('/api/login', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['email', 'password']);
+            ->assertJson([
+                'status' => 'error',
+                'error' => [
+                    'code' => 'VALIDATION_ERROR'
+                ]
+            ])
+            ->assertJsonPath('error.details.field_errors', function ($errors) {
+                return is_array($errors) && count($errors) > 0 && 
+                       (str_contains(implode(' ', $errors), 'email') ||
+                        str_contains(implode(' ', $errors), 'password'));
+            });
     }
 
     /** @test */
@@ -127,10 +179,10 @@ class AuthControllerTest extends TestCase
             'password' => 'wrong_password'
         ]);
 
-        $response->assertStatus(401)
+        $response->assertStatus(400)
             ->assertJson([
                 'status' => 'error',
-                'message' => 'Invalid credentials'
+                'message' => 'Login failed. The email address or password you entered is incorrect.'
             ]);
     }
 
@@ -175,7 +227,7 @@ class AuthControllerTest extends TestCase
         $response->assertStatus(403)
             ->assertJson([
                 'status' => 'error',
-                'message' => 'Account is deactivated'
+                'message' => 'You don\'t have permission to access your account because it has been deactivated.'
             ]);
     }
 

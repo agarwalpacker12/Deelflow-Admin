@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { propertySaveAPI } from "../../services/api";
+import MainContentWrapper from "../../components/Layout/MainContentWrapper";
 
 const SavedPropertiesPage = () => {
   const [savedProperties, setSavedProperties] = useState([]);
@@ -7,7 +8,9 @@ const SavedPropertiesPage = () => {
   useEffect(() => {
     const fetchSavedProperties = async () => {
       try {
-        const response = await propertySaveAPI.getPropertySave({ per_page: 100 });
+        const response = await propertySaveAPI.getPropertySave({
+          per_page: 100,
+        });
         if (response.data.status === "success") {
           setSavedProperties(response.data.data.data);
         }
@@ -36,8 +39,8 @@ const SavedPropertiesPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
-      <div className="space-y-6">
+    <MainContentWrapper>
+      <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-white">Saved Properties</h1>
           <div className="text-sm text-gray-400">
@@ -198,7 +201,7 @@ const SavedPropertiesPage = () => {
           </div>
         </div>
       </div>
-    </div>
+    </MainContentWrapper>
   );
 };
 

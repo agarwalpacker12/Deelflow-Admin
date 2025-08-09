@@ -25,7 +25,6 @@ class DataSchemaTest extends TestCase
         $deal = Deal::factory()->create([
             'property_id' => $property->id,
             'lead_id' => $lead->id,
-            'wholesaler_id' => $user->id,
         ]);
 
         $this->assertInstanceOf(User::class, $property->user);
@@ -40,7 +39,5 @@ class DataSchemaTest extends TestCase
         $this->assertInstanceOf(Lead::class, $deal->lead);
         $this->assertEquals($lead->id, $deal->lead->id);
 
-        $this->assertInstanceOf(User::class, $deal->wholesaler);
-        $this->assertEquals($user->id, $deal->wholesaler->id);
     }
 }

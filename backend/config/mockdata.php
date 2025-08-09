@@ -99,10 +99,8 @@ return [
         ],
         
         'user_roles' => [
-            'wholesaler',
-            'investor',
-            'funder',
             'admin',
+            'staff',
         ],
         
         'subscription_tiers' => [

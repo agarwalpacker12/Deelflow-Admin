@@ -66,11 +66,15 @@ import ContentManagementPage from "./pages/Content_Management/page.jsx";
 import ClientPage from "./pages/Client/page.jsx";
 import AdvancedPage from "./pages/Advance/page.jsx";
 import AiSettingsPage from "./pages/Ai-settings/page.jsx";
-import GeneralSettingsPage from "./pages/General-settings/page.jsx";
 import LiveActivityPage from "./pages/LiveActivity/page.jsx";
 import TenantManagementPage from "./pages/TenantManagement/page.jsx";
 import UserManagementPage from "./pages/UserManagement/page.jsx";
 import RoleManagementPage from "./pages/RoleManagement/page.jsx";
+import BillingPage from "./pages/Billing/page.jsx";
+import OrganizationSettingsPage from "./pages/Settings/SettingsPage.jsx";
+
+import InviteeRegister from "./pages/Auth/InviteRegister.jsx";
+import TestAfterLogin from "./pages/TestAfterLogin/page.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -144,6 +148,7 @@ function App() {
                             index
                             element={<Navigate to="/app/dashboard" replace />}
                           />
+
                           <Route path="dashboard" element={<Dashboard />} />
                           <Route path="leads" element={<LeadsPage />} />
                           <Route path="leads/add" element={<AddLead />} />
@@ -225,7 +230,7 @@ function App() {
                           />
                           <Route
                             path="settings"
-                            element={<GeneralSettingsPage />}
+                            element={<OrganizationSettingsPage />}
                           />
                           <Route
                             path="live-activity"
@@ -243,6 +248,12 @@ function App() {
                             path="role-management"
                             element={<RoleManagementPage />}
                           />
+                          <Route path="billing" element={<BillingPage />} />
+                          <Route
+                            path="invitee-register"
+                            element={<InviteeRegister />}
+                          />
+                          <Route path="test" element={<TestAfterLogin />} />
                           {/* <Route
                             path="marketplace"
                             element={<MarketplacePage />}

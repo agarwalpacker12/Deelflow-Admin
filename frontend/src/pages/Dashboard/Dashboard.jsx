@@ -42,6 +42,7 @@ import {
   Area,
   AreaChart,
 } from "recharts";
+import MainContentWrapper from "../../components/Layout/MainContentWrapper";
 
 const Dashboard = () => {
   const [timeframe, setTimeframe] = useState("7d");
@@ -57,7 +58,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6">
+    <MainContentWrapper>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -470,7 +471,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </MainContentWrapper>
   );
 };
 

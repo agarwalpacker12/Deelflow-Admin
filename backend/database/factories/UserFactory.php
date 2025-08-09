@@ -31,20 +31,20 @@ class UserFactory extends Factory
             'phone' => fake()->phoneNumber(),
             'password' => static::$password ??= Hash::make('password'),
             'company_name' => fake()->company(),
-            'role' => 'wholesaler',
+            'role' => 'admin',
             'level' => 1,
             'points' => 0,
             'avatar_url' => fake()->imageUrl(),
             'blockchain_wallet' => Str::random(42),
             'stripe_customer_id' => 'cus_' . Str::random(14),
-            'subscription_tier' => 'starter',
-            'subscription_status' => 'active',
             'is_verified' => false,
             'is_active' => true,
+            'status' => 'active',
             'preferences' => '{}',
             'metadata' => '{}',
             'last_login_at' => now(),
             'email_verified_at' => now(),
+            'organization_id' => \App\Models\Organization::factory(),
         ];
     }
 
