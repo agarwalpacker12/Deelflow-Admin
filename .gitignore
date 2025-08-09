@@ -37,3 +37,4 @@ yarn-error.log
 /.fleet
 /storage/app/public
 /public/storage
+*.json

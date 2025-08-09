@@ -165,4 +165,22 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Organization::class);
     }
+
+    // roles
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class);
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->where('name', $role)->exists();
+    }
+
+    public function hasPermission($permission)
+    {
+        return $this->roles()
+            ->whereHas('permissions', fn($q) => $q->where('name', $permission))
+            ->exists();
+    }
 }
