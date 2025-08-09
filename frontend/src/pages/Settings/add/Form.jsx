@@ -1,7 +1,13 @@
 import { Save } from "lucide-react";
 import { Text } from "@radix-ui/themes";
-import { DefaultValues, settingsSchema } from "./utility";
-import { TenantAPI } from "../../../services/api";
+import {
+  countries,
+  DefaultValues,
+  industries,
+  organizationSizes,
+  settingsSchema,
+} from "./utility";
+import { OrganizationAPI, TenantAPI } from "../../../services/api";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,8 +15,9 @@ import { useForm } from "react-hook-form";
 import ButtonLoader from "../../../components/UI/ButtonLoader";
 import { setTenants } from "../../../store/slices/tenantSlice";
 
-const CreateOrganizationForm = ({ onClose }) => {
+const CreateOrganizationForm = ({ orgState }) => {
   const dispatch = useDispatch();
+  console.log("orgState", orgState);
 
   // Fixed: Add proper fallback and null check for tenants state
   const tenantsState = useSelector((state) => state.tenants);
@@ -24,31 +31,18 @@ const CreateOrganizationForm = ({ onClose }) => {
     watch,
   } = useForm({
     resolver: yupResolver(settingsSchema),
-    defaultValues: DefaultValues,
+    defaultValues: orgState,
   });
 
   const mutation = useMutation({
     mutationFn: async (data) => {
-      const res = await TenantAPI.createTenant(data);
+      const res = await OrganizationAPI.UpdateOrganization(data.id, data);
       return res;
     },
     onSuccess: (data) => {
       if (data.data.status == "success") {
         // Fixed: Make sure toast is imported or available
-        if (typeof toast !== "undefined") {
-          toast.success(data.data.message);
-        }
-
-        // Fixed: Use proper tenants array with fallback
-        const updatedTenants = Array.isArray(tenants)
-          ? [...tenants, data.data.data]
-          : [data.data.data];
-        dispatch(setTenants(updatedTenants));
-
-        // Fixed: Make sure navigate is imported or available
-        if (typeof navigate !== "undefined") {
-          navigate("/app/tenant-management");
-        }
+        toast.success(data.data.message);
       }
     },
     onError: (error) => {
@@ -61,7 +55,27 @@ const CreateOrganizationForm = ({ onClose }) => {
   });
 
   const onSubmit = (data) => {
-    mutation.mutate(data);
+    const formattedRequest = {
+      id: data.id,
+      name: data.name,
+      industry: data.industry,
+      organization_size: data.organization_size,
+      business_email: data.business_email,
+      business_phone: data.business_phone,
+      website: data.website,
+      support_email: data.support_email,
+      street_address: data.street_address,
+      city: data.city,
+      state_province: data.state_province,
+      zip_postal_code: data.zip_postal_code,
+      country: data.country,
+      timezone: data.timezone,
+      language: data.language,
+    };
+
+    console.log("formattedRequest", formattedRequest);
+
+    mutation.mutate(formattedRequest);
   };
 
   return (
@@ -76,51 +90,46 @@ const CreateOrganizationForm = ({ onClose }) => {
                   Organization Details
                 </h2>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Organization Name<Text className="text-red-700">*</Text>
                     </label>
                     <input
-                      {...register("organization_name")}
+                      {...register("name")}
                       type="text"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                        errors.organization_name
-                          ? "border-red-500"
-                          : "border-gray-300"
+                        errors.name ? "border-red-500" : "border-gray-300"
                       }`}
                       placeholder="Enter your first name"
                     />
-                    {errors.organization_name && (
+                    {errors.name && (
                       <p className="text-red-500 text-sm mt-1">
-                        {errors.organization_name.message}
+                        {errors.name.message}
                       </p>
                     )}
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      organization id <Text className="text-red-700">*</Text>
-                    </label>
-                    <input
-                      {...register("organization_id")}
-                      type="text"
-                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
-                        errors.organization_id
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                      placeholder="Enter your last name"
-                    />
-                    {errors.organization_id && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.organization_id.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
+                </div> */}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Organization Name<Text className="text-red-700">*</Text>
+                    </label>
+                    <input
+                      {...register("name")}
+                      type="text"
+                      className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
+                        errors.name ? "border-red-500" : "border-gray-300"
+                      }`}
+                      placeholder="Enter your first name"
+                    />
+                    {errors.name && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.name.message}
+                      </p>
+                    )}
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       URL Path
@@ -132,14 +141,14 @@ const CreateOrganizationForm = ({ onClose }) => {
                       </span>
                       <input
                         type="text"
-                        {...register("url_path")}
+                        {...register("website")}
                         className="flex-1 px-4 py-3 border rounded-r-lg text-black border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         placeholder="abc-wholesalers"
                       />
                     </div>
-                    {errors.url_path && (
+                    {errors.website && (
                       <p className="text-sm text-red-500 mt-1">
-                        {errors.url_path?.message}
+                        {errors.website?.message}
                       </p>
                     )}
                   </div>
@@ -148,14 +157,23 @@ const CreateOrganizationForm = ({ onClose }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Industry <Text className="text-red-700">*</Text>
                     </label>
-                    <input
+                    <select
+                      {...register("industry")}
+                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black border-gray-300"
+                    >
+                      <option value="">Choose a industry...</option>
+                      {industries.map((item) => (
+                        <option value={item.value}>{item.label}</option>
+                      ))}
+                    </select>
+                    {/* <input
                       {...register("industry")}
                       type="text"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                         errors.industry ? "border-red-500" : "border-gray-300"
                       }`}
                       placeholder="Enter your industry number"
-                    />
+                    /> */}
                     {errors.industry && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.industry.message}
@@ -169,7 +187,16 @@ const CreateOrganizationForm = ({ onClose }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       organization size<Text className="text-red-700">*</Text>
                     </label>
-                    <input
+                    <select
+                      {...register("organization_size")}
+                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black border-gray-300"
+                    >
+                      <option value="">Choose a organization size...</option>
+                      {organizationSizes.map((item) => (
+                        <option value={item.value}>{item.label}</option>
+                      ))}
+                    </select>
+                    {/* <input
                       {...register("organization_size")}
                       type="text"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
@@ -178,7 +205,7 @@ const CreateOrganizationForm = ({ onClose }) => {
                           : "border-gray-300"
                       }`}
                       placeholder="Enter your first name"
-                    />
+                    /> */}
                     {errors.organization_size && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.organization_size.message}
@@ -313,7 +340,6 @@ const CreateOrganizationForm = ({ onClose }) => {
                     <input
                       {...register("state_province")}
                       type="text"
-                      step="0.01"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                         errors.state_province
                           ? "border-red-500"
@@ -334,7 +360,6 @@ const CreateOrganizationForm = ({ onClose }) => {
                     <input
                       {...register("zip_postal_code")}
                       type="text"
-                      step="0.01"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                         errors.zip_postal_code
                           ? "border-red-500"
@@ -352,14 +377,22 @@ const CreateOrganizationForm = ({ onClose }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Country
                     </label>
-                    <input
+                    <select
+                      {...register("country")}
+                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black border-gray-300"
+                    >
+                      <option value="">Choose a organization size...</option>
+                      {countries.map((item) => (
+                        <option value={item.value}>{item.label}</option>
+                      ))}
+                    </select>
+                    {/* <input
                       {...register("country")}
                       type="text"
-                      step="0.01"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                         errors.country ? "border-red-500" : "border-gray-300"
                       }`}
-                    />
+                    /> */}
                     {errors.country && (
                       <p className="text-red-500 text-sm mt-1">
                         {errors.country.message}
@@ -384,7 +417,6 @@ const CreateOrganizationForm = ({ onClose }) => {
                     <input
                       {...register("timezone")}
                       type="text"
-                      step="0.01"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                         errors.timezone ? "border-red-500" : "border-gray-300"
                       }`}
@@ -403,7 +435,6 @@ const CreateOrganizationForm = ({ onClose }) => {
                     <input
                       {...register("language")}
                       type="text"
-                      step="0.01"
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-black ${
                         errors.language ? "border-red-500" : "border-gray-300"
                       }`}

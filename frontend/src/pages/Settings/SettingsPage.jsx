@@ -1,8 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CreateOrganizationForm from "./add/Form";
+import { OrganizationAPI } from "../../services/api";
 
 function AddOrganizationSettings() {
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const [orgState, setOrgState] = useState();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const fetchOrganizationHandler = async () => {
+      setLoading(true);
+      try {
+        const response = await OrganizationAPI.getOrganization();
+        console.log("edit", response.data[0]);
+
+        setOrgState(response.data[0]); // Adjust if your API response is nested differently
+      } catch (err) {
+        setError("Failed to fetch campaign details");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrganizationHandler();
+  }, []);
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-indigo-900 p-4 md:p-6">
       <div className="max-w-5xl mx-auto">
@@ -16,30 +37,8 @@ function AddOrganizationSettings() {
             </p>
           </div>
 
-          <div className="p-6 md:p-8">
-            {/* Success Message */}
-            {submitStatus && submitStatus.type === "success" && (
-              <div className="mb-6 p-4 rounded-lg bg-green-50 border-l-4 border-green-400 text-green-800">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5" />
-                  {submitStatus.message}
-                </div>
-              </div>
-            )}
-
-            {/* Error Message */}
-            {submitStatus && submitStatus.type === "error" && (
-              <div className="mb-6 p-4 rounded-lg bg-red-50 border-l-4 border-red-400 text-red-800">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5" />
-                  {submitStatus.message}
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-6">
-              <CreateOrganizationForm />
-            </div>
+          <div className="space-y-6">
+            <CreateOrganizationForm orgState={orgState} />
           </div>
         </div>
       </div>
