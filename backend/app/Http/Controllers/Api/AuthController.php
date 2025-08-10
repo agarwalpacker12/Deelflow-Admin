@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\Organization;
 use App\Models\Invitation;
 use Illuminate\Support\Str;
+use App\Services\OrganizationRolePermissionSetupService;
+use App\Models\Role;
 
 class AuthController extends Controller
 {
@@ -66,6 +68,8 @@ class AuthController extends Controller
                 'is_verified' => false,
                 'is_active' => true,
             ]);
+
+            app(OrganizationRolePermissionSetupService::class)->setup($organization, $user, 'admin');
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -129,6 +133,15 @@ class AuthController extends Controller
                 'is_verified' => false,
                 'is_active' => true,
             ]);
+
+            // role-permission
+            $role = Role::where('organization_id', $organization->id)
+                ->where('name', $invitation->role) // 'staff','admin'
+                ->first();
+
+            if ($role) {
+                $user->roles()->attach($role->id);
+            }
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
