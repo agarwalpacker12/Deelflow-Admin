@@ -8,9 +8,10 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Permission;
+use App\Models\Organization;
 use Illuminate\Support\Facades\Validator;
 
-class UserRolePermissionController extends Controller
+class SuperAdminController extends Controller
 {
     use MockableController;
 
@@ -18,5 +19,8 @@ class UserRolePermissionController extends Controller
     {
         $this->initializeMockDataService();
     }
-    
+
+
+
+
 }

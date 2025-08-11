@@ -30,8 +30,85 @@ The `Organization` model contains the following fields:
 
 ### GET /api/organizations
 
-- **Description:** Retrieve the current user's organization.
-- **Response:** A JSON object representing the organization.
+- **Description:** Retrieve organizations based on user role:
+  - **Super Admin**: Returns all organizations with pagination and filtering
+  - **Regular Users**: Returns only their own organization
+- **Query Parameters (Super Admin only):**
+  - `page` (integer, optional): Page number for pagination (default: 1)
+  - `per_page` (integer, optional): Items per page (default: 10, max: 100)
+  - `subscription_status` (string, optional): Filter by subscription status (`new`, `active`, `suspended`, `waiting`)
+  - `search` (string, optional): Search organizations by name
+- **Response:**
+
+**For Super Admin:**
+```json
+{
+  "status": "success",
+  "message": "Organizations retrieved successfully",
+  "data": {
+    "organizations": [
+      {
+        "id": 1,
+        "uuid": "550e8400-e29b-41d4-a716-446655440000",
+        "name": "Example Organization",
+        "slug": "example-organization",
+        "subscription_status": "active",
+        "industry": "Technology",
+        "organization_size": "50-100",
+        "business_email": "contact@example.com",
+        "business_phone": "+1234567890",
+        "website": "https://example.com",
+        "users_count": 25,
+        "roles_count": 2,
+        "permissions_count": 6,
+        "created_at": "2025-08-11T09:00:00.000000Z",
+        "updated_at": "2025-08-11T09:00:00.000000Z"
+      }
+    ],
+    "pagination": {
+      "current_page": 1,
+      "per_page": 10,
+      "total": 5,
+      "last_page": 1,
+      "from": 1,
+      "to": 5
+    },
+    "filters_applied": {
+      "subscription_status": "active"
+    }
+  }
+}
+```
+
+**For Regular Users:**
+```json
+{
+  "status": "success",
+  "message": "Organization retrieved successfully",
+  "data": {
+    "id": 1,
+    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "name": "User's Organization",
+    "slug": "users-organization",
+    "subscription_status": "active",
+    "industry": "Technology",
+    "organization_size": "10-50",
+    "business_email": "contact@userorg.com",
+    "business_phone": "+1234567890",
+    "website": "https://userorg.com",
+    "support_email": "support@userorg.com",
+    "street_address": "123 Main St",
+    "city": "New York",
+    "state_province": "NY",
+    "zip_postal_code": "10001",
+    "country": "USA",
+    "timezone": "America/New_York",
+    "language": "en",
+    "created_at": "2025-08-11T09:00:00.000000Z",
+    "updated_at": "2025-08-11T09:00:00.000000Z"
+  }
+}
+```
 
 ### GET /api/organizations/{id}
 

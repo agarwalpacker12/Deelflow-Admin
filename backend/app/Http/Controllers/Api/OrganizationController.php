@@ -31,6 +31,58 @@ class OrganizationController extends Controller
         // Real implementation
         $user = $request->user();
         
+        // Super admin can see all organizations
+        if ($user->isSuperAdmin()) {
+            [$page, $perPage] = $this->getPaginationParams($request);
+            $filters = $this->getFilterParams($request, ['subscription_status']);
+
+            $query = Organization::withCount(['users', 'roles', 'permissions']);
+
+            if (isset($filters['subscription_status'])) {
+                $query->where('subscription_status', $filters['subscription_status']);
+            }
+
+            if (isset($filters['search'])) {
+                $query->where('name', 'like', '%' . $filters['search'] . '%');
+            }
+
+            $organizations = $query->paginate($perPage, ['*'], 'page', $page);
+
+            $formattedOrganizations = $organizations->getCollection()->map(function ($organization) {
+                return [
+                    'id' => $organization->id,
+                    'uuid' => $organization->uuid,
+                    'name' => $organization->name,
+                    'slug' => $organization->slug,
+                    'subscription_status' => $organization->subscription_status,
+                    'industry' => $organization->industry,
+                    'organization_size' => $organization->organization_size,
+                    'business_email' => $organization->business_email,
+                    'business_phone' => $organization->business_phone,
+                    'website' => $organization->website,
+                    'users_count' => $organization->users_count,
+                    'roles_count' => $organization->roles_count,
+                    'permissions_count' => $organization->permissions_count,
+                    'created_at' => $organization->created_at->toISOString(),
+                    'updated_at' => $organization->updated_at->toISOString(),
+                ];
+            });
+
+            return $this->successResponse([
+                'organizations' => $formattedOrganizations,
+                'pagination' => [
+                    'current_page' => $organizations->currentPage(),
+                    'per_page' => $organizations->perPage(),
+                    'total' => $organizations->total(),
+                    'last_page' => $organizations->lastPage(),
+                    'from' => $organizations->firstItem(),
+                    'to' => $organizations->lastItem(),
+                ],
+                'filters_applied' => $filters,
+            ], 'Organizations retrieved successfully');
+        }
+
+        // Regular users see only their organization
         if (!$user->organization) {
             return $this->notFoundResponse('organization');
         }

@@ -15,9 +15,12 @@ use App\Http\Controllers\Api\CampaignRecipientController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\UserRolePermissionController;
+use App\Http\Controllers\Api\SuperAdminController;
 use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\StripeWebhookController;
+use App\Http\Controllers\Api\RbacController;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,12 +49,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/invitations', [InvitationController::class, 'store']);
-    
+
     // Lead routes
+    // Route::middleware('permission:manage_lead')->group(function () {
     Route::apiResource('leads', LeadController::class);
     Route::get('leads/{lead}/ai-score', [LeadController::class, 'aiScore']);
-    
+    // )};
+
     // Property routes
+    // Route::middleware('permission:manage_properties')->group(function () {
     Route::apiResource('properties', PropertyController::class);
     Route::get('properties/{property}/ai-analysis', [PropertyController::class, 'aiAnalysis']);
     
@@ -65,26 +71,32 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Property saves routes
     Route::apiResource('property-saves', PropertySaveController::class);
+    // )};
     
     // AI conversation routes
     Route::apiResource('ai-conversations', AiConversationController::class);
-    
+
     // Campaign routes
+    // Route::middleware('permission:manage_campaign')->group(function () {
     Route::apiResource('campaigns', CampaignController::class);
     Route::get('campaigns/{campaign}/recipients', [CampaignController::class, 'recipients']);
     
     // Campaign recipient routes
     Route::apiResource('campaign-recipients', CampaignRecipientController::class);
-    
-    // Client routes
-    Route::apiResource('clients', ClientController::class);
+    // });
 
+        // Client routes
+    //Route::middleware('permission:manage_client')->group(function () {
+        Route::apiResource('clients', ClientController::class)->middleware('permission:manage_clint');
+    // });
     // Organization routes
-    Route::get('organizations/status', [OrganizationController::class, 'getStatus']);
-    Route::apiResource('organizations', OrganizationController::class);
-    Route::patch('organizations/{organization}/subscription-status', [OrganizationController::class, 'updateSubscriptionStatus']);
-    Route::delete('organizations/{organization}/users/{user}', [OrganizationController::class, 'removeUser']);
-    Route::patch('organizations/{organization}/users/{user}/status', [OrganizationController::class, 'updateUserStatus']);
+    // Route::middleware('permission:manage_org')->group(function () {
+        Route::get('organizations/status', [OrganizationController::class, 'getStatus']);
+        Route::apiResource('organizations', OrganizationController::class);
+        Route::patch('organizations/{organization}/subscription-status', [OrganizationController::class, 'updateSubscriptionStatus']);
+        Route::delete('organizations/{organization}/users/{user}', [OrganizationController::class, 'removeUser']);
+        Route::patch('organizations/{organization}/users/{user}/status', [OrganizationController::class, 'updateUserStatus']);
+   // });
     
     // User achievement routes
     Route::apiResource('user-achievements', UserAchievementController::class);
@@ -153,14 +165,18 @@ Route::group(['middleware' => 'api'], function () {
     }
 });
 
-// role based system for saas
-Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/users', [UserRolePermissionController::class, 'index']);
-    Route::get('/users/{user}', [UserRolePermissionController::class, 'show']);
+// RBAC routes - accessible by both super admin and organization admin with dual functionality
+Route::middleware(['auth:sanctum'])->prefix('rbac')->group(function () {
+    // Roles and permissions with dual functionality based on user type
+    Route::get('/roles', [RbacController::class, 'getRoles']);
+    Route::get('/permissions', [RbacController::class, 'getPermissions']);
+    Route::put('/roles/{role}', [RbacController::class, 'updateRolePermissions']);
+});
 
-    // Update user's roles
-    Route::put('/users/{user}/roles', [UserRolePermissionController::class, 'updateRoles']);
-
-    // Update user's permissions
-    Route::put('/users/{user}/permissions', [UserRolePermissionController::class, 'updatePermissions']);
+// Consolidated User routes - accessible by both super admin and organization admin with dual functionality
+Route::middleware(['auth:sanctum'])->group(function () {
+    // User management with dual functionality based on user type
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::put('/users/{user}/roles', [UserController::class, 'updateRoles']);
 });
