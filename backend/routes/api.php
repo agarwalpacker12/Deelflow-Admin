@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\UserRolePermissionController;
 use App\Http\Controllers\Api\OrganizationController;
+use App\Http\Controllers\Api\PaymentController;
+use App\Http\Controllers\Api\StripeWebhookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +36,9 @@ Route::post('/invitee-register', [AuthController::class, 'inviteeRegister']);
 Route::post('/login', [AuthController::class, 'login']);
 // Route::post('/register/invitation/{token}', [AuthController::class, 'registerInvitedUser'])->name('register.invitation');
 Route::get('/validate-invitation', [InvitationController::class, 'validateToken'])->name('validate.invitation');
+
+//Stripe Webhook routes
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']);
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
@@ -83,6 +88,13 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // User achievement routes
     Route::apiResource('user-achievements', UserAchievementController::class);
+
+    //Subscription routes
+    Route::get('/subscription-packs', [PaymentController::class, 'getSubscriptionPacks']);
+    Route::post('/create-checkout-session', [PaymentController::class, 'createCheckoutSession']);
+    Route::post('/create-customer-portal-session', [PaymentController::class, 'createCustomPortalSession']);
+    Route::post('/stripe-invoice', [PaymentController::class, 'InvoiceList']);
+    Route::get('/current-subscription', [PaymentController::class, 'Subscription']);
 });
 
 // Mock-enabled routes (for development/testing when mock data is enabled)

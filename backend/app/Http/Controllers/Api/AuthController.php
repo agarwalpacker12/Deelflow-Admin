@@ -11,6 +11,9 @@ use App\Models\User;
 use App\Models\Organization;
 use App\Models\Invitation;
 use Illuminate\Support\Str;
+use Stripe\Stripe;
+use Stripe\Customer;
+
 
 class AuthController extends Controller
 {
@@ -43,8 +46,8 @@ class AuthController extends Controller
             return $this->handleMockRegister($request);
         }
 
-        // Real implementation
         try {
+            // 1. Create organization
             $organization = Organization::create([
                 'name' => $request->organization_name,
                 'uuid' => Str::uuid(),
@@ -52,6 +55,18 @@ class AuthController extends Controller
                 'subscription_status' => 'active',
             ]);
 
+            // 2. Create Stripe customer BEFORE creating the user
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            $customer = Customer::create([
+                'email' => $request->email,
+                'name' => $request->first_name . ' ' . $request->last_name,
+                'metadata' => [
+                    'organization_id' => $organization->id
+                ]
+            ]);
+
+            // 3. Create user
             $user = User::create([
                 'uuid' => Str::uuid(),
                 'email' => $request->email,
@@ -60,13 +75,15 @@ class AuthController extends Controller
                 'last_name' => $request->last_name,
                 'organization_id' => $organization->id,
                 'phone' => $request->phone,
-                'role' => 'admin', // First user is admin
+                'role' => 'admin',
                 'level' => 1,
                 'points' => 0,
                 'is_verified' => false,
                 'is_active' => true,
+                'stripe_customer_id' => $customer->id
             ]);
 
+            // 4. Generate token
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return $this->successResponse([
@@ -82,6 +99,7 @@ class AuthController extends Controller
                 'points' => $user->points,
                 'is_verified' => $user->is_verified,
                 'is_active' => $user->is_active,
+                'stripe_customer_id' => $user->stripe_customer_id,
                 'created_at' => $user->created_at->toISOString(),
                 'updated_at' => $user->updated_at->toISOString()
             ], 'User registered successfully', 201);
@@ -92,6 +110,7 @@ class AuthController extends Controller
             return $this->serverErrorResponse('user registration', $e);
         }
     }
+
 
     public function inviteeRegister(Request $request)
     {
