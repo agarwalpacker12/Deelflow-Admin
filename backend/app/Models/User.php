@@ -183,4 +183,9 @@ class User extends Authenticatable
             ->whereHas('permissions', fn($q) => $q->where('name', $permission))
             ->exists();
     }
+
+    public function isSuperAdmin()
+    {
+        return $this->email === config('auth.super_admin.email');
+    }
 }

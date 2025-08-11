@@ -15,7 +15,10 @@ use App\Http\Controllers\Api\CampaignRecipientController;
 use App\Http\Controllers\Api\ClientController;
 use App\Http\Controllers\Api\InvitationController;
 use App\Http\Controllers\Api\UserRolePermissionController;
+use App\Http\Controllers\Api\SuperAdminController;
 use App\Http\Controllers\Api\OrganizationController;
+use App\Http\Controllers\Api\RbacController;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -150,17 +153,18 @@ Route::group(['middleware' => 'api'], function () {
     }
 });
 
-// role based system for saas
-Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/users', [UserRolePermissionController::class, 'index']);
-    Route::get('/users/{user}', [UserRolePermissionController::class, 'show']);
+// RBAC routes - accessible by both super admin and organization admin with dual functionality
+Route::middleware(['auth:sanctum'])->prefix('rbac')->group(function () {
+    // Roles and permissions with dual functionality based on user type
+    Route::get('/roles', [RbacController::class, 'getRoles']);
+    Route::get('/permissions', [RbacController::class, 'getPermissions']);
+    Route::put('/roles/{role}', [RbacController::class, 'updateRolePermissions']);
+});
 
-    // Update user's roles
-    Route::put('/users/{user}/roles', [UserRolePermissionController::class, 'updateRoles']);
-
-    // Update user's permissions
-    Route::put('/users/{user}/permissions', [UserRolePermissionController::class, 'updatePermissions']);
-    Route::get('organization/roles', [UserRolePermissionController::class, 'getOrganizationRolesWithPermissions'])->middleware('permission:manage_roles');
-    Route::get('organization/permissions', [UserRolePermissionController::class, 'getOrganizationPermissions']);
-
+// Consolidated User routes - accessible by both super admin and organization admin with dual functionality
+Route::middleware(['auth:sanctum'])->group(function () {
+    // User management with dual functionality based on user type
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{user}', [UserController::class, 'show']);
+    Route::put('/users/{user}/roles', [UserController::class, 'updateRoles']);
 });

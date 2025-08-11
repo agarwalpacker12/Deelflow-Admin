@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             //new
             'role' => \App\Http\Middleware\RoleMiddleware::class,
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'super_admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
 
     ]);
     })
