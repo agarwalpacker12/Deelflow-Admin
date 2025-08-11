@@ -37,4 +37,14 @@ class Organization extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function roles()
+    {
+        return $this->hasMany(Role::class);
+    }
+
+    public function permissions()
+    {
+        return $this->hasMany(Permission::class);
+    }
 }
