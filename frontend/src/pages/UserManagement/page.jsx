@@ -125,8 +125,6 @@ const InvitationForm = () => {
                     >
                       <option value="staff">Staff</option>
                       <option value="admin">Admin</option>
-                      <option value="manager">Manager</option>
-                      <option value="user">User</option>
                     </select>
                   </div>
                   {errors.role && (
