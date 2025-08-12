@@ -302,7 +302,7 @@ class AuthController extends Controller
             );
         }
 
-        if ($user->organization->subscription_status !== 'active') {
+        if (!$user->hasRole('super_admin') && $user->organization && $user->organization->subscription_status !== 'active') {
             if (!$user->hasRole('admin')) {
                 return $this->forbiddenResponse(
                     'access your account because the organization subscription is not active',
