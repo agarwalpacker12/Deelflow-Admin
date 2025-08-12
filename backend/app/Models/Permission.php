@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Permission extends Model
 {
-    protected $fillable = ['name', 'label', 'organization_id'];
+    protected $fillable = ['name', 'label', 'group'];
     
     public function roles()
     {

@@ -55,7 +55,6 @@ Retrieves users based on user type with dual functionality:
         "last_name": "Doe",
         "full_name": "John Doe",
         "phone": "+1234567890",
-        "role": "admin",
         "status": "active",
         "is_active": true,
         "is_verified": true,
@@ -114,7 +113,6 @@ Retrieves users based on user type with dual functionality:
         "last_name": "Doe",
         "full_name": "John Doe",
         "phone": "+1234567890",
-        "role": "staff",
         "status": "active",
         "is_active": true,
         "is_verified": true,
@@ -174,7 +172,6 @@ Retrieves detailed information about a specific user based on user type:
     "last_name": "Doe",
     "full_name": "John Doe",
     "phone": "+1234567890",
-    "role": "admin",
     "status": "active",
     "is_active": true,
     "is_verified": true,
@@ -220,7 +217,6 @@ Retrieves detailed information about a specific user based on user type:
     "last_name": "Doe",
     "full_name": "John Doe",
     "phone": "+1234567890",
-    "role": "staff",
     "status": "active",
     "is_active": true,
     "is_verified": true,
@@ -352,11 +348,14 @@ Users can have the following status values:
 
 Users are assigned roles through the many-to-many relationship with the roles table. Each role contains multiple permissions that define what actions the user can perform within the system.
 
+**Important**: The system now uses **global roles and permissions** that are shared across all organizations, not organization-specific.
+
 ### Role Assignment Rules
-1. **Super Admin**: Can assign any role that exists within the target user's organization
-2. **Organization Admin**: Can only assign roles that exist within their own organization
-3. **Role Validation**: All role assignments are validated to ensure roles exist in the appropriate organization
-4. **Permission Inheritance**: Users inherit all permissions from their assigned roles
+1. **Super Admin**: Can assign any global role to any user across all organizations
+2. **Organization Admin**: Can assign global roles to users within their organization
+3. **Role Validation**: All role assignments are validated to ensure roles exist in the global role system
+4. **Permission Inheritance**: Users inherit all permissions from their assigned global roles
+5. **Global Consistency**: Same roles and permissions are available across all organizations
 
 ## Error Responses
 
@@ -386,14 +385,13 @@ Users are assigned roles through the many-to-many relationship with the roles ta
 ```json
 {
   "status": "error",
-  "message": "Some roles do not exist in the user's organization",
+  "message": "Some roles do not exist",
   "error_code": "INVALID_ROLES",
   "details": {
-    "requested_roles": ["invalid_role"],
-    "organization_id": 1
+    "requested_roles": ["invalid_role"]
   },
   "suggestions": [
-    "Ensure all roles exist in the user's organization",
+    "Ensure all roles exist in the global role system",
     "Check role names for typos"
   ]
 }
@@ -412,9 +410,10 @@ Users are assigned roles through the many-to-many relationship with the roles ta
 
 1. **Organization Isolation**: Organization admins can only access users within their organization
 2. **Super Admin Protection**: Super admin access is restricted to configured email addresses
-3. **Role Validation**: All role assignments are validated against organization scope
+3. **Global Role Validation**: All role assignments are validated against the global role system
 4. **Cross-organization Prevention**: Built-in checks prevent unauthorized cross-organization access
 5. **Audit Trail**: All user role changes are logged with timestamps and user information
+6. **Global Consistency**: Same security model applies across all organizations using global roles
 
 ## Rate Limiting
 
