@@ -16,6 +16,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+    protected $guard_name = 'api';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -178,7 +180,7 @@ class User extends Authenticatable
      */
     public function getPrimaryRole()
     {
-        return $this->roles()->first();
+        return $this->roles->first();
     }
 
     /**
@@ -207,37 +209,4 @@ class User extends Authenticatable
         return $this->roles()->whereIn('name', $roles)->count() === count($roles);
     }
 
-    /**
-     * Assign a role to the user
-     */
-    public function assignRole($roleName)
-    {
-        $role = Role::where('name', $roleName)->first();
-        if ($role && !$this->hasRole($roleName)) {
-            $this->roles()->attach($role->id);
-        }
-        return $this;
-    }
-
-    /**
-     * Remove a role from the user
-     */
-    public function removeRole($roleName)
-    {
-        $role = Role::where('name', $roleName)->first();
-        if ($role) {
-            $this->roles()->detach($role->id);
-        }
-        return $this;
-    }
-
-    /**
-     * Sync user roles (replaces all current roles)
-     */
-    public function syncRoles(array $roleNames)
-    {
-        $roleIds = Role::whereIn('name', $roleNames)->pluck('id')->toArray();
-        $this->roles()->sync($roleIds);
-        return $this;
-    }
 }
