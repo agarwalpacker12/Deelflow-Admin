@@ -46,9 +46,9 @@ const LoginPage = () => {
         // Call organization status API
         const orgResponse = await OrganizationAPI.getOrganizationStatus();
 
-        if (orgResponse?.data?.status == "new") {
+        if (orgResponse?.data?.data?.status == "new") {
           navigate("/app/payment");
-        } else if (orgResponse?.data?.status == "active") {
+        } else if (orgResponse?.data?.data?.status == "active") {
           navigate("/app");
         } else {
           navigate("/app/bill");

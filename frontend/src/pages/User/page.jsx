@@ -390,15 +390,17 @@ const UserManagement = () => {
                         </div>
                       </td>
                       <td className="p-4">
-                        <span
-                          className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border ${getRoleColor(
-                            user.role
-                          )}`}
-                        >
-                          {user.role === "admin"
-                            ? "Organization Admin"
-                            : "Organization Member"}
-                        </span>
+                        {user?.role && (
+                          <span
+                            className={`inline-flex px-2 py-1 rounded-full text-xs font-medium border ${getRoleColor(
+                              user?.role
+                            )}`}
+                          >
+                            {user.role === "admin"
+                              ? "Organization Admin"
+                              : "Organization Member"}
+                          </span>
+                        )}
                       </td>
                       <td className="p-4">
                         <span

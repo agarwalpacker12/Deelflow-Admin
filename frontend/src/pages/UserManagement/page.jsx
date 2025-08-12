@@ -43,7 +43,7 @@ const InvitationForm = () => {
     onSuccess: (data) => {
       if (data.data.status == "success") {
         toast.success(data.data.message);
-        navigate("/app/invitee-register?token=ffsdfssggdgddgddgdgd");
+        // navigate("/app/invitee-register?token=ffsdfssggdgddgddgdgd");
       }
     },
     onError: (error) => {
