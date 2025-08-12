@@ -20,9 +20,8 @@ class RbacController extends Controller
     }
 
     /**
-     * Get roles with their permissions:
-     * - Super Admin: All roles with their permissions
-     * - Organization Admin: All roles except super admin role with their permissions
+     * Get all global roles with their permissions.
+     * Note: Roles are now global, not organization-specific.
      */
     public function getRoles(Request $request)
     {
@@ -32,43 +31,19 @@ class RbacController extends Controller
             // Super admin can see all roles
             if ($user->isSuperAdmin()) {
                 $roles = Role::with(['permissions', 'users'])->get();
-
-                $formattedRoles = $roles->map(function ($role) {
-                    return [
-                        'id' => $role->id,
-                        'name' => $role->name,
-                        'label' => $role->label,
-                        'organization_id' => $role->organization_id,
-                        'users_count' => $role->users->count(),
-                        'permissions' => $role->permissions->map(function ($permission) {
-                            return [
-                                'id' => $permission->id,
-                                'name' => $permission->name,
-                                'label' => $permission->label,
-                            ];
-                        }),
-                        'created_at' => $role->created_at->toISOString(),
-                        'updated_at' => $role->updated_at->toISOString(),
-                    ];
-                });
-
-                return $this->successResponse([
-                    'roles' => $formattedRoles,
-                    'total_roles' => $formattedRoles->count(),
-                ], 'Roles retrieved successfully');
+            } else {
+                // Regular users see all roles except super admin role
+                $roles = Role::with('permissions')
+                    ->where('name', '!=', 'super_admin')
+                    ->get();
             }
 
-            // Organization admin sees all roles except super admin role
-            $roles = Role::with('permissions')
-                ->where('name', '!=', 'super_admin') // Exclude super admin role
-                ->get();
-
-            $formattedRoles = $roles->map(function ($role) {
+            $formattedRoles = $roles->map(function ($role) use ($user) {
                 return [
                     'id' => $role->id,
                     'name' => $role->name,
                     'label' => $role->label,
-                    'organization_id' => $role->organization_id,
+                    'users_count' => $user->isSuperAdmin() ? $role->users->count() : null,
                     'permissions' => $role->permissions->map(function ($permission) {
                         return [
                             'id' => $permission->id,
@@ -92,41 +67,47 @@ class RbacController extends Controller
     }
 
     /**
-     * Get all permissions with their associated roles (Super Admin only)
+     * Get all global permissions with their associated roles (Super Admin only)
      */
     public function getPermissions(Request $request)
     {
         try {
             $user = $request->user();
 
-            // Only super admin can access this endpoint
             if (!$user->isSuperAdmin()) {
                 return $this->forbiddenResponse('access permissions data', 'super admin');
             }
 
             $permissions = Permission::with('roles')->get();
+            $allRoles = Role::all();
 
-            $formattedPermissions = $permissions->map(function ($permission) {
+            $groupedPermissions = $permissions->groupBy('group')->map(function ($group, $groupName) use ($allRoles) {
                 return [
-                    'id' => $permission->id,
-                    'name' => $permission->name,
-                    'label' => $permission->label,
-                    'roles' => $permission->roles->map(function ($role) {
+                    'group' => $groupName,
+                    'permissions' => $group->map(function ($permission) use ($allRoles) {
+                        $assignedRoleIds = $permission->roles->pluck('id')->toArray();
                         return [
-                            'id' => $role->id,
-                            'name' => $role->name,
-                            'label' => $role->label,
-                            'organization_id' => $role->organization_id,
+                            'id' => $permission->id,
+                            'name' => $permission->name,
+                            'label' => $permission->label,
+                            'roles' => $allRoles->map(function ($role) use ($assignedRoleIds) {
+                                return [
+                                    'id' => $role->id,
+                                    'name' => $role->name,
+                                    'label' => $role->label,
+                                    'enabled' => in_array($role->id, $assignedRoleIds),
+                                ];
+                            }),
+                            'created_at' => $permission->created_at->toISOString(),
+                            'updated_at' => $permission->updated_at->toISOString(),
                         ];
                     }),
-                    'created_at' => $permission->created_at->toISOString(),
-                    'updated_at' => $permission->updated_at->toISOString(),
                 ];
             });
 
             return $this->successResponse([
-                'permissions' => $formattedPermissions,
-                'total_permissions' => $formattedPermissions->count(),
+                'permission_groups' => $groupedPermissions->values(),
+                'total_permissions' => $permissions->count(),
             ], 'Permissions retrieved successfully');
 
         } catch (\Exception $e) {
@@ -136,6 +117,7 @@ class RbacController extends Controller
 
     /**
      * Update role permissions (Super Admin only)
+     * Note: Permissions are now global, not organization-specific.
      */
     public function updateRolePermissions(Request $request, Role $role)
     {
@@ -156,17 +138,16 @@ class RbacController extends Controller
                 return $this->forbiddenResponse('update role permissions', 'super admin');
             }
 
-            // Get permission IDs that match the role's organization
-            $permissionIds = Permission::where('organization_id', $role->organization_id)
-                ->whereIn('name', $request->permissions)
+            // Get permission IDs for the requested permissions (now global)
+            $permissionIds = Permission::whereIn('name', $request->permissions)
                 ->pluck('id');
 
             if ($permissionIds->count() !== count($request->permissions)) {
                 return $this->businessLogicErrorResponse(
-                    'Some permissions do not exist in the role\'s organization',
+                    'Some permissions do not exist',
                     'INVALID_PERMISSIONS',
-                    ['requested_permissions' => $request->permissions, 'organization_id' => $role->organization_id],
-                    ['Ensure all permissions exist in the role\'s organization', 'Check permission names for typos']
+                    ['requested_permissions' => $request->permissions],
+                    ['Ensure all permissions exist', 'Check permission names for typos']
                 );
             }
 
@@ -186,7 +167,6 @@ class RbacController extends Controller
                 'role_id' => $role->id,
                 'role_name' => $role->name,
                 'role_label' => $role->label,
-                'organization_id' => $role->organization_id,
                 'permissions' => $updatedPermissions,
                 'updated_at' => now()->toISOString(),
             ], 'Role permissions updated successfully');

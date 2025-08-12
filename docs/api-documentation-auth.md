@@ -39,7 +39,6 @@
                 "updated_at": "2025-06-26T20:00:00.000000Z"
             },
             "phone": "+14155552671",
-            "role": "admin",
             "level": 1,
             "points": 0,
             "is_verified": false,
@@ -88,7 +87,6 @@
                 "subscription_status": "active"
             },
             "phone": "9868985856",
-            "role": "staff",
             "level": 1,
             "points": 0,
             "is_verified": false,
@@ -199,8 +197,7 @@
                 "uuid": "550e8400-e29b-41d4-a716-446655440000",
                 "email": "user@example.com",
                 "first_name": "John",
-                "last_name": "Doe",
-                "role": "admin"
+                "last_name": "Doe"
             }
         }
     }
@@ -226,7 +223,6 @@
             "last_name": "Doe",
             "company_name": null,
             "phone": "+14155552671",
-            "role": "admin",
             "level": 1,
             "points": 0,
             "is_verified": false,

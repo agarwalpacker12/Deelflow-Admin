@@ -68,7 +68,7 @@ class UserController extends Controller
                         'last_name' => $user->last_name,
                         'full_name' => $user->name,
                         'phone' => $user->phone,
-                        'role' => $user->role,
+                        'role' => $user->getPrimaryRoleName(),
                         'status' => $user->status,
                         'is_active' => $user->is_active,
                         'is_verified' => $user->is_verified,
@@ -147,7 +147,7 @@ class UserController extends Controller
                     'last_name' => $user->last_name,
                     'full_name' => $user->name,
                     'phone' => $user->phone,
-                    'role' => $user->role,
+                    'role' => $user->getPrimaryRoleName(),
                     'status' => $user->status,
                     'is_active' => $user->is_active,
                     'is_verified' => $user->is_verified,
@@ -210,7 +210,7 @@ class UserController extends Controller
                     'last_name' => $targetUser->last_name,
                     'full_name' => $targetUser->name,
                     'phone' => $targetUser->phone,
-                    'role' => $targetUser->role,
+                    'role' => $targetUser->getPrimaryRoleName(),
                     'status' => $targetUser->status,
                     'is_active' => $targetUser->is_active,
                     'is_verified' => $targetUser->is_verified,
@@ -259,7 +259,7 @@ class UserController extends Controller
                 'last_name' => $targetUser->last_name,
                 'full_name' => $targetUser->name,
                 'phone' => $targetUser->phone,
-                'role' => $targetUser->role,
+                'role' => $targetUser->getPrimaryRoleName(),
                 'status' => $targetUser->status,
                 'is_active' => $targetUser->is_active,
                 'is_verified' => $targetUser->is_verified,
@@ -312,16 +312,16 @@ class UserController extends Controller
 
             // Super admin can update any user's roles
             if ($user->isSuperAdmin()) {
-                $roleIds = Role::where('organization_id', $targetUser->organization_id)
+                $roleIds = Role::whereNull('organization_id')
                     ->whereIn('name', $request->roles)
                     ->pluck('id');
 
                 if ($roleIds->count() !== count($request->roles)) {
                     return $this->businessLogicErrorResponse(
-                        'Some roles do not exist in the user\'s organization',
+                        'Some roles do not exist',
                         'INVALID_ROLES',
-                        ['requested_roles' => $request->roles, 'organization_id' => $targetUser->organization_id],
-                        ['Ensure all roles exist in the user\'s organization', 'Check role names for typos']
+                        ['requested_roles' => $request->roles],
+                        ['Ensure all roles exist', 'Check role names for typos']
                     );
                 }
 
@@ -360,18 +360,16 @@ class UserController extends Controller
                 return $this->forbiddenResponse('update this user', 'same organization');
             }
 
-            $orgId = $user->organization_id;
-
-            $roleIds = Role::where('organization_id', $orgId)
+            $roleIds = Role::whereNull('organization_id')
                 ->whereIn('name', $request->roles)
                 ->pluck('id');
 
             if ($roleIds->count() !== count($request->roles)) {
                 return $this->businessLogicErrorResponse(
-                    'Some roles do not exist in your organization',
+                    'Some roles do not exist',
                     'INVALID_ROLES',
-                    ['requested_roles' => $request->roles, 'organization_id' => $orgId],
-                    ['Ensure all roles exist in your organization', 'Check role names for typos']
+                    ['requested_roles' => $request->roles],
+                    ['Ensure all roles exist', 'Check role names for typos']
                 );
             }
 
@@ -402,6 +400,57 @@ class UserController extends Controller
 
         } catch (\Exception $e) {
             return $this->serverErrorResponse('updating user roles', $e);
+        }
+    }
+
+    /**
+     * Update user status based on user type:
+     * - Super Admin: Can update status for any user
+     * - Organization Admin: Can update status for users within their organization only
+     */
+    public function updateStatus(Request $request, User $targetUser)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|string|in:active,inactive',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors(), 'updating user status');
+        }
+
+        try {
+            $user = $request->user();
+
+            // Super admin can update any user's status
+            if ($user->isSuperAdmin()) {
+                $newStatus = $request->status;
+                $isActive = $newStatus === 'active';
+
+                $targetUser->update([
+                    'status' => $newStatus,
+                    'is_active' => $isActive,
+                ]);
+
+                return $this->successResponse($targetUser, 'User status updated successfully');
+            }
+
+            // Organization admin can only update users from their organization
+            if ($targetUser->organization_id !== $user->organization_id) {
+                return $this->forbiddenResponse('update this user', 'same organization');
+            }
+
+            $newStatus = $request->status;
+            $isActive = $newStatus === 'active';
+
+            $targetUser->update([
+                'status' => $newStatus,
+                'is_active' => $isActive,
+            ]);
+
+            return $this->successResponse($targetUser, 'User status updated successfully');
+
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('updating user status', $e);
         }
     }
 }

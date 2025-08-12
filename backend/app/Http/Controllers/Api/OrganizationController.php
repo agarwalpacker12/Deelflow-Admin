@@ -192,7 +192,7 @@ class OrganizationController extends Controller
             return $this->forbiddenResponse('access this organization');
         }
 
-        if ($user->role !== 'admin') {
+        if (!$user->hasRole('admin')) {
             return $this->forbiddenResponse('update organization details', 'admin');
         }
 
@@ -229,16 +229,20 @@ class OrganizationController extends Controller
             return $this->forbiddenResponse('access this organization');
         }
 
-        if ($user->role !== 'admin') {
+        if (!$user->hasRole('admin')) {
             return $this->forbiddenResponse('delete this organization', 'admin');
         }
 
-        if ($organization->users()->where('role', 'admin')->count() > 0) {
+        $adminCount = $organization->users()->whereHas('roles', function($q) {
+            $q->where('name', 'admin');
+        })->count();
+
+        if ($adminCount > 0) {
             return $this->businessLogicErrorResponse(
                 'Cannot delete an organization with admin users.',
                 'ORGANIZATION_HAS_ADMIN_USERS',
                 [
-                    'admin_count' => $organization->users()->where('role', 'admin')->count(),
+                    'admin_count' => $adminCount,
                     'organization_id' => $organization->id
                 ],
                 [
@@ -271,7 +275,7 @@ class OrganizationController extends Controller
         // Real implementation
         $user = $request->user();
 
-        if ($user->role === 'super_admin') {
+        if ($user->hasRole('super_admin')) {
             return $this->successResponse(['status' => 'super_admin'], 'Status retrieved successfully');
         }
 
@@ -305,11 +309,11 @@ class OrganizationController extends Controller
 
         // Real implementation - check permissions
         $user = auth()->user();
-        if ($user->role !== 'super_admin' && $user->organization_id !== $organization->id) {
+        if (!$user->hasRole('super_admin') && $user->organization_id !== $organization->id) {
             return $this->forbiddenResponse('update subscription status for this organization');
         }
 
-        if ($user->role !== 'super_admin' && $user->role !== 'admin') {
+        if (!$user->hasRole('super_admin') && !$user->hasRole('admin')) {
             return $this->forbiddenResponse('update subscription status', 'admin');
         }
 
@@ -340,7 +344,7 @@ class OrganizationController extends Controller
             return $this->forbiddenResponse('access this organization');
         }
 
-        if ($currentUser->role !== 'admin') {
+        if (!$currentUser->hasRole('admin')) {
             return $this->forbiddenResponse('remove users from the organization', 'admin');
         }
 
@@ -348,7 +352,11 @@ class OrganizationController extends Controller
             return $this->notFoundResponse('user in this organization', $user->id);
         }
 
-        if ($user->role === 'admin' && $organization->users()->where('role', 'admin')->count() === 1) {
+        $adminCount = $organization->users()->whereHas('roles', function($q) {
+            $q->where('name', 'admin');
+        })->count();
+
+        if ($user->hasRole('admin') && $adminCount === 1) {
             return $this->businessLogicErrorResponse(
                 'Cannot remove the only admin user from an organization.',
                 'CANNOT_REMOVE_LAST_ADMIN',
@@ -373,55 +381,6 @@ class OrganizationController extends Controller
             return $this->databaseErrorResponse($e, 'user removal', 'user');
         } catch (\Exception $e) {
             return $this->serverErrorResponse('user removal', $e);
-        }
-    }
-
-    /**
-     * Update a user's status within an organization
-     */
-    public function updateUserStatus(Request $request, Organization $organization, User $user)
-    {
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|string|in:active,inactive',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->validationErrorResponse($validator->errors(), 'user status update');
-        }
-
-        if ($this->isMockEnabled()) {
-            return $this->handleMockUpdateUserStatus($request, $organization->id, $user->id);
-        }
-
-        // Real implementation - check permissions
-        $currentUser = auth()->user();
-        if ($currentUser->organization_id !== $organization->id) {
-            return $this->forbiddenResponse('access this organization');
-        }
-
-        if ($currentUser->role !== 'admin') {
-            return $this->forbiddenResponse('update user status', 'admin');
-        }
-
-        if ($user->organization_id !== $organization->id) {
-            return $this->notFoundResponse('user in this organization', $user->id);
-        }
-
-        try {
-            $newStatus = $validator->validated()['status'];
-            $isActive = $newStatus === 'active';
-
-            $user->update([
-                'status' => $newStatus,
-                'is_active' => $isActive,
-            ]);
-
-            return $this->successResponse($user, 'User status updated successfully');
-
-        } catch (\Illuminate\Database\QueryException $e) {
-            return $this->databaseErrorResponse($e, 'user status update', 'user');
-        } catch (\Exception $e) {
-            return $this->serverErrorResponse('user status update', $e);
         }
     }
 

@@ -42,7 +42,7 @@ class AuthControllerTest extends TestCase
             'email' => 'invalid-email',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => 'wholesaler'
+            'role' => 'staff'
         ]);
 
         $response->assertStatus(422)
@@ -67,7 +67,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'different_password',
-            'role' => 'wholesaler'
+            'role' => 'staff'
         ]);
 
         $response->assertStatus(422)
@@ -92,7 +92,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => 'wholesaler',
+            'role' => 'staff',
             'organization_name' => 'Test Organization'
         ];
 
@@ -128,7 +128,7 @@ class AuthControllerTest extends TestCase
             'email' => 'test@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
-            'role' => 'wholesaler',
+            'role' => 'staff',
             'organization_name' => 'Test Organization'
         ];
 

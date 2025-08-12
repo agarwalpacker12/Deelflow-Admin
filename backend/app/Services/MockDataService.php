@@ -98,7 +98,6 @@ class MockDataService
             'email' => strtolower($firstName . '.' . $lastName . '@' . $this->faker->safeEmailDomain),
             'first_name' => $firstName,
             'last_name' => $lastName,
-            'company_name' => $this->faker->company . ' ' . $this->faker->randomElement(['LLC', 'Inc', 'Properties', 'Investments']),
             'phone' => $this->faker->phoneNumber,
             'role' => $role,
             'level' => $this->faker->numberBetween(1, 10),
