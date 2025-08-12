@@ -151,5 +151,9 @@ export const RbacAPI = {
   UpdatePermission: (id, data) => api.put(`/rbac/roles/${role}`, data),
   UpdateRole: (data) => api.put(`users/${data.id}/roles`, data),
 };
+export const PaymentAPI = {
+  getSubscriptionPack: () => api.get(`/subscription-packs`),
+  createCheckout: (id) => api.post(`/create-checkout-session`, id),
+};
 
 export default api;

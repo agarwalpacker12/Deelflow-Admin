@@ -1,6 +1,71 @@
 import { Check, ArrowLeft } from "lucide-react";
+import { PaymentAPI } from "../../services/api";
+import { useEffect, useState } from "react";
 
 function ShowPrice({ handlePlanSelect }) {
+  const [subscriptionPackState, setSubscriptionPackState] = useState();
+
+  useEffect(() => {
+    const fetchInvitation = async () => {
+      try {
+        const response = await PaymentAPI.getSubscriptionPack();
+        if (response.data.status == "success") {
+          console.log(
+            "subscriptionPackState",
+            JSON.stringify(response.data.data)
+          );
+          setSubscriptionPackState(response?.data?.data);
+        }
+      } catch (err) {
+        console.error("Error fetching leads:", err);
+      }
+    };
+
+    fetchInvitation();
+  }, []);
+
+  // Helper function to get plan features based on plan name
+  const getPlanFeatures = (planName) => {
+    const features = {
+      Basic: [
+        "100 API Requests",
+        "Basic Workflow Creation",
+        "Email Support",
+        "Standard Support",
+      ],
+      Professional: [
+        "Everything in Basic",
+        "Advanced Workflow Creation",
+        "Priority Support",
+        "Custom Requests",
+        "Multiple User Access",
+        "Advanced Analytics",
+        "API Access",
+      ],
+      Enterprise: [
+        "Everything in Professional",
+        "White Label Solution",
+        "Custom AI Training",
+        "Dedicated Account Manager",
+        "Custom Integrations",
+        "Unlimited API Requests",
+      ],
+    };
+    return features[planName] || [];
+  };
+
+  // Helper function to determine if plan is most popular
+  const isMostPopular = (planName) => {
+    return planName.toLowerCase() === "professional";
+  };
+
+  // Helper function to get button text
+  const getButtonText = (planName) => {
+    return planName.toLowerCase() === "enterprise"
+      ? "Contact Sales"
+      : "Select Plan";
+  };
+
   return (
     <>
       <div className="flex items-center justify-center min-h-full">
@@ -22,149 +87,110 @@ function ShowPrice({ handlePlanSelect }) {
           {/* Pricing Cards */}
           <div className="bg-white/95 backdrop-blur-sm rounded-b-xl shadow-xl border border-white/20 overflow-hidden">
             <div className="p-4 space-y-4">
-              {/* Starter Plan */}
-              <div className="border border-purple-200 rounded-lg p-4 bg-purple-50/50">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Starter
-                  </h3>
-                </div>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold text-purple-800">
-                    $257
-                  </span>
-                  <span className="text-gray-600 ml-2">per month</span>
-                </div>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-600 mr-3" />
-                    <span className="text-sm text-gray-700">
-                      100 API Requests
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-600 mr-3" />
-                    <span className="text-sm text-gray-700">
-                      Advanced Workflow Creation
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-600 mr-3" />
-                    <span className="text-sm text-gray-700">Email Support</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-600 mr-3" />
-                    <span className="text-sm text-gray-700">
-                      Standard Support
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handlePlanSelect("Starter", "$257/month")}
-                  className="w-full bg-purple-200 text-purple-800 py-2 rounded-lg font-medium hover:bg-purple-300 transition-colors"
-                >
-                  Select Plan
-                </button>
-              </div>
+              {subscriptionPackState &&
+                subscriptionPackState.map((plan) => {
+                  const isPopular = isMostPopular(plan.name);
+                  const features = getPlanFeatures(plan.name);
 
-              {/* Professional Plan - Most Popular */}
-              <div className="border-2 border-purple-500 rounded-lg p-4 bg-gradient-to-br from-purple-600 to-purple-700 text-white relative">
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <span className="bg-purple-500 text-white text-xs px-3 py-1 rounded-full font-medium">
-                    MOST POPULAR
-                  </span>
-                </div>
-                <div className="flex justify-between items-center mb-3 mt-2">
-                  <h3 className="text-lg font-semibold">Professional</h3>
-                </div>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold">$597</span>
-                  <span className="text-purple-100 ml-2">per month</span>
-                </div>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-200 mr-3" />
-                    <span className="text-sm">Everything in Starter</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-200 mr-3" />
-                    <span className="text-sm">Advanced Workflow Creation</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-200 mr-3" />
-                    <span className="text-sm">Priority Support</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-200 mr-3" />
-                    <span className="text-sm">Custom Requests</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-200 mr-3" />
-                    <span className="text-sm">Multiple User Access</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-200 mr-3" />
-                    <span className="text-sm">Advanced Analytics</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-200 mr-3" />
-                    <span className="text-sm">API Access</span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handlePlanSelect("Professional", "$597/month")}
-                  className="w-full bg-white text-purple-600 py-2 rounded-lg font-medium hover:bg-purple-50 transition-colors"
-                >
-                  Select Plan
-                </button>
-              </div>
+                  return (
+                    <div
+                      key={plan.id}
+                      className={`border rounded-lg p-4 relative ${
+                        isPopular
+                          ? "border-2 border-purple-500 bg-gradient-to-br from-purple-600 to-purple-700 text-white"
+                          : "border-purple-200 bg-purple-50/50"
+                      }`}
+                    >
+                      {/* Most Popular Badge */}
+                      {isPopular && (
+                        <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                          <span className="bg-purple-500 text-white text-xs px-3 py-1 rounded-full font-medium">
+                            MOST POPULAR
+                          </span>
+                        </div>
+                      )}
 
-              {/* Enterprise Plan */}
-              <div className="border border-purple-200 rounded-lg p-4 bg-purple-50/50">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Enterprise
-                  </h3>
-                </div>
-                <div className="mb-4">
-                  <span className="text-3xl font-bold text-purple-800">
-                    $2997
-                  </span>
-                  <span className="text-gray-600 ml-2">per month</span>
-                </div>
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-600 mr-3" />
-                    <span className="text-sm text-gray-700">
-                      White Label Solution
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-600 mr-3" />
-                    <span className="text-sm text-gray-700">
-                      Custom AI Training
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-600 mr-3" />
-                    <span className="text-sm text-gray-700">
-                      Dedicated Account Manager
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <Check className="w-4 h-4 text-purple-600 mr-3" />
-                    <span className="text-sm text-gray-700">
-                      Custom Integrations
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handlePlanSelect("Enterprise", "$2997/month")}
-                  className="w-full bg-purple-200 text-purple-800 py-2 rounded-lg font-medium hover:bg-purple-300 transition-colors"
-                >
-                  Contact Sales
-                </button>
-              </div>
+                      <div
+                        className={`flex justify-between items-center mb-3 ${
+                          isPopular ? "mt-2" : ""
+                        }`}
+                      >
+                        <h3
+                          className={`text-lg font-semibold ${
+                            isPopular ? "text-white" : "text-gray-900"
+                          }`}
+                        >
+                          {plan.name}
+                        </h3>
+                      </div>
+
+                      <div className="mb-4">
+                        <span
+                          className={`text-3xl font-bold ${
+                            isPopular ? "text-white" : "text-purple-800"
+                          }`}
+                        >
+                          ${plan.amount}
+                        </span>
+                        <span
+                          className={`ml-2 ${
+                            isPopular ? "text-purple-100" : "text-gray-600"
+                          }`}
+                        >
+                          per {plan.interval}
+                        </span>
+                      </div>
+
+                      {plan.description && (
+                        <p
+                          className={`text-sm mb-4 ${
+                            isPopular ? "text-purple-100" : "text-gray-600"
+                          }`}
+                        >
+                          {plan.description}
+                        </p>
+                      )}
+
+                      <div className="space-y-2 mb-4">
+                        {features.map((feature, index) => (
+                          <div key={index} className="flex items-center">
+                            <Check
+                              className={`w-4 h-4 mr-3 ${
+                                isPopular
+                                  ? "text-purple-200"
+                                  : "text-purple-600"
+                              }`}
+                            />
+                            <span
+                              className={`text-sm ${
+                                isPopular ? "text-white" : "text-gray-700"
+                              }`}
+                            >
+                              {feature}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={() =>
+                          handlePlanSelect(
+                            plan.id,
+                            plan.name,
+                            `$${plan.amount}/${plan.interval}`
+                          )
+                        }
+                        className={`w-full py-2 rounded-lg font-medium transition-colors ${
+                          isPopular
+                            ? "bg-white text-purple-600 hover:bg-purple-50"
+                            : "bg-purple-200 text-purple-800 hover:bg-purple-300"
+                        }`}
+                      >
+                        {getButtonText(plan.name)}
+                      </button>
+                    </div>
+                  );
+                })}
             </div>
 
             {/* Footer Link */}

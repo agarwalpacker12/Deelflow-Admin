@@ -1,7 +1,8 @@
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-function PaymentSuccess({ selectedPlan }) {
+function PaymentSuccess() {
+// { selectedPlan }
   const navigate = useNavigate();
   return (
     <>
@@ -26,7 +27,8 @@ function PaymentSuccess({ selectedPlan }) {
             <p className="text-gray-600 mb-6">
               upgraded to the{" "}
               <span className="font-semibold text-purple-600">
-                {selectedPlan?.name} Plan
+                {/* {selectedPlan?.name}  */}
+                Plan
               </span>
               .
             </p>
