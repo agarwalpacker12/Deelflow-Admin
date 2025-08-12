@@ -67,13 +67,14 @@ import AdvancedPage from "./pages/Advance/page.jsx";
 import AiSettingsPage from "./pages/Ai-settings/page.jsx";
 import LiveActivityPage from "./pages/LiveActivity/page.jsx";
 import TenantManagementPage from "./pages/TenantManagement/page.jsx";
-import UserManagementPage from "./pages/UserManagement/page.jsx";
 import RoleManagementPage from "./pages/RoleManagement/page.jsx";
 import BillingPage from "./pages/Billing/page.jsx";
 import OrganizationSettingsPage from "./pages/Settings/SettingsPage.jsx";
 
 import InviteeRegister from "./pages/Auth/InviteRegister.jsx";
 import PaymentAfterLogin from "./pages/payment/page.jsx";
+import UserManagement from "./pages/user/page.jsx";
+import InvitationForm from "./pages/UserManagement/page.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -242,8 +243,9 @@ function App() {
                           />
                           <Route
                             path="user-management"
-                            element={<UserManagementPage />}
+                            element={<UserManagement />}
                           />
+                          <Route path="invite" element={<InvitationForm />} />
                           <Route
                             path="role-management"
                             element={<RoleManagementPage />}
