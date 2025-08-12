@@ -14,34 +14,52 @@ class RolesAndPermissionsSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        // Define permissions
+        // Define permissions with more descriptive groups
         $permissions = [
-            'users' => ['view users', 'manage users', 'impersonate users'],
-            'roles' => ['view roles', 'manage roles'],
-            'permissions' => ['view permissions', 'manage permissions'],
-            'settings' => ['view settings', 'manage settings'],
-            'deals' => ['view deals', 'manage deals'],
-            'leads' => ['view leads', 'manage leads'],
-            'properties' => ['view properties', 'manage properties'],
-            'campaigns' => ['view campaigns', 'manage campaigns'],
-            'organizations' => ['view organizations', 'manage organizations'],
+            'User Management' => ['view users', 'manage users', 'impersonate users'],
+            'Role Management' => ['view roles', 'manage roles'],
+            'Permission Management' => ['view permissions', 'manage permissions'],
+            'Application Settings' => ['view settings', 'manage settings'],
+            'Deal Management' => ['view deals', 'manage deals', 'delete deals'],
+            'Lead Management' => ['view leads', 'manage leads', 'delete leads'],
+            'Property Management' => ['view properties', 'manage properties', 'delete properties'],
+            'Campaign Management' => ['view campaigns', 'manage campaigns', 'delete campaigns'],
+            'Organization Management' => ['view organizations', 'manage organizations', 'delete organizations'],
         ];
 
-        // Create permissions
+        // Create or update permissions
         foreach ($permissions as $group => $permissionNames) {
             foreach ($permissionNames as $name) {
-                Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web', 'group' => $group]);
+                Permission::updateOrCreate(
+                    ['name' => $name, 'guard_name' => 'web'],
+                    ['group' => $group]
+                );
             }
         }
 
         // Define roles and assign permissions
-        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
-        $superAdminRole->givePermissionTo(Permission::all());
+        $superAdminRole = Role::updateOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+        $superAdminRole->syncPermissions(Permission::all());
 
-        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
-        $adminRole->givePermissionTo(['view users', 'manage users', 'view deals', 'manage deals']);
+        $adminRole = Role::updateOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $adminRole->givePermissionTo([
+            'view users', 'manage users',
+            'view roles', 'manage roles',
+            'view permissions', 'manage permissions',
+            'view settings', 'manage settings',
+            'view deals', 'manage deals',
+            'view leads', 'manage leads',
+            'view properties', 'manage properties',
+            'view campaigns', 'manage campaigns',
+            'view organizations', 'manage organizations',
+        ]);
 
-        $userRole = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
-        $userRole->givePermissionTo(['view deals']);
+        $staffRole = Role::updateOrCreate(['name' => 'staff', 'guard_name' => 'web']);
+        $staffRole->givePermissionTo([
+            'view deals', 'manage deals',
+            'view leads', 'manage leads',
+            'view properties', 'manage properties',
+            'view campaigns', 'manage campaigns',
+        ]);
     }
 }
