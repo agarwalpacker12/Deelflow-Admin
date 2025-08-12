@@ -243,7 +243,7 @@ class OrganizationControllerTest extends TestCase
     {
         $regularUser = User::factory()->create([
             'organization_id' => $this->organization->id,
-            'role' => 'user'
+            'role' => 'staff'
         ]);
         Sanctum::actingAs($regularUser);
 
@@ -261,7 +261,7 @@ class OrganizationControllerTest extends TestCase
         $emptyOrg = Organization::factory()->create();
         $regularUser = User::factory()->create([
             'organization_id' => $emptyOrg->id,
-            'role' => 'user'  // Not an admin
+            'role' => 'staff'  // Not an admin
         ]);
         
         // Use a super admin or admin from another organization to perform the deletion
@@ -367,7 +367,7 @@ class OrganizationControllerTest extends TestCase
     {
         $regularUser = User::factory()->create([
             'organization_id' => $this->organization->id,
-            'role' => 'user',
+            'role' => 'staff',
             'is_active' => true,
             'status' => 'active'
         ]);
@@ -403,7 +403,7 @@ class OrganizationControllerTest extends TestCase
     {
         $regularUser = User::factory()->create([
             'organization_id' => $this->organization->id,
-            'role' => 'user',
+            'role' => 'staff',
             'status' => 'active',
             'is_active' => true
         ]);
@@ -435,12 +435,12 @@ class OrganizationControllerTest extends TestCase
     {
         $regularUser = User::factory()->create([
             'organization_id' => $this->organization->id,
-            'role' => 'user'
+            'role' => 'staff'
         ]);
         
         $anotherUser = User::factory()->create([
             'organization_id' => $this->organization->id,
-            'role' => 'user'
+            'role' => 'staff'
         ]);
         
         Sanctum::actingAs($regularUser);

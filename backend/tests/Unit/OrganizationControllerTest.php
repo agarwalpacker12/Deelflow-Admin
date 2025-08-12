@@ -179,7 +179,7 @@ class OrganizationControllerTest extends TestCase
         $validStatuses = ['active', 'inactive'];
         $targetUser = User::factory()->create([
             'organization_id' => $this->organization->id,
-            'role' => 'user'
+            'role' => 'staff'
         ]);
         
         foreach ($validStatuses as $status) {

@@ -1,13 +1,14 @@
 # Role and Permission Management API Documentation
 
-This document outlines all the role and permission management APIs available in the application, including both Super Admin and Organization Admin endpoints.
+This document outlines all the role and permission management APIs available in the application.
 
 ## Overview
 
-The application implements a two-tier role and permission management system:
+The application implements a **global role and permission management system**:
 
-1. **Super Admin Level**: Cross-organization management (prefix: `/api/super/`)
-2. **Organization Admin Level**: Organization-scoped management (prefix: `/api/admin/`)
+- **Global Roles**: Roles are shared across all organizations and are not organization-specific
+- **Global Permissions**: Permissions are shared across all organizations and are not organization-specific
+- **Simplified Management**: Single set of roles and permissions for the entire application
 
 ## Authentication & Authorization
 
@@ -16,15 +17,10 @@ All endpoints require authentication via Sanctum token in the Authorization head
 Authorization: Bearer {token}
 ```
 
-### Super Admin Access
-- Super Admin endpoints require the user's email to match the configured super admin email
-- Super Admin can manage users, roles, and permissions across all organizations
-- Access is controlled by the `super_admin` middleware
-
-### Organization Admin Access
-- Organization Admin endpoints require the `admin` role within the user's organization
-- Organization Admins can only manage users within their own organization
-- Access is controlled by the `role:admin` middleware
+### Access Control
+- **Super Admin**: Can view all roles with user counts and manage role permissions
+- **Regular Users**: Can view all roles (except super_admin role) without user counts
+- Access is controlled by checking if the user has super admin privileges
 
 ## RBAC (Role-Based Access Control) Endpoints
 
@@ -32,9 +28,9 @@ Authorization: Bearer {token}
 
 **GET** `/api/rbac/roles`
 
-Retrieves roles with their assigned permissions based on user type:
-- **Super Admin**: Returns all roles with their permissions
-- **Organization Admin**: Returns all roles except super admin role with their permissions
+Retrieves all global roles with their assigned permissions based on user type:
+- **Super Admin**: Returns all roles with their permissions and user counts
+- **Regular Users**: Returns all roles except super admin role with their permissions (no user counts)
 
 **Response:**
 
@@ -49,7 +45,6 @@ Retrieves roles with their assigned permissions based on user type:
         "id": 1,
         "name": "admin",
         "label": "Administrator",
-        "organization_id": 1,
         "users_count": 5,
         "permissions": [
           {
@@ -66,6 +61,21 @@ Retrieves roles with their assigned permissions based on user type:
             "id": 3,
             "name": "manage_campaign",
             "label": "Manage Campaigns"
+          },
+          {
+            "id": 4,
+            "name": "manage_org",
+            "label": "Manage Organization"
+          },
+          {
+            "id": 5,
+            "name": "manage_lead",
+            "label": "Manage Leads"
+          },
+          {
+            "id": 6,
+            "name": "manage_properties",
+            "label": "Manage Properties"
           }
         ],
         "created_at": "2025-08-11T09:00:00.000000Z",
@@ -74,31 +84,35 @@ Retrieves roles with their assigned permissions based on user type:
       {
         "id": 2,
         "name": "staff",
-        "label": "Staff",
-        "organization_id": 1,
+        "label": "Staff Member",
         "users_count": 12,
         "permissions": [
           {
-            "id": 4,
+            "id": 5,
             "name": "manage_lead",
             "label": "Manage Leads"
           },
           {
-            "id": 5,
+            "id": 6,
             "name": "manage_properties",
             "label": "Manage Properties"
+          },
+          {
+            "id": 3,
+            "name": "manage_campaign",
+            "label": "Manage Campaigns"
           }
         ],
         "created_at": "2025-08-11T09:00:00.000000Z",
         "updated_at": "2025-08-11T09:00:00.000000Z"
       }
     ],
-    "total_roles": 10
+    "total_roles": 2
   }
 }
 ```
 
-**For Organization Admin:**
+**For Regular Users:**
 ```json
 {
   "status": "success",
@@ -109,7 +123,7 @@ Retrieves roles with their assigned permissions based on user type:
         "id": 1,
         "name": "admin",
         "label": "Administrator",
-        "organization_id": 1,
+        "users_count": null,
         "permissions": [
           {
             "id": 1,
@@ -125,6 +139,21 @@ Retrieves roles with their assigned permissions based on user type:
             "id": 3,
             "name": "manage_campaign",
             "label": "Manage Campaigns"
+          },
+          {
+            "id": 4,
+            "name": "manage_org",
+            "label": "Manage Organization"
+          },
+          {
+            "id": 5,
+            "name": "manage_lead",
+            "label": "Manage Leads"
+          },
+          {
+            "id": 6,
+            "name": "manage_properties",
+            "label": "Manage Properties"
           }
         ],
         "created_at": "2025-08-11T09:00:00.000000Z",
@@ -133,90 +162,100 @@ Retrieves roles with their assigned permissions based on user type:
       {
         "id": 2,
         "name": "staff",
-        "label": "Staff",
-        "organization_id": 2,
+        "label": "Staff Member",
+        "users_count": null,
         "permissions": [
           {
-            "id": 4,
+            "id": 5,
             "name": "manage_lead",
             "label": "Manage Leads"
           },
           {
-            "id": 5,
+            "id": 6,
             "name": "manage_properties",
             "label": "Manage Properties"
+          },
+          {
+            "id": 3,
+            "name": "manage_campaign",
+            "label": "Manage Campaigns"
           }
         ],
         "created_at": "2025-08-11T09:00:00.000000Z",
         "updated_at": "2025-08-11T09:00:00.000000Z"
       }
     ],
-    "total_roles": 8
+    "total_roles": 2
   }
 }
 ```
 
-**Note:** Organization Admin response excludes any `super_admin` roles and their permissions for security reasons.
+**Note:** Regular user response excludes any `super_admin` roles and their permissions for security reasons, and `users_count` is set to `null`.
 
 ### 2. Get Permissions (Super Admin Only)
 
 **GET** `/api/rbac/permissions`
 
-Retrieves all permissions with their associated roles. This endpoint is only accessible by super admin users.
+Retrieves all global permissions, grouped by the `group` attribute. This endpoint is only accessible by super admin users.
 
 **Access:** Super Admin only
 
 **Response:**
 ```json
 {
-  "status": "success",
+  "success": true,
+  "status_code": 200,
   "message": "Permissions retrieved successfully",
   "data": {
-    "permissions": [
+    "permission_groups": [
       {
-        "id": 1,
-        "name": "manage_roles",
-        "label": "Manage Roles",
-        "roles": [
+        "group": "User Management",
+        "permissions": [
           {
             "id": 1,
-            "name": "admin",
-            "label": "Administrator",
-            "organization_id": 1
-          },
-          {
-            "id": 3,
-            "name": "admin",
-            "label": "Administrator",
-            "organization_id": 2
+            "name": "create_users",
+            "label": "Create Users",
+            "roles": [
+              {
+                "id": 1,
+                "name": "super_admin",
+                "label": "Super Administrator",
+                "enabled": true
+              },
+              {
+                "id": 2,
+                "name": "organization_admin",
+                "label": "Organization Administrator",
+                "enabled": true
+              }
+            ],
+            "created_at": "2025-08-12T04:00:00.000000Z",
+            "updated_at": "2025-08-12T04:00:00.000000Z"
           }
-        ],
-        "created_at": "2025-08-11T09:00:00.000000Z",
-        "updated_at": "2025-08-11T09:00:00.000000Z"
+        ]
       },
       {
-        "id": 2,
-        "name": "manage_client",
-        "label": "Manage Clients",
-        "roles": [
-          {
-            "id": 1,
-            "name": "admin",
-            "label": "Administrator",
-            "organization_id": 1
-          },
+        "group": "Billing",
+        "permissions": [
           {
             "id": 2,
-            "name": "staff",
-            "label": "Staff",
-            "organization_id": 1
+            "name": "manage_billing",
+            "label": "Manage Billing",
+            "roles": [
+              {
+                "id": 1,
+                "name": "super_admin",
+                "label": "Super Administrator",
+                "enabled": true
+              }
+            ],
+            "created_at": "2025-08-12T04:00:00.000000Z",
+            "updated_at": "2025-08-12T04:00:00.000000Z"
           }
-        ],
-        "created_at": "2025-08-11T09:00:00.000000Z",
-        "updated_at": "2025-08-11T09:00:00.000000Z"
+        ]
       }
     ],
-    "total_permissions": 6
+    "total_permissions": 2
   }
 }
 ```
@@ -234,7 +273,7 @@ Retrieves all permissions with their associated roles. This endpoint is only acc
 
 **PUT** `/api/rbac/roles/{role}`
 
-Updates the permissions assigned to a specific role. This endpoint is only accessible by super admin users.
+Updates the permissions assigned to a specific global role. This endpoint is only accessible by super admin users.
 
 **Access:** Super Admin only
 
@@ -254,7 +293,6 @@ Updates the permissions assigned to a specific role. This endpoint is only acces
     "role_id": 1,
     "role_name": "admin",
     "role_label": "Administrator",
-    "organization_id": 1,
     "permissions": [
       {
         "id": 1,
@@ -290,14 +328,13 @@ Updates the permissions assigned to a specific role. This endpoint is only acces
 ```json
 {
   "status": "error",
-  "message": "Some permissions do not exist in the role's organization",
+  "message": "Some permissions do not exist",
   "error_code": "INVALID_PERMISSIONS",
   "details": {
-    "requested_permissions": ["invalid_permission"],
-    "organization_id": 1
+    "requested_permissions": ["invalid_permission"]
   },
   "suggestions": [
-    "Ensure all permissions exist in the role's organization",
+    "Ensure all permissions exist",
     "Check permission names for typos"
   ]
 }
@@ -316,13 +353,13 @@ Updates the permissions assigned to a specific role. This endpoint is only acces
 }
 ```
 
-## Default Roles and Permissions
+## Global Roles and Permissions
 
-### Default Roles
-- **admin**: Full access to all permissions within the organization
+### Default Global Roles
+- **admin**: Full access to all permissions across the application
 - **staff**: Limited access (manage_lead, manage_properties, manage_campaign)
 
-### Default Permissions
+### Default Global Permissions
 - `manage_roles`: Manage Roles and Permissions
 - `manage_client`: Manage Clients
 - `manage_campaign`: Manage Campaigns
@@ -330,17 +367,31 @@ Updates the permissions assigned to a specific role. This endpoint is only acces
 - `manage_lead`: Manage Leads
 - `manage_properties`: Manage Properties
 
+## Key Features
+
+### Global System Benefits
+1. **Simplified Management**: Single set of roles and permissions for the entire application
+2. **Consistency**: Same roles and permissions available across all organizations
+3. **Easier Maintenance**: No need to manage organization-specific roles/permissions
+4. **Better Performance**: No organization-scoped queries required
+5. **Cleaner Architecture**: Simplified codebase without complex scoping logic
+
+### Role Assignment
+- Users can be assigned global roles that work across the entire application
+- Role assignments are managed through the user management endpoints
+- Users can have multiple roles assigned simultaneously
+
 ## Error Responses
 
 ### Validation Errors
 ```json
 {
   "status": "error",
-  "message": "Validation failed for updating user roles",
+  "message": "Validation failed for updating role permissions",
   "error_code": "VALIDATION_ERROR",
   "errors": [
-    "The roles field is required.",
-    "The roles.0 field must be a string."
+    "The permissions field is required.",
+    "The permissions.0 field must be a string."
   ]
 }
 ```
@@ -358,26 +409,24 @@ Updates the permissions assigned to a specific role. This endpoint is only acces
 ```json
 {
   "status": "error",
-  "message": "Some roles do not exist in the user's organization",
-  "error_code": "INVALID_ROLES",
+  "message": "Some permissions do not exist",
+  "error_code": "INVALID_PERMISSIONS",
   "details": {
-    "requested_roles": ["invalid_role"],
-    "organization_id": 1
+    "requested_permissions": ["invalid_permission"]
   },
   "suggestions": [
-    "Ensure all roles exist in the user's organization",
-    "Check role names for typos"
+    "Ensure all permissions exist",
+    "Check permission names for typos"
   ]
 }
 ```
 
 ## Security Features
 
-1. **Organization Isolation**: Users can only manage resources within their organization
-2. **Super Admin Protection**: Super admin access is restricted to configured email
-3. **Role-based Access**: Different access levels for super admin vs organization admin
-4. **Permission Validation**: All role and permission assignments are validated against organization scope
-5. **Cross-organization Prevention**: Built-in checks prevent cross-organization access
+1. **Super Admin Protection**: Super admin access is restricted to configured users
+2. **Role-based Access**: Different access levels for super admin vs regular users
+3. **Permission Validation**: All role and permission assignments are validated
+4. **Global Consistency**: Unified permission system across the application
 
 ## Rate Limiting
 
@@ -389,3 +438,14 @@ Rate limit headers are included in responses:
 - `X-RateLimit-Limit`: Maximum requests allowed
 - `X-RateLimit-Remaining`: Remaining requests
 - `X-RateLimit-Reset`: Reset timestamp
+
+## Migration Notes
+
+**Important:** This system has been migrated from organization-specific roles and permissions to a global system. Key changes:
+
+1. **Database Schema**: Removed `organization_id` columns from `roles` and `permissions` tables
+2. **Unique Constraints**: Changed from organization-scoped to global unique constraints
+3. **API Responses**: Removed `organization_id` fields from role and permission responses
+4. **Business Logic**: Simplified to work with global roles and permissions only
+
+All existing functionality continues to work, but now operates on a global scale rather than organization-specific scope.

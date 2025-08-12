@@ -18,7 +18,7 @@ class TenantScope implements Scope
      */
     public function apply(Builder $builder, Model $model)
     {
-        if (Auth::hasUser() && Auth::user()->role !== 'super_admin') {
+        if (Auth::hasUser() && !Auth::user()->hasRole('super_admin')) {
             $builder->where($model->getTable() . '.organization_id', Auth::user()->organization_id);
         }
     }
