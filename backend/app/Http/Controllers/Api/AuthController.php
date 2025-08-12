@@ -136,14 +136,14 @@ class AuthController extends Controller
         // Real implementation
         try {
             $invitation = Invitation::where('token', $request->invitation_token)->firstOrFail();
-            $organization = Organization::find($request->organization_id);
+            $organization = Organization::find($invitation->organization_id);
             $user = User::create([
                 'uuid' => Str::uuid(),
                 'email' => $invitation->email,
                 'password' => Hash::make($request->password),
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
-                'organization_id' => $organization,
+                'organization_id' => $organization->id,
                 'phone' => $request->phone,
                 'role' => $invitation->role, // First user is admin
                 'level' => 1,
@@ -183,6 +183,7 @@ class AuthController extends Controller
             ], 'User registered successfully', 201);
 
         } catch (\Illuminate\Database\QueryException $e) {
+
             return $this->databaseErrorResponse($e, 'user registration', 'user');
         } catch (\Exception $e) {
             return $this->serverErrorResponse('user registration', $e);
