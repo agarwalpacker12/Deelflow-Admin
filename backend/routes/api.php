@@ -95,7 +95,6 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('organizations', OrganizationController::class);
         Route::patch('organizations/{organization}/subscription-status', [OrganizationController::class, 'updateSubscriptionStatus']);
         Route::delete('organizations/{organization}/users/{user}', [OrganizationController::class, 'removeUser']);
-        Route::patch('organizations/{organization}/users/{user}/status', [OrganizationController::class, 'updateUserStatus']);
    // });
     
     // User achievement routes
@@ -179,4 +178,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::put('/users/{user}/roles', [UserController::class, 'updateRoles']);
+    Route::patch('/users/{user}/status', [UserController::class, 'updateStatus']);
 });

@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('password');
             $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
-            $table->string('company_name')->nullable();
             $table->string('role', 50)->default('admin');
             $table->integer('level')->default(1);
             $table->integer('points')->default(0);

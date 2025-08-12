@@ -14,3 +14,4 @@ This documentation is divided into the following sections:
 *   [Property Saves API](./api-documentation-property-saves.md)
 *   [AI Conversations API](./api-documentation-ai-conversations.md)
 *   [User Achievements API](./api-documentation-user-achievements.md)
+*   [Roles and Permissions API](./api-documentation-roles-permissions.md)

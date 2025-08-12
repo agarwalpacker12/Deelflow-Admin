@@ -71,6 +71,8 @@ export const authAPI = {
   register: (userData) => api.post("/register", userData),
   logout: () => api.post("/logout"),
   getCurrentUser: () => api.get("/user"),
+  getAllUsers: () => api.get("/users"),
+
   invite: (data) => api.post("/invitations", data),
   getInvitation: (invitationtoken) =>
     api.get(`/validate-invitation?token=${invitationtoken}`),
@@ -142,4 +144,12 @@ export const OrganizationAPI = {
   getOrganization: () => api.get(`/organizations`),
   UpdateOrganization: (id, data) => api.put(`/organizations/${id}`, data),
 };
+
+export const RbacAPI = {
+  getRoles: () => api.get("/rbac/roles"),
+  getPermissions: () => api.get("/rbac/permissions"),
+  UpdatePermission: (id, data) => api.put(`/rbac/roles/${role}`, data),
+  UpdateRole: (data) => api.put(`users/${data.id}/roles`, data),
+};
+
 export default api;

@@ -12,13 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $table->foreignId('organization_id')->after('id')->constrained()->onDelete('cascade');
-
-            // Drop global unique index
-            $table->dropUnique(['name']);
-
-            // Add scoped unique index
-            $table->unique(['organization_id', 'name']);
+            $table->string('group')->nullable()->after('label');
         });
     }
 
@@ -28,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('permissions', function (Blueprint $table) {
-            //
+            $table->dropColumn('group');
         });
     }
 };

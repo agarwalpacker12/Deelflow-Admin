@@ -28,7 +28,7 @@ class AuthControllerTest extends TestCase
             'last_name' => $this->faker->lastName,
             'company_name' => $this->faker->company,
             'phone' => $this->faker->phoneNumber,
-            'role' => 'wholesaler'
+            'role' => 'staff'
         ];
 
         $response = $this->postJson('/api/register', $userData);
@@ -89,7 +89,7 @@ class AuthControllerTest extends TestCase
             'password_confirmation' => 'password123',
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
-            'role' => 'wholesaler'
+            'role' => 'staff'
         ];
 
         $response = $this->postJson('/api/register', $userData);

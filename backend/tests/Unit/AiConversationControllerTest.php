@@ -64,7 +64,7 @@ class AiConversationControllerTest extends TestCase
         $conversationData = [
             'lead_id' => $lead->id,
             'channel' => 'chat',
-            'messages' => [['role' => 'user', 'content' => 'Hello']]
+            'messages' => [['role' => 'staff', 'content' => 'Hello']]
         ];
 
         $response = $this->postJson('/api/ai-conversations', $conversationData);

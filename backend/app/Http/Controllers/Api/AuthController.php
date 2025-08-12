@@ -77,7 +77,6 @@ class AuthController extends Controller
                 'last_name' => $request->last_name,
                 'organization_id' => $organization->id,
                 'phone' => $request->phone,
-                'role' => 'admin',
                 'level' => 1,
                 'points' => 0,
                 'is_verified' => false,
@@ -97,7 +96,7 @@ class AuthController extends Controller
                 'last_name' => $user->last_name,
                 'organization' => $organization,
                 'phone' => $user->phone,
-                'role' => $user->role,
+                'role' => $user->getPrimaryRoleName(),
                 'level' => $user->level,
                 'points' => $user->points,
                 'is_verified' => $user->is_verified,
@@ -173,7 +172,7 @@ class AuthController extends Controller
                 'last_name' => $user->last_name,
                 'organization' => $organization,
                 'phone' => $user->phone,
-                'role' => $user->role,
+                'role' => $user->getPrimaryRoleName(),
                 'level' => $user->level,
                 'points' => $user->points,
                 'is_verified' => $user->is_verified,
@@ -342,7 +341,7 @@ class AuthController extends Controller
         }
 
         if ($user->organization->subscription_status !== 'active') {
-            if ($user->role !== 'admin') {
+            if (!$user->hasRole('admin')) {
                 return $this->forbiddenResponse(
                     'access your account because the organization subscription is not active',
                     null,
@@ -368,7 +367,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
-                'role' => $user->role
+                'role' => $user->getPrimaryRoleName()
             ]
         ], 'User logged in successfully');
     }
@@ -421,7 +420,6 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'first_name' => $request->first_name,
                 'last_name' => $request->last_name,
-                'company_name' => $request->company_name,
                 'phone' => $request->phone,
                 'role' => 'admin',
                 'level' => 1,
