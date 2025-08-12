@@ -9,11 +9,12 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -165,22 +166,6 @@ class User extends Authenticatable
     }
 
     // roles
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
-    }
-
-    public function hasRole($role)
-    {
-        return $this->roles()->where('name', $role)->exists();
-    }
-
-    public function hasPermission($permission)
-    {
-        return $this->roles()
-            ->whereHas('permissions', fn($q) => $q->where('name', $permission))
-            ->exists();
-    }
 
     public function isSuperAdmin()
     {

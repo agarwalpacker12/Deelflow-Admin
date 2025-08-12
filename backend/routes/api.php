@@ -165,7 +165,7 @@ Route::group(['middleware' => 'api'], function () {
 });
 
 // RBAC routes - accessible by both super admin and organization admin with dual functionality
-Route::middleware(['auth:sanctum'])->prefix('rbac')->group(function () {
+Route::middleware(['auth:sanctum', 'role:super_admin'])->prefix('rbac')->group(function () {
     // Roles and permissions with dual functionality based on user type
     Route::get('/roles', [RbacController::class, 'getRoles']);
     Route::get('/permissions', [RbacController::class, 'getPermissions']);
@@ -179,4 +179,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show']);
     Route::put('/users/{user}/roles', [UserController::class, 'updateRoles']);
     Route::patch('/users/{user}/status', [UserController::class, 'updateStatus']);
+    Route::put('/users/{user}/profile', [UserController::class, 'updateProfile']);
 });
