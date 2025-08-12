@@ -73,7 +73,7 @@ import OrganizationSettingsPage from "./pages/Settings/SettingsPage.jsx";
 
 import InviteeRegister from "./pages/Auth/InviteRegister.jsx";
 import PaymentAfterLogin from "./pages/payment/page.jsx";
-import UserManagement from "./pages/user/page.jsx";
+import UserManagement from "./pages/User/page.jsx";
 import InvitationForm from "./pages/UserManagement/page.jsx";
 
 // Create a client
