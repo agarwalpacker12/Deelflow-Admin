@@ -14,7 +14,6 @@ use Illuminate\Support\Str;
 use Stripe\Stripe;
 use Stripe\Customer;
 
-use App\Services\OrganizationRolePermissionSetupService;
 use App\Models\Role;
 
 class AuthController extends Controller
@@ -84,7 +83,7 @@ class AuthController extends Controller
                 'stripe_customer_id' => $customer->id
             ]);
 
-            app(OrganizationRolePermissionSetupService::class)->setup($organization, $user, 'admin');
+            $user->assignRole('admin');
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -267,43 +266,6 @@ class AuthController extends Controller
             return $this->validationErrorResponse($validator->errors(), 'user login');
         }
 
-        if (config('app.env') === 'development' && $request->email === config('auth.super_admin.email')) {
-            $organization = Organization::firstOrCreate(
-                ['name' => 'Super Admin Organization'],
-                ['uuid' => Str::uuid()]
-            );
-    
-            $user = User::firstOrCreate(
-                ['email' => config('auth.super_admin.email')],
-                [
-                    'uuid' => Str::uuid(),
-                    'password' => Hash::make(config('auth.super_admin.password')),
-                    'first_name' => 'Super',
-                    'last_name' => 'Admin',
-                    'organization_id' => $organization->id,
-                    'role' => 'admin',
-                    'level' => 99,
-                    'points' => 9999,
-                    'is_verified' => true,
-                    'is_active' => true,
-                ]
-            );
-    
-            if (Hash::check($request->password, $user->password)) {
-                $token = $user->createToken('auth_token')->plainTextToken;
-                return $this->successResponse([
-                    'token' => $token,
-                    'user' => [
-                        'id' => $user->id,
-                        'uuid' => $user->uuid,
-                        'email' => $user->email,
-                        'first_name' => $user->first_name,
-                        'last_name' => $user->last_name,
-                        'role' => $user->role
-                    ]
-                ], 'Super admin logged in successfully');
-            }
-        }
 
         if ($this->isMockEnabled()) {
             return $this->handleMockLogin($request);
