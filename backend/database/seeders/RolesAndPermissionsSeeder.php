@@ -31,17 +31,17 @@ class RolesAndPermissionsSeeder extends Seeder
         foreach ($permissions as $group => $permissionNames) {
             foreach ($permissionNames as $name) {
                 Permission::updateOrCreate(
-                    ['name' => $name, 'guard_name' => 'web'],
+                    ['name' => $name, 'guard_name' => 'api'],
                     ['group' => $group]
                 );
             }
         }
 
         // Define roles and assign permissions
-        $superAdminRole = Role::updateOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+        $superAdminRole = Role::updateOrCreate(['name' => 'super_admin', 'guard_name' => 'api']);
         $superAdminRole->syncPermissions(Permission::all());
 
-        $adminRole = Role::updateOrCreate(['name' => 'admin', 'guard_name' => 'web']);
+        $adminRole = Role::updateOrCreate(['name' => 'admin', 'guard_name' => 'api']);
         $adminRole->givePermissionTo([
             'view users', 'manage users',
             'view roles', 'manage roles',
@@ -54,7 +54,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'view organizations', 'manage organizations',
         ]);
 
-        $staffRole = Role::updateOrCreate(['name' => 'staff', 'guard_name' => 'web']);
+        $staffRole = Role::updateOrCreate(['name' => 'staff', 'guard_name' => 'api']);
         $staffRole->givePermissionTo([
             'view deals', 'manage deals',
             'view leads', 'manage leads',

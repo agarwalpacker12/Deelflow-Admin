@@ -272,7 +272,7 @@ class AuthController extends Controller
         }
 
         // Real implementation
-        $user = User::where('email', $request->email)->first();
+        $user = User::with('roles')->where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return $this->businessLogicErrorResponse(

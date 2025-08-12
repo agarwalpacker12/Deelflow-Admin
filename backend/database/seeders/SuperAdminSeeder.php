@@ -39,7 +39,7 @@ class SuperAdminSeeder extends Seeder
 
         // Ensure the 'super_admin' role exists and assign it
         $superAdminRole = Role::updateOrCreate(
-            ['name' => 'super_admin', 'guard_name' => 'web']
+            ['name' => 'super_admin', 'guard_name' => 'api']
         );
 
         $superAdmin->assignRole($superAdminRole);
