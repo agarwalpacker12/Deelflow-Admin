@@ -1,27 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Zap, Users, Check } from "lucide-react";
 import ShowPrice from "./ShowPrice";
 import SelectPlan from "./SelectPlan";
 import PaymentSuccess from "./PaymentSuccess";
+import { PaymentAPI } from "../../services/api";
 
 export default function PaymentAfterLogin() {
   const [showPricing, setShowPricing] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [packageId, setPackageId] = useState();
 
-  const handlePlanSelect = (planName, price) => {
-    setSelectedPlan({ name: planName, price: price });
+  // Check for payment success on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentStatus = urlParams.get("payment_status");
+    const sessionId = urlParams.get("session_id");
+
+    // Check if payment was successful
+    if (paymentStatus === "success" || sessionId) {
+      // Optionally verify the payment with your backend
+      verifyPayment(sessionId);
+    }
+  }, []);
+
+  const verifyPayment = async (sessionId) => {
+    try {
+      // Call your backend to verify the payment
+      const response = await PaymentAPI.verifyPayment(sessionId);
+      if (response.data.success) {
+        setPaymentSuccess(true);
+        // Optionally get plan details from the response
+        setSelectedPlan(response.data.planDetails);
+
+        // Clean up URL parameters
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+      }
+    } catch (error) {
+      console.log("Payment verification failed:", error);
+    }
   };
 
-  const handlePayment = () => {
-    // Simulate payment processing
-    setPaymentSuccess(true);
+  const handlePlanSelect = (id, planName, price) => {
+    setPackageId(id);
+    setSelectedPlan({ planId: id, name: planName, price: price });
+  };
+
+  const handlePayment = async () => {
+    try {
+      const formattedData = {
+        package_id: packageId,
+      };
+      const response = await PaymentAPI.createCheckout(formattedData);
+      console.log("response", response.data.data);
+      if (response.data.data.redirect_url) {
+        window.location.href = response.data.data.redirect_url;
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // Payment success screen
-  if (paymentSuccess) {
-    return <PaymentSuccess selectedPlan={selectedPlan} />;
-  }
+  // if (paymentSuccess) {
+  //   return <PaymentSuccess selectedPlan={selectedPlan} />;
+  // }
 
   // Subscription completion screen
   if (selectedPlan) {
@@ -31,8 +78,14 @@ export default function PaymentAfterLogin() {
   }
 
   if (showPricing) {
-    return <ShowPrice handlePlanSelect={handlePlanSelect} />;
+    return (
+      <ShowPrice
+        handlePlanSelect={handlePlanSelect}
+        setPackageId={setPackageId}
+      />
+    );
   }
+
   return (
     <div className="flex items-center justify-center min-h-full">
       <div className="w-full max-w-md">

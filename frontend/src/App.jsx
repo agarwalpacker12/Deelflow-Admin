@@ -75,6 +75,7 @@ import InviteeRegister from "./pages/Auth/InviteRegister.jsx";
 import PaymentAfterLogin from "./pages/payment/page.jsx";
 import UserManagement from "./pages/User/page.jsx";
 import InvitationForm from "./pages/UserManagement/page.jsx";
+import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -259,7 +260,14 @@ function App() {
                             path="payment"
                             element={<PaymentAfterLogin />}
                           />
-
+                          <Route
+                            path="payment-success"
+                            element={<PaymentSuccess />}
+                          />
+                          <Route
+                            path="payment-cancel"
+                            element={<PaymentAfterLogin />}
+                          />
                           {/* <Route
                             path="marketplace"
                             element={<MarketplacePage />}
