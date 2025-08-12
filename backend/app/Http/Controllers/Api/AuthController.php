@@ -53,7 +53,7 @@ class AuthController extends Controller
                 'name' => $request->organization_name,
                 'uuid' => Str::uuid(),
                 'slug' => Str::slug($request->organization_name),
-                'subscription_status' => 'active',
+                'subscription_status' => 'new',
             ]);
 
             // 2. Create Stripe customer BEFORE creating the user
