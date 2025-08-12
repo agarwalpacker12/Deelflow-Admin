@@ -336,6 +336,60 @@ Updates a user's roles based on user type:
 }
 ```
 
+### 4. Update User Status
+
+**PATCH** `/api/users/{user}/status`
+
+Updates a user's status based on user type:
+- **Super Admin**: Can update status for any user
+- **Organization Admin**: Can update status for users within their organization only
+
+**Request Body:**
+```json
+{
+  "status": "active"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "User status updated successfully",
+  "data": {
+    "id": 1,
+    "uuid": "550e8400-e29b-41d4-a716-446655440000",
+    "email": "user@example.com",
+    "first_name": "John",
+    "last_name": "Doe",
+    "full_name": "John Doe",
+    "phone": "+1234567890",
+    "status": "active",
+    "is_active": true,
+    "is_verified": true,
+    "level": 1,
+    "points": 50,
+    "roles": [
+      {
+        "id": 2,
+        "name": "staff",
+        "label": "Staff",
+        "permissions": [
+          {
+            "id": 4,
+            "name": "manage_lead",
+            "label": "Manage Leads"
+          }
+        ]
+      }
+    ],
+    "created_at": "2025-08-11T09:00:00.000000Z",
+    "updated_at": "2025-08-12T09:00:00.000000Z",
+    "last_login_at": "2025-08-11T08:30:00.000000Z"
+  }
+}
+```
+
 ## User Status Values
 
 Users can have the following status values:

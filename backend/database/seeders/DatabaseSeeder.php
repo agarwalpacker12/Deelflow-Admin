@@ -6,7 +6,6 @@ use App\Models\Deal;
 use App\Models\Lead;
 use App\Models\Property;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,18 +15,21 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(RolesAndPermissionsSeeder::class);
+
         // Create super admin user for development
-        User::factory()->create([
+        $superAdmin = User::factory()->create([
             'first_name' => 'Super',
             'last_name' => 'Admin',
             'email' => env('SUPER_ADMIN_EMAIL', 'superadmin@example.com'),
             'password' => env('SUPER_ADMIN_PASSWORD', 'password'),
-            'role' => 'admin',
             'is_active' => true,
             'is_verified' => true,
         ]);
+        $superAdmin->assignRole('super_admin');
 
         User::factory(10)->create()->each(function ($user) {
+            $user->assignRole('user');
             Property::factory(5)->create(['user_id' => $user->id]);
             Lead::factory(5)->create(['user_id' => $user->id]);
         });

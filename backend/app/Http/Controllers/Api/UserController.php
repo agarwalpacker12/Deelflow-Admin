@@ -453,4 +453,44 @@ class UserController extends Controller
             return $this->serverErrorResponse('updating user status', $e);
         }
     }
+
+    /**
+     * Update user profile information.
+     * - A user can update their own profile.
+     * - An organization admin can update any user in their organization.
+     * - A super admin can update any user.
+     */
+    public function updateProfile(Request $request, User $targetUser)
+    {
+        $user = $request->user();
+
+        // Authorization: Check if the user is allowed to update the target user's profile
+        if (!$user->isSuperAdmin() && $user->id !== $targetUser->id && $user->organization_id !== $targetUser->organization_id) {
+            return $this->forbiddenResponse('update this user\'s profile');
+        }
+        
+        if (!$user->isSuperAdmin() && $user->id !== $targetUser->id && !$user->hasRole('admin')) {
+            return $this->forbiddenResponse('update this user\'s profile');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'sometimes|required|string|max:255',
+            'last_name' => 'sometimes|required|string|max:255',
+            'phone' => 'nullable|string|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator->errors(), 'updating user profile');
+        }
+
+        try {
+            $dataToUpdate = $request->only(['first_name', 'last_name', 'phone']);
+
+            $targetUser->update($dataToUpdate);
+
+            return $this->successResponse($targetUser, 'User profile updated successfully');
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse('updating user profile', $e);
+        }
+    }
 }
