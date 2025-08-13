@@ -12,8 +12,7 @@ const RoleManagementPage = () => {
 
         // Handle the API response format
         if (response.data.status === "success") {
-          console.log(response.data.data);
-
+          // console.log(response.data.data);
           // setInvitationRes(response.data.data); // leads array
         }
       } catch (err) {

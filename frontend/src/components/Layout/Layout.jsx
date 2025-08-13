@@ -21,11 +21,16 @@ const marketingHubNavLinks = [
   { to: "/app/marketing/advanced", label: "Advanced" },
 ];
 
-const settingsNavLinks = [
-  { to: "/app/ai-settings", label: "AI Settings" },
+// Base settings for all roles (except staff)
+const baseSettingsNavLinks = [
   { to: "/app/settings", label: "Organization Settings" },
   { to: "/app/user-management", label: "User Management" },
   { to: "/app/billing", label: "Billing & Subscription" },
+];
+
+// Super admin only settings
+const superAdminSettingsNavLinks = [
+  { to: "/app/ai-settings", label: "AI Settings" },
 ];
 
 const saasManagementNavLinks = [
@@ -42,16 +47,54 @@ const Layout = () => {
   const [isSaaSManagementExpanded, setIsSaaSManagementExpanded] =
     useState(false);
 
+  const userDetails = JSON.parse(localStorage.getItem("user") || "{}");
+  const userRole = userDetails.role || "staff"; // Default to staff if no role
+
+  // Generate settings links based on role
+  const getSettingsNavLinks = () => {
+    if (userRole === "super_admin") {
+      return [...superAdminSettingsNavLinks, ...baseSettingsNavLinks];
+    } else if (userRole === "admin") {
+      return [...superAdminSettingsNavLinks, ...baseSettingsNavLinks];
+    }
+    return []; // Staff gets no settings
+  };
+
+  // Generate SaaS Management links based on role
+  const getSaaSManagementNavLinks = () => {
+    if (userRole === "super_admin") {
+      return saasManagementNavLinks; // Show all SaaS management links
+    } else if (userRole === "admin") {
+      // Filter out tenant management for admin users
+      return saasManagementNavLinks.filter(
+        (link) => link.to !== "/app/tenant-management"
+      );
+    }
+    return []; // Staff gets no SaaS management
+  };
+
+  const settingsNavLinks = getSettingsNavLinks();
+  const filteredSaaSManagementNavLinks = getSaaSManagementNavLinks();
+
+  // Check if settings section should be shown
+  const shouldShowSettings = userRole !== "staff";
+
+  // Check if SaaS Management should be shown (ONLY for super_admin)
+  const shouldShowSaaSManagement = userRole === "super_admin";
+
   // Check if any of the "Settings" submenu items are currently active
   const isSettingsActive =
     settingsNavLinks.some((link) => location.pathname.startsWith(link.to)) ||
-    saasManagementNavLinks.some((link) =>
+    (shouldShowSaaSManagement &&
+      filteredSaaSManagementNavLinks.some((link) =>
+        location.pathname.startsWith(link.to)
+      ));
+
+  const isSaaSManagementActive =
+    shouldShowSaaSManagement &&
+    filteredSaaSManagementNavLinks.some((link) =>
       location.pathname.startsWith(link.to)
     );
-
-  const isSaaSManagementActive = saasManagementNavLinks.some((link) =>
-    location.pathname.startsWith(link.to)
-  );
 
   // Check if any of the "Marketplace" submenu items are currently active
   const isMarketplaceActive = marketplaceNavLinks.some((link) =>
@@ -185,103 +228,110 @@ const Layout = () => {
               )}
             </div>
 
-            {/* Settings Dropdown */}
-            <div className="flex flex-col">
-              <button
-                onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
-                className={`px-3 py-2 rounded text-slate-200 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between ${
-                  isSettingsActive ? "bg-indigo-600 text-white" : ""
-                }`}
-              >
-                <span>Settings</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${
-                    isSettingsExpanded ? "rotate-180" : ""
+            {/* Settings Dropdown - Only show if user is not staff */}
+            {shouldShowSettings && (
+              <div className="flex flex-col">
+                <button
+                  onClick={() => setIsSettingsExpanded(!isSettingsExpanded)}
+                  className={`px-3 py-2 rounded text-slate-200 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between ${
+                    isSettingsActive ? "bg-indigo-600 text-white" : ""
                   }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+                  <span>Settings</span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${
+                      isSettingsExpanded ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
 
-              {/* Settings Submenu Items */}
-              {isSettingsExpanded && (
-                <div className="ml-4 mt-2 flex flex-col gap-2">
-                  {settingsNavLinks.map((link) => (
-                    <Link
-                      key={link.to}
-                      to={link.to}
-                      className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white text-sm ${
-                        location.pathname.startsWith(link.to)
-                          ? "bg-indigo-600 text-white"
-                          : ""
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-
-                  {/* SaaS Management Dropdown */}
-                  <div className="flex flex-col">
-                    <button
-                      onClick={() =>
-                        setIsSaaSManagementExpanded(!isSaaSManagementExpanded)
-                      }
-                      className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between text-sm ${
-                        isSaaSManagementActive ? "bg-indigo-600 text-white" : ""
-                      }`}
-                    >
-                      <span>SaaS Management</span>
-                      <svg
-                        className={`w-4 h-4 transition-transform ${
-                          isSaaSManagementExpanded ? "rotate-180" : ""
+                {/* Settings Submenu Items */}
+                {isSettingsExpanded && (
+                  <div className="ml-4 mt-2 flex flex-col gap-2">
+                    {settingsNavLinks.map((link) => (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white text-sm ${
+                          location.pathname.startsWith(link.to)
+                            ? "bg-indigo-600 text-white"
+                            : ""
                         }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
+                        {link.label}
+                      </Link>
+                    ))}
 
-                    {/* SaaS Management Submenu Items */}
-                    {isSaaSManagementExpanded && (
-                      <div className="ml-4 mt-2 flex flex-col gap-2">
-                        {saasManagementNavLinks.map((link) => (
-                          <Link
-                            key={link.to}
-                            to={link.to}
-                            className={`px-3 py-2 rounded text-slate-400 font-medium transition hover:bg-indigo-700 hover:text-white text-xs ${
-                              location.pathname.startsWith(link.to)
-                                ? "bg-indigo-600 text-white"
-                                : ""
+                    {/* SaaS Management Dropdown - ONLY for super_admin */}
+                    {shouldShowSaaSManagement && (
+                      <div className="flex flex-col">
+                        <button
+                          onClick={() =>
+                            setIsSaaSManagementExpanded(
+                              !isSaaSManagementExpanded
+                            )
+                          }
+                          className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between text-sm ${
+                            isSaaSManagementActive
+                              ? "bg-indigo-600 text-white"
+                              : ""
+                          }`}
+                        >
+                          <span>SaaS Management</span>
+                          <svg
+                            className={`w-4 h-4 transition-transform ${
+                              isSaaSManagementExpanded ? "rotate-180" : ""
                             }`}
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
                           >
-                            {link.label}
-                          </Link>
-                        ))}
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </button>
+
+                        {/* SaaS Management Submenu Items */}
+                        {isSaaSManagementExpanded && (
+                          <div className="ml-4 mt-2 flex flex-col gap-2">
+                            {filteredSaaSManagementNavLinks.map((link) => (
+                              <Link
+                                key={link.to}
+                                to={link.to}
+                                className={`px-3 py-2 rounded text-slate-400 font-medium transition hover:bg-indigo-700 hover:text-white text-xs ${
+                                  location.pathname.startsWith(link.to)
+                                    ? "bg-indigo-600 text-white"
+                                    : ""
+                                }`}
+                              >
+                                {link.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </nav>
 
           {/* User icon at bottom */}
-
           <span>
             <button
               onClick={() => navigate("/app/profile")}
