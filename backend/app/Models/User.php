@@ -174,39 +174,5 @@ class User extends Authenticatable
         return $this->hasRole('super_admin') || $this->email === config('auth.super_admin.email');
     }
 
-    /**
-     * Get the user's primary role (for backward compatibility)
-     * Returns the first role or null if no roles assigned
-     */
-    public function getPrimaryRole()
-    {
-        return $this->roles->first();
-    }
-
-    /**
-     * Get the user's primary role name (for backward compatibility)
-     * Returns the name of the first role or null if no roles assigned
-     */
-    public function getPrimaryRoleName()
-    {
-        $role = $this->getPrimaryRole();
-        return $role ? $role->name : null;
-    }
-
-    /**
-     * Check if user has any of the specified roles
-     */
-    public function hasAnyRole(array $roles)
-    {
-        return $this->roles()->whereIn('name', $roles)->exists();
-    }
-
-    /**
-     * Check if user has all of the specified roles
-     */
-    public function hasAllRoles(array $roles)
-    {
-        return $this->roles()->whereIn('name', $roles)->count() === count($roles);
-    }
 
 }

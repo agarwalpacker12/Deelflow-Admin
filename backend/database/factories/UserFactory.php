@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -45,6 +46,10 @@ class UserFactory extends Factory
             'organization_id' => \App\Models\Organization::factory(),
         ];
     }
+
+    /**
+     * Configure the model factory.
+     */
 
     /**
      * Indicate that the model's email address should be unverified.

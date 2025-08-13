@@ -98,10 +98,6 @@ return [
             'cancelled',
         ],
         
-        'user_roles' => [
-            'admin',
-            'staff',
-        ],
         
         'subscription_tiers' => [
             'starter',
