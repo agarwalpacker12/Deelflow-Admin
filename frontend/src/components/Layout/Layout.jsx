@@ -114,7 +114,7 @@ const Layout = () => {
         <aside className="bg-[#18192a] flex flex-col px-8 py-6 h-screen">
           <Link to="/" className="text-white text-2xl font-bold mb-8">
             {/* DealFlow */}
-            <img src="../../public/logo.jpeg" alt="Logo" />
+            <img src="/logo.jpeg" alt="Logo" />
           </Link>
 
           {/* Vertical Navbar - Takes up remaining space */}
