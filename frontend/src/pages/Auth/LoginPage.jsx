@@ -51,7 +51,7 @@ const LoginPage = () => {
         } else if (orgResponse?.data?.data?.status == "active") {
           navigate("/app/dashboard");
         } else {
-          navigate("/app/bill");
+          navigate("/app/dashboard");
         }
       }
     } catch (error) {
