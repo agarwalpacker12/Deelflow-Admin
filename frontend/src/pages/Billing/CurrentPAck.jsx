@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { PaymentAPI } from "../../services/api";
 
 // Billing Management Component
-function BillingManagement({ subscriptionPackState }) {
+function BillingManagement({ subscriptionPackState, redirectStripeHandler }) {
   // Helper functions
   const capitalizeFirst = (str) => {
     if (!str) return "";
@@ -21,7 +21,10 @@ function BillingManagement({ subscriptionPackState }) {
     <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 mt-8">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-xl font-semibold text-white">Billing Management</h2>
-        <button className="flex items-center gap-2 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-purple-500/25">
+        <button
+          onClick={() => redirectStripeHandler()}
+          className="flex items-center gap-2 px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-purple-500/25"
+        >
           <svg
             className="w-4 h-4"
             fill="none"
@@ -194,56 +197,6 @@ function BillingManagement({ subscriptionPackState }) {
 }
 
 function CurrentPack({ redirectStripeHandler }) {
-  const currentData = {
-    id: 1,
-    organization_id: 1,
-    user_id: 73,
-    package_id: 1,
-    stripe_subscription_id: "sub_1RvZtmE0wE8Cg1knguwnFnnQ",
-    stripe_customer_id: "cus_SrIULkYZt2oSSS",
-    stripe_price_id: "price_1RuqJRE0wE8Cg1knGpSwxESM",
-    status: "active",
-    current_period_end: "2025-09-13 08:19:04",
-    card_last4: "4242",
-    card_brand: "visa",
-    created_at: "2025-08-13T08:19:09.000000Z",
-    updated_at: "2025-08-13T08:19:09.000000Z",
-    package: {
-      id: 1,
-      name: "Enterprise",
-      description: "Enterprise",
-      amount: 200,
-      currency: "usd",
-      interval: "month",
-      stripe_product_id: "prod_SqXOD2sgmc458Q",
-      stripe_price_id: "price_1RuqJRE0wE8Cg1knGpSwxESM",
-      created_at: "2025-08-13T08:14:42.000000Z",
-      updated_at: "2025-08-13T08:14:42.000000Z",
-    },
-    organization: {
-      id: 1,
-      uuid: "b69ae2c0-07bc-415d-b9a7-32ad921c59f0",
-      name: "protech",
-      created_at: "2025-08-08T07:00:22.000000Z",
-      updated_at: "2025-08-13T08:19:09.000000Z",
-      slug: "protech",
-      industry: null,
-      organization_size: null,
-      business_email: null,
-      business_phone: null,
-      website: null,
-      support_email: null,
-      street_address: null,
-      city: null,
-      state_province: null,
-      zip_postal_code: null,
-      country: null,
-      timezone: null,
-      language: null,
-      subscription_status: "active",
-    },
-  };
-
   const [subscriptionPackState, setSubscriptionPackState] = useState();
 
   useEffect(() => {
@@ -253,7 +206,6 @@ function CurrentPack({ redirectStripeHandler }) {
         console.log(response.data.data);
         if (response.data.status == "success") {
           setSubscriptionPackState(response.data.data); // Use actual API response
-          //   setSubscriptionPackState(currentData); // Use actual API response
         }
       } catch (err) {
         console.error("Error fetching leads:", err);
@@ -330,12 +282,12 @@ function CurrentPack({ redirectStripeHandler }) {
           <h2 className="text-xl font-semibold text-white">
             Current Subscription
           </h2>
-          <button
+          {/* <button
             onClick={() => redirectStripeHandler()}
             className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-blue-500/25"
           >
             Change Plan
-          </button>
+          </button> */}
         </div>
 
         {/* Subscription Plan Section */}
@@ -434,7 +386,10 @@ function CurrentPack({ redirectStripeHandler }) {
       </div>
 
       {/* Billing Management Section */}
-      <BillingManagement subscriptionPackState={subscriptionPackState} />
+      <BillingManagement
+        subscriptionPackState={subscriptionPackState}
+        redirectStripeHandler={redirectStripeHandler}
+      />
     </div>
   );
 }
