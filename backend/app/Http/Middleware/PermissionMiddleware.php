@@ -15,7 +15,7 @@ class PermissionMiddleware
      */
     public function handle(Request $request, Closure $next, $permission): Response
     {
-        if (!auth()->check() || !auth()->user()->hasPermission($permission)) {
+        if (!auth()->check() || !auth()->user()->hasPermissionTo($permission)) {
             abort(403, 'Permission denied');
         }
         

@@ -13,13 +13,18 @@ class Invitation extends Model
     protected $fillable = [
         'organization_id',
         'email',
-        'role',
+        'role_id',
         'token',
     ];
 
     public function organization()
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
     public static function generateToken()

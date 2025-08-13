@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Permission as SpatiePermission;
 
-class Permission extends Model
+class Permission extends SpatiePermission
 {
-    protected $fillable = ['name', 'label', 'group'];
-    
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class);
-    }
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'name',
+        'guard_name',
+        'group',
+        'label',
+    ];
 }

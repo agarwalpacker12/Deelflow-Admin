@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Traits\MockableController;
 use App\Models\Invitation;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\InvitationMail;
@@ -23,7 +24,7 @@ class InvitationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'role' => 'required|in:admin,staff',
+            'role_id' => 'required|exists:roles,id',
         ]);
 
         if ($validator->fails()) {
@@ -49,9 +50,11 @@ class InvitationController extends Controller
         }
 
         try {
+            $role = Role::find($request->role_id);
+
             $invitation = Invitation::create([
                 'email' => $request->email,
-                'role' => $request->role,
+                'role_id' => $role->id,
                 'organization_id' => auth()->user()->organization_id,
                 'token' => Invitation::generateToken(),
             ]);
@@ -61,7 +64,7 @@ class InvitationController extends Controller
             return $this->successResponse([
                 'invitation_id' => $invitation->id,
                 'email' => $invitation->email,
-                'role' => $invitation->role,
+                'role' => $role->name,
                 'created_at' => $invitation->created_at->toISOString()
             ], 'Invitation sent successfully', 201);
 
@@ -108,7 +111,7 @@ class InvitationController extends Controller
 
             return $this->successResponse([
                 'email' => $invitation->email,
-                'role' => $invitation->role,
+                'role' => $invitation->role->name,
                 'organization' => $invitation->organization->only('id', 'name'),
                 'token' => $invitation->token
             ], 'Invitation validated successfully');

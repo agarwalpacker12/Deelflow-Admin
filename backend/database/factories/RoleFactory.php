@@ -16,7 +16,8 @@ class RoleFactory extends Factory
     {
         return [
             'name' => $this->faker->unique()->word,
-            'label' => $this->faker->word,
+            'guard_name' => 'api',
+            'organization_id' => \App\Models\Organization::factory(),
         ];
     }
 }

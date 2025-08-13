@@ -95,7 +95,7 @@ class AuthController extends Controller
                 'last_name' => $user->last_name,
                 'organization' => $organization,
                 'phone' => $user->phone,
-                'role' => $user->getPrimaryRoleName(),
+                'role' => $user->getRoleNames()->first(),
                 'level' => $user->level,
                 'points' => $user->points,
                 'is_verified' => $user->is_verified,
@@ -143,21 +143,13 @@ class AuthController extends Controller
                 'last_name' => $request->last_name,
                 'organization_id' => $organization->id,
                 'phone' => $request->phone,
-                'role' => $invitation->role, // First user is admin
                 'level' => 1,
                 'points' => 0,
                 'is_verified' => false,
                 'is_active' => true,
             ]);
 
-            // role-permission
-            $role = Role::where('organization_id', $organization->id)
-                ->where('name', $invitation->role) // 'staff','admin'
-                ->first();
-
-            if ($role) {
-                $user->roles()->attach($role->id);
-            }
+            $user->assignRole($invitation->role_id);
 
             $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -171,7 +163,7 @@ class AuthController extends Controller
                 'last_name' => $user->last_name,
                 'organization' => $organization,
                 'phone' => $user->phone,
-                'role' => $user->getPrimaryRoleName(),
+                'role' => $user->getRoleNames()->first(),
                 'level' => $user->level,
                 'points' => $user->points,
                 'is_verified' => $user->is_verified,
@@ -329,7 +321,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
-                'role' => $user->getPrimaryRoleName()
+                'role' => $user->getRoleNames()->first()
             ]
         ], 'User logged in successfully');
     }
