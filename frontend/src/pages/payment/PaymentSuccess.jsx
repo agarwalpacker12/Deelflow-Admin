@@ -1,9 +1,34 @@
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { PaymentAPI } from "../../services/api";
+import { useEffect } from "react";
 
 function PaymentSuccess() {
-// { selectedPlan }
+  // { selectedPlan }
   const navigate = useNavigate();
+
+  const createCustomerPortalHandler = async () => {
+    try {
+      const response = await PaymentAPI.createCustomerPortal();
+      console.log("response", response.data.data);
+      if (response.data.data.redirect_url) {
+        window.location.href = response.data.data.redirect_url;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    // Set a timeout to call the function after 40 seconds
+    const timer = setTimeout(() => {
+      createCustomerPortalHandler();
+    }, 10000); // 10 seconds = 10,000 milliseconds
+
+    // Cleanup function to clear the timeout if component unmounts
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       <div className="flex items-center justify-center min-h-full">
@@ -44,13 +69,6 @@ function PaymentSuccess() {
             >
               Go to Dashboard
             </button>
-          </div>
-
-          {/* Footer */}
-          <div className="text-center mt-6">
-            <p className="text-xs text-white/70">
-              © 2025 WholesaleAI. All rights reserved.
-            </p>
           </div>
         </div>
       </div>
