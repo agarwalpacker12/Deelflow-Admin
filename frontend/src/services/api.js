@@ -148,7 +148,7 @@ export const OrganizationAPI = {
 export const RbacAPI = {
   getRoles: () => api.get("/rbac/roles"),
   getPermissions: () => api.get("/rbac/permissions"),
-  UpdatePermission: (id, data) => api.put(`/rbac/roles/${role}`, data),
+  UpdatePermission: (id, data) => api.put(`/rbac/roles/${id}`, data),
   UpdateRole: (data) => api.put(`users/${data.id}/roles`, data),
 };
 export const PaymentAPI = {
