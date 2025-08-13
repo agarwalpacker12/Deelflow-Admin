@@ -11,9 +11,9 @@ function AddOrganizationSettings() {
       setLoading(true);
       try {
         const response = await OrganizationAPI.getOrganization();
-        console.log("edit", response.data[0]);
+        // console.log("edit", response.data.data);
 
-        setOrgState(response.data[0]); // Adjust if your API response is nested differently
+        setOrgState(response.data.data); // Adjust if your API response is nested differently
       } catch (err) {
         setError("Failed to fetch campaign details");
       } finally {

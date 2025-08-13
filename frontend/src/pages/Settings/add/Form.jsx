@@ -2,18 +2,16 @@ import { Save } from "lucide-react";
 import { Text } from "@radix-ui/themes";
 import {
   countries,
-  DefaultValues,
   industries,
   organizationSizes,
   settingsSchema,
 } from "./utility";
-import { OrganizationAPI, TenantAPI } from "../../../services/api";
+import { OrganizationAPI } from "../../../services/api";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@tanstack/react-query";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import ButtonLoader from "../../../components/UI/ButtonLoader";
-import { setTenants } from "../../../store/slices/tenantSlice";
 
 const CreateOrganizationForm = ({ orgState }) => {
   const dispatch = useDispatch();
