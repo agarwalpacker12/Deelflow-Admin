@@ -49,7 +49,7 @@ const LoginPage = () => {
         if (orgResponse?.data?.data?.status == "new") {
           navigate("/app/payment");
         } else if (orgResponse?.data?.data?.status == "active") {
-          navigate("/app");
+          navigate("/app/dashboard");
         } else {
           navigate("/app/bill");
         }
