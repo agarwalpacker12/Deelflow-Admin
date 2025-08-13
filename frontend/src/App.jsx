@@ -77,6 +77,7 @@ import UserManagement from "./pages/User/page.jsx";
 import InvitationForm from "./pages/UserManagement/page.jsx";
 import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
 import PaymentFailedPage from "./pages/payment/PaymentFailed.jsx";
+import Invoice from "./pages/payment/_Invoice.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -269,6 +270,8 @@ function App() {
                             path="payment-cancel"
                             element={<PaymentFailedPage />}
                           />
+                          <Route path="invoice" element={<Invoice />} />
+
                           {/* <Route
                             path="marketplace"
                             element={<MarketplacePage />}

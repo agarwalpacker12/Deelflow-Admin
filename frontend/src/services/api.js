@@ -154,6 +154,9 @@ export const RbacAPI = {
 export const PaymentAPI = {
   getSubscriptionPack: () => api.get(`/subscription-packs`),
   createCheckout: (id) => api.post(`/create-checkout-session`, id),
+  createCustomerPortal: () => api.post(`/create-customer-portal-session`),
+  getTransactionList: () => api.post(`/stripe-invoice`),
+  getCurrentPack: () => api.get(`/current-subscription`),
 };
 
 export default api;
