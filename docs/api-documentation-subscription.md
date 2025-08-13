@@ -290,22 +290,56 @@
 
     ```json
     {
-        "status": "success",
-        "message": "Subscription retrieved successfully",
-        "data": {
-            "id": 2,
-            "organization_id": 4,
-            "user_id": 75,
-            "package_id": 6,
-            "stripe_subscription_id": "sub_1RuzyEE0wE8Cg1knXLIib9xH",
-            "stripe_customer_id": "cus_SqeciAuyLwHEG2",
-            "stripe_price_id": "price_1RuqIiE0wE8Cg1kn9WxFPHxI",
-            "status": "active",
-            "current_period_end": "2025-09-11 17:57:16", // this is renew date
-            "card_last4": "4242",
-            "card_brand": "visa",
-            "created_at": "2025-08-11T17:57:32.000000Z",
-            "updated_at": "2025-08-11T17:57:32.000000Z"
+    "status": "success",
+    "message": "Subscription retrieved successfully",
+    "data": {
+        "id": 1,
+        "organization_id": 1,
+        "user_id": 73,
+        "package_id": 1,
+        "stripe_subscription_id": "sub_1RvZtmE0wE8Cg1knguwnFnnQ",
+        "stripe_customer_id": "cus_SrIULkYZt2oSSS",
+        "stripe_price_id": "price_1RuqJRE0wE8Cg1knGpSwxESM",
+        "status": "active",
+        "current_period_end": "2025-09-13 08:19:04",
+        "card_last4": "4242",
+        "card_brand": "visa",
+        "created_at": "2025-08-13T08:19:09.000000Z",
+        "updated_at": "2025-08-13T08:19:09.000000Z",
+        "package": {
+            "id": 1,
+            "name": "Enterprise",
+            "description": "Enterprise",
+            "amount": 200,
+            "currency": "usd",
+            "interval": "month",
+            "stripe_product_id": "prod_SqXOD2sgmc458Q",
+            "stripe_price_id": "price_1RuqJRE0wE8Cg1knGpSwxESM",
+            "created_at": "2025-08-13T08:14:42.000000Z",
+            "updated_at": "2025-08-13T08:14:42.000000Z"
+        },
+        "organization": {
+            "id": 1,
+            "uuid": "b69ae2c0-07bc-415d-b9a7-32ad921c59f0",
+            "name": "protech",
+            "created_at": "2025-08-08T07:00:22.000000Z",
+            "updated_at": "2025-08-13T08:19:09.000000Z",
+            "slug": "protech",
+            "industry": null,
+            "organization_size": null,
+            "business_email": null,
+            "business_phone": null,
+            "website": null,
+            "support_email": null,
+            "street_address": null,
+            "city": null,
+            "state_province": null,
+            "zip_postal_code": null,
+            "country": null,
+            "timezone": null,
+            "language": null,
+            "subscription_status": "active"
         }
+    }
     }
 

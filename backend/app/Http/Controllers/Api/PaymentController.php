@@ -93,7 +93,7 @@ class PaymentController extends Controller
 
     public function Subscription(Request $request){
         $user = $request->user();
-        $subscription = Subscription::where('organization_id', $user->organization->id)->where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+        $subscription = Subscription::with(['package','organization'])->where('organization_id', $user->organization->id)->where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
         return $this->successResponse($subscription, 'Subscription retrieved successfully', 200);
     }
 

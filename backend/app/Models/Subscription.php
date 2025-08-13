@@ -18,4 +18,14 @@ class Subscription extends Model
         'card_last4',
         'card_brand'
     ];
+
+    public function package()
+    {
+        return $this->belongsTo(SubscriptionPackage::class);
+    }
+
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
 }
