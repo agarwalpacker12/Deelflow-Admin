@@ -53,7 +53,7 @@ const Layout = () => {
   // Generate settings links based on role
   const getSettingsNavLinks = () => {
     if (userRole === "super_admin") {
-      return [...superAdminSettingsNavLinks, ...baseSettingsNavLinks];
+      return [...superAdminSettingsNavLinks]; // Only show AI Settings for super_admin
     } else if (userRole === "admin") {
       return [...superAdminSettingsNavLinks, ...baseSettingsNavLinks];
     }
@@ -81,6 +81,12 @@ const Layout = () => {
 
   // Check if SaaS Management should be shown (ONLY for super_admin)
   const shouldShowSaaSManagement = userRole === "super_admin";
+
+  // Check if Marketplace should be shown (hide for super_admin)
+  const shouldShowMarketplace = userRole !== "super_admin";
+
+  // Check if Marketing Hub should be shown (hide for super_admin)
+  const shouldShowMarketingHub = userRole !== "super_admin";
 
   // Check if any of the "Settings" submenu items are currently active
   const isSettingsActive =
@@ -134,99 +140,105 @@ const Layout = () => {
               </Link>
             ))}
 
-            {/* Marketing Hub Dropdown */}
-            <div className="flex flex-col">
-              <button
-                onClick={() =>
-                  setIsMarketingHubExpanded(!isMarketingHubExpanded)
-                }
-                className={`px-3 py-2 rounded text-slate-200 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between ${
-                  isMarketingHubActive ? "bg-indigo-600 text-white" : ""
-                }`}
-              >
-                <span>Marketing Hub</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${
-                    isMarketingHubExpanded ? "rotate-180" : ""
+            {/* Marketing Hub Dropdown - Hide for super_admin */}
+            {shouldShowMarketingHub && (
+              <div className="flex flex-col">
+                <button
+                  onClick={() =>
+                    setIsMarketingHubExpanded(!isMarketingHubExpanded)
+                  }
+                  className={`px-3 py-2 rounded text-slate-200 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between ${
+                    isMarketingHubActive ? "bg-indigo-600 text-white" : ""
                   }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+                  <span>Marketing Hub</span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${
+                      isMarketingHubExpanded ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
 
-              {/* Marketing Hub Submenu Items */}
-              {isMarketingHubExpanded && (
-                <div className="ml-4 mt-2 flex flex-col gap-2">
-                  {marketingHubNavLinks.map((link) => (
-                    <Link
-                      key={link.to}
-                      to={link.to}
-                      className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white text-sm ${
-                        location.pathname.startsWith(link.to)
-                          ? "bg-indigo-600 text-white"
-                          : ""
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                {/* Marketing Hub Submenu Items */}
+                {isMarketingHubExpanded && (
+                  <div className="ml-4 mt-2 flex flex-col gap-2">
+                    {marketingHubNavLinks.map((link) => (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white text-sm ${
+                          location.pathname.startsWith(link.to)
+                            ? "bg-indigo-600 text-white"
+                            : ""
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
-            {/* Marketplace Dropdown */}
-            <div className="flex flex-col">
-              <button
-                onClick={() => setIsMarketplaceExpanded(!isMarketplaceExpanded)}
-                className={`px-3 py-2 rounded text-slate-200 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between ${
-                  isMarketplaceActive ? "bg-indigo-600 text-white" : ""
-                }`}
-              >
-                <span>Marketplace</span>
-                <svg
-                  className={`w-4 h-4 transition-transform ${
-                    isMarketplaceExpanded ? "rotate-180" : ""
+            {/* Marketplace Dropdown - Hide for super_admin */}
+            {shouldShowMarketplace && (
+              <div className="flex flex-col">
+                <button
+                  onClick={() =>
+                    setIsMarketplaceExpanded(!isMarketplaceExpanded)
+                  }
+                  className={`px-3 py-2 rounded text-slate-200 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between ${
+                    isMarketplaceActive ? "bg-indigo-600 text-white" : ""
                   }`}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </button>
+                  <span>Marketplace</span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${
+                      isMarketplaceExpanded ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
 
-              {/* Marketplace Submenu Items */}
-              {isMarketplaceExpanded && (
-                <div className="ml-4 mt-2 flex flex-col gap-2">
-                  {marketplaceNavLinks.map((link) => (
-                    <Link
-                      key={link.to}
-                      to={link.to}
-                      className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white text-sm ${
-                        location.pathname.startsWith(link.to)
-                          ? "bg-indigo-600 text-white"
-                          : ""
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                {/* Marketplace Submenu Items */}
+                {isMarketplaceExpanded && (
+                  <div className="ml-4 mt-2 flex flex-col gap-2">
+                    {marketplaceNavLinks.map((link) => (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white text-sm ${
+                          location.pathname.startsWith(link.to)
+                            ? "bg-indigo-600 text-white"
+                            : ""
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Settings Dropdown - Only show if user is not staff */}
             {shouldShowSettings && (

@@ -35,12 +35,12 @@ const LandingPage = () => {
               Sign In
             </Link>
             {/* )} */}
-            <Link
+            {/* <Link
               to="/pay"
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Pay Now
-            </Link>
+            </Link> */}
           </div>
         </div>
 

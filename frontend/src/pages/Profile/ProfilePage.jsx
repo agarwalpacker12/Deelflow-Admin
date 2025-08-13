@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { propertySaveAPI } from "../../services/api";
 import SavedPropertiesPage from "../PropertiesSave/Table";
-import { Mail } from "lucide-react";
+import { Mail, X } from "lucide-react";
 import { authAPI } from "../../services/api";
 import DealsPage from "../Deals/DealsPage";
 
@@ -57,8 +57,34 @@ const ProfilePage = () => {
     fetchSavedProperties();
   }, []);
 
+  // Back navigation handler
+  const handleBackNavigation = () => {
+    // Option 1: Use browser history
+    window.history.back();
+
+    // Option 2: Navigate to specific route (uncomment and modify as needed)
+    // window.location.href = "/dashboard"; // or your desired route
+
+    // Option 3: If using React Router, you can use navigate
+    // navigate(-1); // or navigate('/dashboard')
+  };
+
   return (
     <>
+      {/* Header with Back Navigation */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-100 dark:text-white">
+          Profile
+        </h1>
+        <button
+          onClick={handleBackNavigation}
+          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors"
+          aria-label="Go back"
+        >
+          <X className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        </button>
+      </div>
+
       {/* Tabs */}
       <div className="border-b border-gray-200 dark:border-gray-700">
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
@@ -196,7 +222,6 @@ const ProfilePage = () => {
                 )}
                 {/* Email */}
                 <div className="text-gray-300 text-sm flex items-center gap-2">
-                  {/* <svg className="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 12H8m8 0a4 4 0 11-8 0 4 4 0 018 0zm0 0v1a4 4 0 01-8 0v-1"></path></svg> */}
                   <Mail />
                   {user.email}
                 </div>
