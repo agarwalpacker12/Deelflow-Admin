@@ -1,0 +1,1172 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Real Estate Wholesaling Platform API",
+    "description": "Comprehensive API for managing real estate wholesaling operations including leads, properties, deals, campaigns, and AI-powered features.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support",
+      "url": "https://api.dealflow.com/support",
+      "email": "support@dealflow.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.dealflow.com/api",
+      "description": "Production server"
+    },
+    {
+      "url": "https://staging-api.dealflow.com/api",
+      "description": "Staging server"
+    },
+    {
+      "url": "http://localhost:8000/api",
+      "description": "Development server (configurable via APP_PORT environment variable)"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "email": {"type": "string", "format": "email", "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"},
+          "phone": {"type": "string", "pattern": "^\\+[1-9]\\d{1,14}$"},
+          "first_name": {"type": "string"},
+          "last_name": {"type": "string"},
+          "company_name": {"type": "string"},
+          "role": {"type": "string", "enum": ["wholesaler", "investor", "agent"]},
+          "level": {"type": "integer"},
+          "points": {"type": "integer"},
+          "avatar_url": {"type": "string", "format": "uri"},
+          "blockchain_wallet": {"type": "string"},
+          "stripe_customer_id": {"type": "string"},
+          "subscription_tier": {"type": "string", "enum": ["starter", "professional", "enterprise"]},
+          "subscription_status": {"type": "string", "enum": ["active", "inactive", "cancelled"]},
+          "is_verified": {"type": "boolean"},
+          "is_active": {"type": "boolean"},
+          "preferences": {"type": "object"},
+          "metadata": {"type": "object"},
+          "last_login_at": {"type": "string", "format": "date-time", "nullable": true},
+          "email_verified_at": {"type": "string", "format": "date-time", "nullable": true},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "Lead": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "user_id": {"type": "integer"},
+          "first_name": {"type": "string"},
+          "last_name": {"type": "string"},
+          "email": {"type": "string", "format": "email", "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"},
+          "phone": {"type": "string", "pattern": "^\\+[1-9]\\d{1,14}$"},
+          "alternate_phone": {"type": "string", "pattern": "^\\+[1-9]\\d{1,14}$"},
+          "property_address": {"type": "string"},
+          "property_city": {"type": "string"},
+          "property_state": {"type": "string"},
+          "property_zip": {"type": "string"},
+          "property_type": {"type": "string", "enum": ["single_family", "townhouse", "condo", "duplex", "multi_family", "mobile_home"]},
+          "ai_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "motivation_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "urgency_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "financial_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "source": {"type": "string", "enum": ["website_form", "cold_call", "referral", "social_media", "direct_mail"]},
+          "source_details": {"type": "object"},
+          "estimated_value": {"type": "number", "format": "decimal"},
+          "mortgage_balance": {"type": "number", "format": "decimal"},
+          "asking_price": {"type": "number", "format": "decimal"},
+          "status": {"type": "string", "enum": ["new", "contacted", "qualified", "negotiating", "contract", "closed", "dead"]},
+          "disposition": {"type": "string"},
+          "preferred_contact_method": {"type": "string", "enum": ["phone", "email", "text"]},
+          "best_time_to_call": {"type": "string"},
+          "ai_insights": {"type": "object"},
+          "conversation_summary": {"type": "string"},
+          "next_action": {"type": "string"},
+          "next_action_date": {"type": "string", "format": "date"},
+          "last_contact_at": {"type": "string", "format": "date-time", "nullable": true},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "Property": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "user_id": {"type": "integer"},
+          "address": {"type": "string"},
+          "unit": {"type": "string"},
+          "city": {"type": "string"},
+          "state": {"type": "string"},
+          "zip": {"type": "string"},
+          "county": {"type": "string"},
+          "location": {"type": "object"},
+          "property_type": {"type": "string", "enum": ["single_family", "townhouse", "condo", "duplex", "multi_family", "mobile_home"]},
+          "bedrooms": {"type": "integer"},
+          "bathrooms": {"type": "number", "format": "decimal"},
+          "square_feet": {"type": "integer"},
+          "lot_size": {"type": "number", "format": "decimal"},
+          "year_built": {"type": "integer"},
+          "stories": {"type": "integer"},
+          "garage_spaces": {"type": "integer"},
+          "purchase_price": {"type": "number", "format": "decimal"},
+          "arv": {"type": "number", "format": "decimal"},
+          "repair_estimate": {"type": "number", "format": "decimal"},
+          "holding_costs": {"type": "number", "format": "decimal"},
+          "profit_potential": {"type": "number", "format": "decimal"},
+          "ai_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "ai_analysis": {"type": "object"},
+          "market_analysis": {"type": "object"},
+          "repair_analysis": {"type": "object"},
+          "transaction_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale", "fix_and_flip", "buy_and_hold"]},
+          "escrow_amount": {"type": "number", "format": "decimal"},
+          "assignment_fee": {"type": "number", "format": "decimal"},
+          "status": {"type": "string", "enum": ["draft", "active", "pending", "sold"]},
+          "listed_at": {"type": "string", "format": "date-time", "nullable": true},
+          "expires_at": {"type": "string", "format": "date-time", "nullable": true},
+          "sold_at": {"type": "string", "format": "date-time", "nullable": true},
+          "blockchain_hash": {"type": "string"},
+          "smart_contract_address": {"type": "string"},
+          "description": {"type": "string"},
+          "seller_notes": {"type": "string"},
+          "images": {"type": "array", "items": {"type": "string", "format": "uri"}},
+          "documents": {"type": "array"},
+          "seller_info": {"type": "object"},
+          "property_condition": {"type": "object"},
+          "neighborhood_data": {"type": "object"},
+          "view_count": {"type": "integer"},
+          "save_count": {"type": "integer"},
+          "inquiry_count": {"type": "integer"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "Deal": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "property_id": {"type": "integer"},
+          "lead_id": {"type": "integer"},
+          "wholesaler_id": {"type": "integer"},
+          "buyer_id": {"type": "integer"},
+          "seller_id": {"type": "integer"},
+          "funder_id": {"type": "integer", "nullable": true},
+          "deal_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale", "fix_flip"]},
+          "purchase_price": {"type": "number", "format": "decimal"},
+          "sale_price": {"type": "number", "format": "decimal"},
+          "assignment_fee": {"type": "number", "format": "decimal"},
+          "funding_amount": {"type": "number", "format": "decimal"},
+          "funding_fee": {"type": "number", "format": "decimal"},
+          "funding_duration": {"type": "integer"},
+          "contract_date": {"type": "string", "format": "date"},
+          "closing_date": {"type": "string", "format": "date"},
+          "inspection_period": {"type": "integer"},
+          "earnest_money": {"type": "number", "format": "decimal"},
+          "status": {"type": "string", "enum": ["active", "pending", "closed", "cancelled"]},
+          "substatus": {"type": "string"},
+          "blockchain_contract_address": {"type": "string"},
+          "escrow_transaction_hash": {"type": "string"},
+          "contract_terms": {"type": "object"},
+          "documents": {"type": "array"},
+          "contingencies": {"type": "object"},
+          "contract_signed_at": {"type": "string", "format": "date-time", "nullable": true},
+          "escrow_deposited_at": {"type": "string", "format": "date-time", "nullable": true},
+          "funding_received_at": {"type": "string", "format": "date-time", "nullable": true},
+          "closed_at": {"type": "string", "format": "date-time", "nullable": true},
+          "cancelled_at": {"type": "string", "format": "date-time", "nullable": true},
+          "internal_notes": {"type": "string"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "DealMilestone": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "deal_id": {"type": "integer"},
+          "milestone_type": {"type": "string", "enum": ["contract", "inspection", "financing", "appraisal", "closing", "custom"]},
+          "title": {"type": "string"},
+          "description": {"type": "string"},
+          "due_date": {"type": "string", "format": "date"},
+          "completed_at": {"type": "string", "format": "date-time", "nullable": true},
+          "is_critical": {"type": "boolean"},
+          "notes": {"type": "string"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "PropertySave": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "user_id": {"type": "integer"},
+          "property_id": {"type": "integer"},
+          "property": {"$ref": "#/components/schemas/Property"},
+          "saved_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "UserAchievement": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "user_id": {"type": "integer"},
+          "achievement_type": {"type": "string", "enum": ["deal_milestone", "lead_conversion", "property_listing", "campaign_success", "level_up"]},
+          "achievement_name": {"type": "string"},
+          "points_earned": {"type": "integer"},
+          "metadata": {"type": "object"},
+          "earned_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "Campaign": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "user_id": {"type": "integer"},
+          "name": {"type": "string"},
+          "campaign_type": {"type": "string", "enum": ["lead_generation", "nurture", "follow_up", "promotional"]},
+          "channel": {"type": "string", "enum": ["email", "sms", "voice", "direct_mail"]},
+          "target_criteria": {"type": "object"},
+          "geofence_center": {"type": "object"},
+          "geofence_radius": {"type": "number"},
+          "subject_line": {"type": "string"},
+          "preview_text": {"type": "string"},
+          "email_content": {"type": "string"},
+          "sms_content": {"type": "string"},
+          "voice_script": {"type": "string"},
+          "landing_page_id": {"type": "integer"},
+          "use_ai_personalization": {"type": "boolean"},
+          "ai_tone": {"type": "string", "enum": ["professional", "friendly", "urgent", "casual"]},
+          "status": {"type": "string", "enum": ["draft", "scheduled", "active", "paused", "completed", "cancelled"]},
+          "scheduled_at": {"type": "string", "format": "date-time"},
+          "started_at": {"type": "string", "format": "date-time", "nullable": true},
+          "completed_at": {"type": "string", "format": "date-time", "nullable": true},
+          "total_recipients": {"type": "integer"},
+          "sent_count": {"type": "integer"},
+          "open_count": {"type": "integer"},
+          "click_count": {"type": "integer"},
+          "response_count": {"type": "integer"},
+          "conversion_count": {"type": "integer"},
+          "budget": {"type": "number", "format": "decimal"},
+          "spent": {"type": "number", "format": "decimal"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "CampaignRecipient": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "campaign_id": {"type": "integer"},
+          "lead_id": {"type": "integer"},
+          "sent_at": {"type": "string", "format": "date-time", "nullable": true},
+          "opened_at": {"type": "string", "format": "date-time", "nullable": true},
+          "clicked_at": {"type": "string", "format": "date-time", "nullable": true},
+          "responded_at": {"type": "string", "format": "date-time", "nullable": true},
+          "open_count": {"type": "integer"},
+          "click_count": {"type": "integer"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "AiConversation": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "integer"},
+          "uuid": {"type": "string", "format": "uuid"},
+          "user_id": {"type": "integer"},
+          "lead_id": {"type": "integer"},
+          "property_id": {"type": "integer", "nullable": true},
+          "channel": {"type": "string", "enum": ["sms", "voice", "email", "chat"]},
+          "external_id": {"type": "string"},
+          "sentiment_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "urgency_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "motivation_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "qualification_score": {"type": "integer", "minimum": 0, "maximum": 100},
+          "extracted_data": {"type": "object"},
+          "identified_pain_points": {"type": "array", "items": {"type": "string"}},
+          "status": {"type": "string", "enum": ["active", "completed", "failed"]},
+          "outcome": {"type": "string", "enum": ["qualified_lead", "unqualified", "callback_requested", "not_interested"]},
+          "next_steps": {"type": "string"},
+          "created_at": {"type": "string", "format": "date-time"},
+          "updated_at": {"type": "string", "format": "date-time"}
+        }
+      },
+      "ApiResponse": {
+        "type": "object",
+        "properties": {
+          "status": {"type": "string", "enum": ["success", "error"]},
+          "message": {"type": "string"},
+          "data": {"type": "object"}
+        }
+      },
+      "PaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "status": {"type": "string", "enum": ["success", "error"]},
+          "message": {"type": "string"},
+          "data": {"type": "array", "items": {"type": "object"}},
+          "meta": {
+            "type": "object",
+            "properties": {
+              "current_page": {"type": "integer"},
+              "per_page": {"type": "integer"},
+              "total": {"type": "integer"},
+              "last_page": {"type": "integer"},
+              "from": {"type": "integer"},
+              "to": {"type": "integer"}
+            }
+          },
+          "links": {
+            "type": "object",
+            "properties": {
+              "first": {"type": "string", "format": "uri"},
+              "last": {"type": "string", "format": "uri"},
+              "prev": {"type": "string", "format": "uri", "nullable": true},
+              "next": {"type": "string", "format": "uri", "nullable": true}
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {"type": "string", "enum": ["error"]},
+          "message": {"type": "string"},
+          "error": {"type": "string"},
+          "errors": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}}
+        }
+      }
+    }
+  },
+  "paths": {
+    "/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register a new user",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password", "password_confirmation", "first_name", "last_name", "role"],
+                "properties": {
+                  "email": {"type": "string", "format": "email"},
+                  "password": {"type": "string", "minLength": 8},
+                  "password_confirmation": {"type": "string"},
+                  "first_name": {"type": "string"},
+                  "last_name": {"type": "string"},
+                  "company_name": {"type": "string"},
+                  "phone": {"type": "string"},
+                  "role": {"type": "string", "enum": ["wholesaler", "investor", "agent"]}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "User registered successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/User"}}}]}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login user",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": {"type": "string", "format": "email"},
+                  "password": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "User logged in successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"type": "object", "properties": {"token": {"type": "string"}, "user": {"$ref": "#/components/schemas/User"}}}}}]}}}},
+          "401": {"description": "Invalid credentials", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/user": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Get current user",
+        "responses": {
+          "200": {"description": "User retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/User"}}}]}}}},
+          "401": {"description": "Unauthenticated", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/logout": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Logout user",
+        "responses": {
+          "200": {"description": "User logged out successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}}
+        }
+      }
+    },
+    "/leads": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "List leads",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}},
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["new", "contacted", "qualified", "unqualified", "converted"]}},
+          {"name": "ai_score_min", "in": "query", "schema": {"type": "integer", "minimum": 0, "maximum": 100}},
+          {"name": "search", "in": "query", "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {"description": "Leads retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/Lead"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["Leads"],
+        "summary": "Create lead",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["first_name", "last_name", "property_address", "property_city", "property_state", "property_zip"],
+                "properties": {
+                  "first_name": {"type": "string"},
+                  "last_name": {"type": "string"},
+                  "email": {"type": "string", "format": "email"},
+                  "phone": {"type": "string"},
+                  "property_address": {"type": "string"},
+                  "property_city": {"type": "string"},
+                  "property_state": {"type": "string"},
+                  "property_zip": {"type": "string"},
+                  "property_type": {"type": "string", "enum": ["single_family", "multi_family", "condo", "townhouse", "commercial"]},
+                  "source": {"type": "string", "enum": ["website_form", "cold_call", "referral", "social_media", "direct_mail"]},
+                  "estimated_value": {"type": "number", "format": "decimal"},
+                  "mortgage_balance": {"type": "number", "format": "decimal"},
+                  "asking_price": {"type": "number", "format": "decimal"},
+                  "preferred_contact_method": {"type": "string", "enum": ["phone", "email", "sms", "mail"]}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "Lead created successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Lead"}}}]}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/leads/{id}": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "Get lead",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Lead retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Lead"}}}]}}}},
+          "404": {"description": "Lead not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "put": {
+        "tags": ["Leads"],
+        "summary": "Update lead",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Lead"}}}},
+        "responses": {
+          "200": {"description": "Lead updated successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Lead"}}}]}}}},
+          "404": {"description": "Lead not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["Leads"],
+        "summary": "Delete lead",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Lead deleted successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Lead not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/leads/{lead}/ai-score": {
+      "get": {
+        "tags": ["Leads"],
+        "summary": "Get lead AI score",
+        "parameters": [{"name": "lead", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Lead AI score retrieved successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Lead not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/properties": {
+      "get": {
+        "tags": ["Properties"],
+        "summary": "List properties",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}},
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["active", "pending", "sold", "withdrawn"]}},
+          {"name": "city", "in": "query", "schema": {"type": "string"}},
+          {"name": "state", "in": "query", "schema": {"type": "string"}},
+          {"name": "zip", "in": "query", "schema": {"type": "string"}},
+          {"name": "price_min", "in": "query", "schema": {"type": "number"}},
+          {"name": "price_max", "in": "query", "schema": {"type": "number"}},
+          {"name": "bedrooms", "in": "query", "schema": {"type": "integer"}},
+          {"name": "bathrooms", "in": "query", "schema": {"type": "number"}},
+          {"name": "transaction_type", "in": "query", "schema": {"type": "string", "enum": ["assignment", "double_close", "wholesale"]}},
+          {"name": "ai_score_min", "in": "query", "schema": {"type": "integer", "minimum": 0, "maximum": 100}}
+        ],
+        "responses": {
+          "200": {"description": "Properties retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/Property"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["Properties"],
+        "summary": "Create property",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["address", "city", "state", "zip", "property_type", "purchase_price", "arv", "transaction_type"],
+                "properties": {
+                  "address": {"type": "string", "maxLength": 500},
+                  "unit": {"type": "string", "maxLength": 50},
+                  "city": {"type": "string", "maxLength": 100},
+                  "state": {"type": "string", "maxLength": 2},
+                  "zip": {"type": "string", "maxLength": 10},
+                  "county": {"type": "string", "maxLength": 100},
+                  "property_type": {"type": "string", "enum": ["single_family", "townhouse", "condo", "duplex", "multi_family", "mobile_home"]},
+                  "bedrooms": {"type": "integer", "minimum": 0},
+                  "bathrooms": {"type": "number", "format": "decimal", "minimum": 0},
+                  "square_feet": {"type": "integer", "minimum": 0},
+                  "lot_size": {"type": "number", "format": "decimal", "minimum": 0},
+                  "year_built": {"type": "integer", "minimum": 1800, "maximum": 2025},
+                  "purchase_price": {"type": "number", "format": "decimal", "minimum": 0},
+                  "arv": {"type": "number", "format": "decimal", "minimum": 0},
+                  "repair_estimate": {"type": "number", "format": "decimal", "minimum": 0},
+                  "holding_costs": {"type": "number", "format": "decimal", "minimum": 0},
+                  "transaction_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale", "fix_and_flip", "buy_and_hold"]},
+                  "assignment_fee": {"type": "number", "format": "decimal", "minimum": 0},
+                  "description": {"type": "string"},
+                  "seller_notes": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Property created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {"type": "string", "enum": ["success"]},
+                    "message": {"type": "string", "example": "Property created successfully"},
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "integer"},
+                        "uuid": {"type": "string", "format": "uuid"},
+                        "user_id": {"type": "integer"},
+                        "address": {"type": "string"},
+                        "unit": {"type": "string", "nullable": true},
+                        "city": {"type": "string"},
+                        "state": {"type": "string"},
+                        "zip": {"type": "string"},
+                        "county": {"type": "string", "nullable": true},
+                        "property_type": {"type": "string", "enum": ["single_family", "townhouse", "condo", "duplex", "multi_family", "mobile_home"]},
+                        "bedrooms": {"type": "integer", "nullable": true},
+                        "bathrooms": {"type": "number", "format": "decimal", "nullable": true},
+                        "square_feet": {"type": "integer", "nullable": true},
+                        "lot_size": {"type": "number", "format": "decimal", "nullable": true},
+                        "year_built": {"type": "integer", "nullable": true},
+                        "purchase_price": {"type": "number", "format": "decimal"},
+                        "arv": {"type": "number", "format": "decimal"},
+                        "repair_estimate": {"type": "number", "format": "decimal", "nullable": true},
+                        "holding_costs": {"type": "number", "format": "decimal", "nullable": true},
+                        "profit_potential": {"type": "number", "format": "decimal"},
+                        "ai_score": {"type": "integer", "minimum": 60, "maximum": 100},
+                        "transaction_type": {"type": "string", "enum": ["assignment", "double_close", "wholesale", "fix_and_flip", "buy_and_hold"]},
+                        "assignment_fee": {"type": "number", "format": "decimal", "nullable": true},
+                        "status": {"type": "string", "enum": ["draft"]},
+                        "view_count": {"type": "integer", "enum": [0]},
+                        "save_count": {"type": "integer", "enum": [0]},
+                        "inquiry_count": {"type": "integer", "enum": [0]},
+                        "description": {"type": "string", "nullable": true},
+                        "seller_notes": {"type": "string", "nullable": true},
+                        "created_at": {"type": "string", "format": "date-time"},
+                        "updated_at": {"type": "string", "format": "date-time"}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {"type": "string", "enum": ["error"]},
+                    "message": {"type": "string", "example": "Validation failed"},
+                    "errors": {
+                      "type": "object",
+                      "properties": {
+                        "address": {"type": "array", "items": {"type": "string"}, "example": ["The address field is required."]},
+                        "city": {"type": "array", "items": {"type": "string"}, "example": ["The city field is required."]},
+                        "state": {"type": "array", "items": {"type": "string"}, "example": ["The state field is required."]},
+                        "zip": {"type": "array", "items": {"type": "string"}, "example": ["The zip field is required."]},
+                        "property_type": {"type": "array", "items": {"type": "string"}, "example": ["The property type field is required."]},
+                        "purchase_price": {"type": "array", "items": {"type": "string"}, "example": ["The purchase price field is required."]},
+                        "arv": {"type": "array", "items": {"type": "string"}, "example": ["The arv field is required."]},
+                        "transaction_type": {"type": "array", "items": {"type": "string"}, "example": ["The transaction type field is required."]}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/properties/{id}": {
+      "get": {
+        "tags": ["Properties"],
+        "summary": "Get property",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Property retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Property"}}}]}}}},
+          "404": {"description": "Property not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "put": {
+        "tags": ["Properties"],
+        "summary": "Update property",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Property"}}}},
+        "responses": {
+          "200": {"description": "Property updated successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Property"}}}]}}}},
+          "404": {"description": "Property not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["Properties"],
+        "summary": "Delete property",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Property deleted successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Property not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/properties/{property}/ai-analysis": {
+      "get": {
+        "tags": ["Properties"],
+        "summary": "Get property AI analysis",
+        "parameters": [{"name": "property", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Property AI analysis retrieved successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Property not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/deals": {
+      "get": {
+        "tags": ["Deals"],
+        "summary": "List deals",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}},
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["active", "pending", "closed", "cancelled"]}},
+          {"name": "deal_type", "in": "query", "schema": {"type": "string", "enum": ["assignment", "double_close", "wholesale"]}},
+          {"name": "closing_date_from", "in": "query", "schema": {"type": "string", "format": "date"}},
+          {"name": "closing_date_to", "in": "query", "schema": {"type": "string", "format": "date"}}
+        ],
+        "responses": {
+          "200": {"description": "Deals retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/Deal"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["Deals"],
+        "summary": "Create deal",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Deal"}}}},
+        "responses": {
+          "201": {"description": "Deal created successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Deal"}}}]}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/deals/{id}": {
+      "get": {
+        "tags": ["Deals"],
+        "summary": "Get deal",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Deal retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Deal"}}}]}}}},
+          "404": {"description": "Deal not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "put": {
+        "tags": ["Deals"],
+        "summary": "Update deal",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Deal"}}}},
+        "responses": {
+          "200": {"description": "Deal updated successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Deal"}}}]}}}},
+          "404": {"description": "Deal not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["Deals"],
+        "summary": "Delete deal",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Deal deleted successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Deal not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/deals/{deal}/milestones": {
+      "get": {
+        "tags": ["Deals"],
+        "summary": "Get deal milestones",
+        "parameters": [{"name": "deal", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Deal milestones retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/DealMilestone"}}}}]}}}},
+          "404": {"description": "Deal not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/deal-milestones": {
+      "get": {
+        "tags": ["Deal Milestones"],
+        "summary": "List deal milestones",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}},
+          {"name": "deal_id", "in": "query", "schema": {"type": "integer"}},
+          {"name": "milestone_type", "in": "query", "schema": {"type": "string", "enum": ["contract", "inspection", "financing", "appraisal", "closing", "custom"]}},
+          {"name": "is_critical", "in": "query", "schema": {"type": "boolean"}},
+          {"name": "completed", "in": "query", "schema": {"type": "boolean"}}
+        ],
+        "responses": {
+          "200": {"description": "Deal milestones retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/DealMilestone"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["Deal Milestones"],
+        "summary": "Create deal milestone",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/DealMilestone"}}}},
+        "responses": {
+          "201": {"description": "Deal milestone created successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/DealMilestone"}}}]}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/deal-milestones/{id}": {
+      "get": {
+        "tags": ["Deal Milestones"],
+        "summary": "Get deal milestone",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Deal milestone retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/DealMilestone"}}}]}}}},
+          "404": {"description": "Deal milestone not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "put": {
+        "tags": ["Deal Milestones"],
+        "summary": "Update deal milestone",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/DealMilestone"}}}},
+        "responses": {
+          "200": {"description": "Deal milestone updated successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/DealMilestone"}}}]}}}},
+          "404": {"description": "Deal milestone not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["Deal Milestones"],
+        "summary": "Delete deal milestone",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Deal milestone deleted successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Deal milestone not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/deal-milestones/{milestone}/complete": {
+      "patch": {
+        "tags": ["Deal Milestones"],
+        "summary": "Complete deal milestone",
+        "parameters": [{"name": "milestone", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "completed_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Deal milestone completed successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/DealMilestone"}}}]}}}},
+          "404": {"description": "Deal milestone not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/property-saves": {
+      "get": {
+        "tags": ["Property Saves"],
+        "summary": "List saved properties",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}}
+        ],
+        "responses": {
+          "200": {"description": "Saved properties retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/PropertySave"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["Property Saves"],
+        "summary": "Save property",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["property_id"],
+                "properties": {
+                  "property_id": {"type": "integer"}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "Property saved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/PropertySave"}}}]}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/property-saves/{id}": {
+      "get": {
+        "tags": ["Property Saves"],
+        "summary": "Get saved property",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Saved property retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/PropertySave"}}}]}}}},
+          "404": {"description": "Saved property not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["Property Saves"],
+        "summary": "Remove saved property",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["property_id"],
+                "properties": {
+                  "property_id": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {"description": "Saved property removed successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Saved property not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/user-achievements": {
+      "get": {
+        "tags": ["User Achievements"],
+        "summary": "List user achievements",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}}
+        ],
+        "responses": {
+          "200": {"description": "User achievements retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/UserAchievement"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["User Achievements"],
+        "summary": "Create user achievement",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/UserAchievement"}}}},
+        "responses": {
+          "201": {"description": "User achievement created successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/UserAchievement"}}}]}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/user-achievements/{id}": {
+      "get": {
+        "tags": ["User Achievements"],
+        "summary": "Get user achievement",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "User achievement retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/UserAchievement"}}}]}}}},
+          "404": {"description": "User achievement not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["User Achievements"],
+        "summary": "Delete user achievement",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "User achievement deleted successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "User achievement not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/campaigns": {
+      "get": {
+        "tags": ["Campaigns"],
+        "summary": "List campaigns",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}},
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["draft", "scheduled", "active", "paused", "completed", "cancelled"]}},
+          {"name": "campaign_type", "in": "query", "schema": {"type": "string", "enum": ["lead_generation", "nurture", "follow_up", "promotional"]}},
+          {"name": "channel", "in": "query", "schema": {"type": "string", "enum": ["email", "sms", "voice", "direct_mail"]}}
+        ],
+        "responses": {
+          "200": {"description": "Campaigns retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/Campaign"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["Campaigns"],
+        "summary": "Create campaign",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Campaign"}}}},
+        "responses": {
+          "201": {"description": "Campaign created successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Campaign"}}}]}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/campaigns/{id}": {
+      "get": {
+        "tags": ["Campaigns"],
+        "summary": "Get campaign",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Campaign retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Campaign"}}}]}}}},
+          "404": {"description": "Campaign not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "put": {
+        "tags": ["Campaigns"],
+        "summary": "Update campaign",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Campaign"}}}},
+        "responses": {
+          "200": {"description": "Campaign updated successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/Campaign"}}}]}}}},
+          "404": {"description": "Campaign not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["Campaigns"],
+        "summary": "Delete campaign",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Campaign deleted successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Campaign not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/campaigns/{campaign}/recipients": {
+      "get": {
+        "tags": ["Campaigns"],
+        "summary": "Get campaign recipients",
+        "parameters": [{"name": "campaign", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Campaign recipients retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/CampaignRecipient"}}}}]}}}},
+          "404": {"description": "Campaign not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/campaign-recipients": {
+      "get": {
+        "tags": ["Campaign Recipients"],
+        "summary": "List campaign recipients",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}},
+          {"name": "campaign_id", "in": "query", "schema": {"type": "integer"}},
+          {"name": "sent", "in": "query", "schema": {"type": "boolean"}},
+          {"name": "opened", "in": "query", "schema": {"type": "boolean"}},
+          {"name": "clicked", "in": "query", "schema": {"type": "boolean"}},
+          {"name": "responded", "in": "query", "schema": {"type": "boolean"}}
+        ],
+        "responses": {
+          "200": {"description": "Campaign recipients retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/CampaignRecipient"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["Campaign Recipients"],
+        "summary": "Add campaign recipients",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["campaign_id", "lead_ids"],
+                "properties": {
+                  "campaign_id": {"type": "integer"},
+                  "lead_ids": {"type": "array", "items": {"type": "integer"}}
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {"description": "Campaign recipients added successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/campaign-recipients/{id}": {
+      "get": {
+        "tags": ["Campaign Recipients"],
+        "summary": "Get campaign recipient",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Campaign recipient retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/CampaignRecipient"}}}]}}}},
+          "404": {"description": "Campaign recipient not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "put": {
+        "tags": ["Campaign Recipients"],
+        "summary": "Update campaign recipient",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CampaignRecipient"}}}},
+        "responses": {
+          "200": {"description": "Campaign recipient updated successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/CampaignRecipient"}}}]}}}},
+          "404": {"description": "Campaign recipient not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["Campaign Recipients"],
+        "summary": "Remove campaign recipient",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "Campaign recipient removed successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "Campaign recipient not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/ai-conversations": {
+      "get": {
+        "tags": ["AI Conversations"],
+        "summary": "List AI conversations",
+        "parameters": [
+          {"name": "page", "in": "query", "schema": {"type": "integer", "minimum": 1, "default": 1}},
+          {"name": "per_page", "in": "query", "schema": {"type": "integer", "minimum": 1, "maximum": 100, "default": 10}},
+          {"name": "channel", "in": "query", "schema": {"type": "string", "enum": ["sms", "voice", "email", "chat"]}},
+          {"name": "status", "in": "query", "schema": {"type": "string", "enum": ["active", "completed", "failed"]}},
+          {"name": "outcome", "in": "query", "schema": {"type": "string", "enum": ["qualified_lead", "unqualified", "callback_requested", "not_interested"]}},
+          {"name": "lead_id", "in": "query", "schema": {"type": "integer"}}
+        ],
+        "responses": {
+          "200": {"description": "AI conversations retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/PaginatedResponse"}, {"properties": {"data": {"type": "array", "items": {"$ref": "#/components/schemas/AiConversation"}}}}]}}}}
+        }
+      },
+      "post": {
+        "tags": ["AI Conversations"],
+        "summary": "Create AI conversation",
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AiConversation"}}}},
+        "responses": {
+          "201": {"description": "AI conversation created successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/AiConversation"}}}]}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    },
+    "/ai-conversations/{id}": {
+      "get": {
+        "tags": ["AI Conversations"],
+        "summary": "Get AI conversation",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "AI conversation retrieved successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/AiConversation"}}}]}}}},
+          "404": {"description": "AI conversation not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "put": {
+        "tags": ["AI Conversations"],
+        "summary": "Update AI conversation",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/AiConversation"}}}},
+        "responses": {
+          "200": {"description": "AI conversation updated successfully", "content": {"application/json": {"schema": {"allOf": [{"$ref": "#/components/schemas/ApiResponse"}, {"properties": {"data": {"$ref": "#/components/schemas/AiConversation"}}}]}}}},
+          "404": {"description": "AI conversation not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}},
+          "422": {"description": "Validation error", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      },
+      "delete": {
+        "tags": ["AI Conversations"],
+        "summary": "Delete AI conversation",
+        "parameters": [{"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}],
+        "responses": {
+          "200": {"description": "AI conversation deleted successfully", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApiResponse"}}}},
+          "404": {"description": "AI conversation not found", "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ErrorResponse"}}}}
+        }
+      }
+    }
+  }
+}
