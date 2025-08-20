@@ -5,6 +5,8 @@ import NotificationBar from "../UI/NotificationBar";
 const topLevelNavLinks = [
   { to: "/app/dashboard", label: "Dashboard" },
   { to: "/app/analytics", label: "Analytics" },
+  { to: "/app/psychology", label: "Psychological Dashboard" },
+
   { to: "/app/content-management", label: "Content Management" },
 ];
 

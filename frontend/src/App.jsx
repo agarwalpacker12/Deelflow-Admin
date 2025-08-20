@@ -78,6 +78,8 @@ import InvitationForm from "./pages/UserManagement/page.jsx";
 import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
 import PaymentFailedPage from "./pages/payment/PaymentFailed.jsx";
 import Invoice from "./pages/payment/_Invoice.jsx";
+import EnhancedPsychologicalDashboard from "./pages/Analytics/AnalyticsPage.jsx";
+import CompletePsychologicalDashboard from "./pages/Psychology/PsychologyDashboard.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -218,7 +220,10 @@ function App() {
                             element={<AchievementsTable />}
                           />
                           <Route path="profile" element={<ProfilePage />} />
-                          <Route path="analytics" element={<AnalyticsPage />} />
+                          <Route
+                            path="analytics"
+                            element={<EnhancedPsychologicalDashboard />}
+                          />
                           <Route
                             path="content-management"
                             element={<ContentManagementPage />}
@@ -271,7 +276,10 @@ function App() {
                             element={<PaymentFailedPage />}
                           />
                           <Route path="invoice" element={<Invoice />} />
-
+                          <Route
+                            path="psychology"
+                            element={<CompletePsychologicalDashboard />}
+                          />
                           {/* <Route
                             path="marketplace"
                             element={<MarketplacePage />}
