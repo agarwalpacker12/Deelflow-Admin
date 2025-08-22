@@ -6,7 +6,6 @@ const topLevelNavLinks = [
   { to: "/app/dashboard", label: "Dashboard" },
   { to: "/app/analytics", label: "Analytics" },
   { to: "/app/psychology", label: "Psychological Dashboard" },
-
   { to: "/app/content-management", label: "Content Management" },
 ];
 
@@ -21,6 +20,13 @@ const marketingHubNavLinks = [
   { to: "/app/leads", label: "Leads" },
   { to: "/app/clients", label: "Clients" },
   { to: "/app/marketing/advanced", label: "Advanced" },
+];
+
+// AI Features navigation links
+const aiFeatureNavLinks = [
+  { to: "#", label: "Vision AI" },
+  { to: "#", label: "Voice AI" },
+  { to: "#", label: "NLP Center" },
 ];
 
 // Base settings for all roles (except staff)
@@ -48,6 +54,7 @@ const Layout = () => {
   const [isMarketingHubExpanded, setIsMarketingHubExpanded] = useState(false);
   const [isSaaSManagementExpanded, setIsSaaSManagementExpanded] =
     useState(false);
+  const [isAIFeaturesExpanded, setIsAIFeaturesExpanded] = useState(false);
 
   const userDetails = JSON.parse(localStorage.getItem("user") || "{}");
   const userRole = userDetails.role || "staff"; // Default to staff if no role
@@ -90,6 +97,9 @@ const Layout = () => {
   // Check if Marketing Hub should be shown (hide for super_admin)
   const shouldShowMarketingHub = userRole !== "super_admin";
 
+  // Check if AI Features should be shown (show for all roles)
+  const shouldShowAIFeatures = true; // You can modify this based on your role requirements
+
   // Check if any of the "Settings" submenu items are currently active
   const isSettingsActive =
     settingsNavLinks.some((link) => location.pathname.startsWith(link.to)) ||
@@ -111,6 +121,11 @@ const Layout = () => {
 
   // Check if any of the "Marketing Hub" submenu items are currently active
   const isMarketingHubActive = marketingHubNavLinks.some((link) =>
+    location.pathname.startsWith(link.to)
+  );
+
+  // Check if any of the "AI Features" submenu items are currently active
+  const isAIFeaturesActive = aiFeatureNavLinks.some((link) =>
     location.pathname.startsWith(link.to)
   );
 
@@ -141,6 +156,54 @@ const Layout = () => {
                 {link.label}
               </Link>
             ))}
+
+            {/* AI Features Dropdown */}
+            {shouldShowAIFeatures && (
+              <div className="flex flex-col">
+                <button
+                  onClick={() => setIsAIFeaturesExpanded(!isAIFeaturesExpanded)}
+                  className={`px-3 py-2 rounded text-slate-200 font-medium transition hover:bg-indigo-700 hover:text-white flex items-center justify-between ${
+                    isAIFeaturesActive ? "bg-indigo-600 text-white" : ""
+                  }`}
+                >
+                  <span>AI Features</span>
+                  <svg
+                    className={`w-4 h-4 transition-transform ${
+                      isAIFeaturesExpanded ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* AI Features Submenu Items */}
+                {isAIFeaturesExpanded && (
+                  <div className="ml-4 mt-2 flex flex-col gap-2">
+                    {aiFeatureNavLinks.map((link) => (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        className={`px-3 py-2 rounded text-slate-300 font-medium transition hover:bg-indigo-700 hover:text-white text-sm ${
+                          location.pathname.startsWith(link.to)
+                            ? "bg-indigo-600 text-white"
+                            : ""
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Marketing Hub Dropdown - Hide for super_admin */}
             {shouldShowMarketingHub && (

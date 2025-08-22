@@ -60,7 +60,7 @@ import EditProperty from "./pages/Properties/[id]/index.jsx";
 import VycentraPaymentGateway from "./pages/Payment.jsx";
 import BidIndex from "./pages/Properties/[id]/bid/BidIndex.jsx";
 import EditCampaign from "./pages/Campaigns/[id]/index.jsx";
-import AnalyticsPage from "./pages/Analytics/AnalyticsPage.jsx";
+import AnalyticsPage from "./pages/Analytics/page.jsx";
 import ContentManagementPage from "./pages/Content_Management/page.jsx";
 import ClientPage from "./pages/Client/page.jsx";
 import AdvancedPage from "./pages/Advance/page.jsx";
@@ -78,7 +78,6 @@ import InvitationForm from "./pages/UserManagement/page.jsx";
 import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
 import PaymentFailedPage from "./pages/payment/PaymentFailed.jsx";
 import Invoice from "./pages/payment/_Invoice.jsx";
-import EnhancedPsychologicalDashboard from "./pages/Analytics/AnalyticsPage.jsx";
 import CompletePsychologicalDashboard from "./pages/Psychology/PsychologyDashboard.jsx";
 
 // Create a client
@@ -220,10 +219,7 @@ function App() {
                             element={<AchievementsTable />}
                           />
                           <Route path="profile" element={<ProfilePage />} />
-                          <Route
-                            path="analytics"
-                            element={<EnhancedPsychologicalDashboard />}
-                          />
+                          <Route path="analytics" element={<AnalyticsPage />} />
                           <Route
                             path="content-management"
                             element={<ContentManagementPage />}

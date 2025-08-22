@@ -3,16 +3,9 @@ import {
   Brain,
   Target,
   Users,
-  Star,
-  Activity,
   Calculator,
   TrendingDown,
-  Hammer,
-  MapPin,
-  BarChart3,
   Timer,
-  UserCheck,
-  ArrowUp,
 } from "lucide-react";
 import AIDealsAssessment from "./AIDealsAssessment";
 import SocialProofSystem from "./SocialProofSystem";
@@ -25,7 +18,7 @@ import SocialProofIndicator from "./SocialProofIndicator";
 
 // ==================== ENHANCED PSYCHOLOGICAL DASHBOARD WITH AI DEAL ASSESSMENT ====================
 
-const EnhancedPsychologicalDashboard = () => {
+const AnalyticsPage = () => {
   const [activeTab, setActiveTab] = useState("deals");
   const [dealData, setDealData] = useState({
     currentDeal: {
@@ -1261,4 +1254,4 @@ const EnhancedPsychologicalDashboard = () => {
 //   </div>
 // );
 
-export default EnhancedPsychologicalDashboard;
+export default AnalyticsPage;
