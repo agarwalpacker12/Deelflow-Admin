@@ -24,9 +24,9 @@ const marketingHubNavLinks = [
 
 // AI Features navigation links
 const aiFeatureNavLinks = [
-  { to: "#", label: "Vision AI" },
-  { to: "#", label: "Voice AI" },
-  { to: "#", label: "NLP Center" },
+  { to: "/app/ai/vision", label: "Vision AI" },
+  { to: "/app/ai/voice", label: "Voice AI" },
+  { to: "/app/ai/nlp-center", label: "NLP Center" },
 ];
 
 // Base settings for all roles (except staff)

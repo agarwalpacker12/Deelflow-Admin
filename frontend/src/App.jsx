@@ -50,8 +50,7 @@ import EditLead from "./pages/Leads/[id]/index.jsx";
 import AddProperty from "./pages/Properties/add/index.jsx";
 import AddDealsMilestone from "./pages/Deals_Milestone/add/index.jsx";
 import DealsMileStonePage from "./pages/Deals_Milestone/DealsMilestonePage.jsx";
-import AiAssistantPage from "./pages/AI/AiConversationPage.jsx";
-import AddAiAssistance from "./pages/AI/add/index.jsx";
+
 import AddCampaign from "./pages/Campaigns/add/index.jsx";
 import CampaignsRecipientPage from "./pages/Campaigns_Recipients/RecipientPage.jsx";
 import AchievementsTable from "./pages/Achievement/AchievementPage.jsx";
@@ -79,6 +78,9 @@ import PaymentSuccess from "./pages/payment/PaymentSuccess.jsx";
 import PaymentFailedPage from "./pages/payment/PaymentFailed.jsx";
 import Invoice from "./pages/payment/_Invoice.jsx";
 import CompletePsychologicalDashboard from "./pages/Psychology/PsychologyDashboard.jsx";
+import VisionAiPage from "./pages/AI/Vision/VisionAiPage.jsx";
+import VoiceAiPage from "./pages/AI/Voice/VoiceAiPage.jsx";
+import NlpAiPage from "./pages/AI/nlp/NlpAiPage.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -186,14 +188,9 @@ function App() {
                             path="milestone/add"
                             element={<AddDealsMilestone />}
                           />
-                          <Route
-                            path="ai-assistant"
-                            element={<AiAssistantPage />}
-                          />
-                          <Route
-                            path="ai-assistant/add"
-                            element={<AddAiAssistance />}
-                          />
+                          <Route path="ai/vision" element={<VisionAiPage />} />
+                          <Route path="ai/voice" element={<VoiceAiPage />} />
+                          <Route path="ai/nlp-center" element={<NlpAiPage />} />
 
                           <Route path="campaigns" element={<CampaignsPage />} />
                           <Route
