@@ -17,6 +17,8 @@ const marketplaceNavLinks = [
 
 const marketingHubNavLinks = [
   { to: "/app/campaigns", label: "Campaigns" },
+  { to: "/app/duplicate", label: "Duplicate Management" },
+
   { to: "/app/leads", label: "Leads" },
   { to: "/app/clients", label: "Clients" },
   { to: "/app/marketing/advanced", label: "Advanced" },

@@ -81,6 +81,7 @@ import CompletePsychologicalDashboard from "./pages/Psychology/PsychologyDashboa
 import VisionAiPage from "./pages/AI/Vision/VisionAiPage.jsx";
 import VoiceAiPage from "./pages/AI/Voice/VoiceAiPage.jsx";
 import NlpAiPage from "./pages/AI/nlp/NlpAiPage.jsx";
+import DuplicateManagementDashboard from "./pages/Duplicate/page.jsx";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -103,8 +104,8 @@ function App() {
 
       // Initialize and test CSRF setup for Laravel Sanctum
       try {
-        await getCsrfToken();
-        console.log("CSRF cookie initialized successfully");
+        // await getCsrfToken();
+        // console.log("CSRF cookie initialized successfully");
 
         // Run CSRF test in development
         if (process.env.NODE_ENV === "development") {
@@ -201,7 +202,10 @@ function App() {
                             path="campaigns/:id"
                             element={<EditCampaign />}
                           />
-
+                          <Route
+                            path="duplicate"
+                            element={<DuplicateManagementDashboard />}
+                          />
                           <Route
                             path="recipients"
                             element={<CampaignsRecipientPage />}
