@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   BarChart3,
   Users,
@@ -139,6 +138,75 @@ const Dashboard = () => {
               value="847"
               percentage="100%"
               color="cyan"
+            />
+          </div>
+        </div>
+
+        {/* Tenant Management Overview */}
+        <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-white flex items-center gap-3">
+              <Users className="w-6 h-6 text-blue-400" />
+              Tenant Management Overview
+            </h2>
+            <button className="text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
+              View All Tenants →
+            </button>
+          </div>
+
+          {/* Tenant Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <TenantStatCard
+              title="Active Tenants"
+              value="8"
+              color="green"
+              icon={<CheckCircle className="w-4 h-4" />}
+            />
+            <TenantStatCard
+              title="Payment Overdue"
+              value="3"
+              color="red"
+              icon={<AlertTriangle className="w-4 h-4" />}
+            />
+            <TenantStatCard
+              title="Suspended"
+              value="1"
+              color="orange"
+              icon={<Eye className="w-4 h-4" />}
+            />
+            <TenantStatCard
+              title="Monthly Revenue"
+              value="$24.5K"
+              color="blue"
+              icon={<DollarSign className="w-4 h-4" />}
+            />
+          </div>
+
+          {/* Recent Tenant Activity */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-300 mb-3">
+              Recent Activity
+            </h3>
+            <TenantActivityItem
+              organization="Dallas Wholesalers LLC"
+              action="Payment received"
+              amount="$4,850"
+              time="2 hours ago"
+              status="paid"
+            />
+            <TenantActivityItem
+              organization="Texas Property Investors"
+              action="Plan upgraded to Enterprise"
+              amount=""
+              time="5 hours ago"
+              status="upgrade"
+            />
+            <TenantActivityItem
+              organization="Austin Real Estate Co"
+              action="Payment overdue"
+              amount="$2,150"
+              time="1 day ago"
+              status="overdue"
             />
           </div>
         </div>
@@ -442,15 +510,6 @@ const Dashboard = () => {
                   time="Just now"
                   location="Miami, FL"
                 />
-                {/* <ActivityItem
-                  icon={<Target className="w-4 h-4" />}
-                  iconColor="text-purple-400"
-                  iconBg="bg-purple-500/20"
-                  title="Lisa R."
-                  action="AI found perfect buyer match"
-                  time="Just now"
-                  location="Denver, CO"
-                /> */}
               </div>
             </div>
           </div>
@@ -714,21 +773,84 @@ const AIMetricCard = ({ icon, title, value, percentage, color }) => {
   );
 };
 
-const ActionButton = ({ color, icon, text }) => {
+const TenantStatCard = ({ title, value, color, icon }) => {
   const colorClasses = {
-    blue: "bg-blue-500/20 hover:bg-blue-500/30 text-blue-400",
-    green: "bg-green-500/20 hover:bg-green-500/30 text-green-400",
-    purple: "bg-purple-500/20 hover:bg-purple-500/30 text-purple-400",
-    orange: "bg-orange-500/20 hover:bg-orange-500/30 text-orange-400",
+    green: {
+      bg: "bg-green-500/20",
+      icon: "text-green-400",
+      text: "text-green-400",
+    },
+    red: {
+      bg: "bg-red-500/20",
+      icon: "text-red-400",
+      text: "text-red-400",
+    },
+    orange: {
+      bg: "bg-orange-500/20",
+      icon: "text-orange-400",
+      text: "text-orange-400",
+    },
+    blue: {
+      bg: "bg-blue-500/20",
+      icon: "text-blue-400",
+      text: "text-blue-400",
+    },
   };
 
+  const colors = colorClasses[color] || colorClasses.blue;
+
   return (
-    <button
-      className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all duration-200 ${colorClasses[color]} hover:scale-105`}
-    >
-      <span className="w-4 h-4">{icon}</span>
-      <span className="text-sm">{text}</span>
-    </button>
+    <div className="bg-white/10 rounded-lg p-4 hover:bg-white/15 transition-colors">
+      <div className="flex items-center gap-3">
+        <div className={`p-2 rounded-lg ${colors.bg}`}>
+          <span className={colors.icon}>{icon}</span>
+        </div>
+        <div>
+          <p className="text-sm text-gray-400">{title}</p>
+          <p className={`text-lg font-bold ${colors.text}`}>{value}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TenantActivityItem = ({ organization, action, amount, time, status }) => {
+  const statusStyles = {
+    paid: {
+      dot: "bg-green-400",
+      action: "text-green-400",
+    },
+    upgrade: {
+      dot: "bg-blue-400",
+      action: "text-blue-400",
+    },
+    overdue: {
+      dot: "bg-red-400",
+      action: "text-red-400",
+    },
+  };
+
+  const style = statusStyles[status] || statusStyles.paid;
+
+  return (
+    <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+      <div className={`w-2 h-2 ${style.dot} rounded-full`}></div>
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <span className="text-white text-sm font-medium">{organization}</span>
+          {amount && (
+            <span className={`text-sm font-semibold ${style.action}`}>
+              {amount}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 mt-1">
+          <span className={`text-xs ${style.action}`}>{action}</span>
+          <span className="text-xs text-gray-400">•</span>
+          <span className="text-xs text-gray-400">{time}</span>
+        </div>
+      </div>
+    </div>
   );
 };
 
