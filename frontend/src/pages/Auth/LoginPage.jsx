@@ -2,11 +2,16 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { login, clearError, selectAuth } from "../../store/slices/authSlice";
-import { getCsrfToken, OrganizationAPI } from "../../services/api";
+import {
+  // getCsrfToken,
+  OrganizationAPI,
+} from "../../services/api";
 import LoadingSpinner from "../../components/UI/LoadingSpinner";
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [orgLoading, setOrgLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, isAuthenticated } = useSelector(selectAuth);
@@ -21,41 +26,67 @@ const LoginPage = () => {
   }, [isAuthenticated, navigate, dispatch]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (formErrors[name]) {
+      setFormErrors({ ...formErrors, [name]: "" });
+    }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     await getCsrfToken(); // Fetch CSRF token before logging in
-  //     dispatch(login(formData));
-  //   } catch (error) {
-  //     console.error('Failed to get CSRF token:', error);
-  //     // Optionally, handle the error, e.g., show a message to the user
-  //   }
-  // };
+  const validateForm = () => {
+    const errors = {};
+
+    if (!formData.username.trim()) {
+      errors.username = "Username is required";
+    }
+
+    if (!formData.password.trim()) {
+      errors.password = "Password is required";
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     try {
-      await getCsrfToken(); // CSRF token before login
+      // await getCsrfToken();
       const resultAction = await dispatch(login(formData));
 
-      // Check if login succeeded
       if (login.fulfilled.match(resultAction)) {
-        // Call organization status API
-        const orgResponse = await OrganizationAPI.getOrganizationStatus();
+        setOrgLoading(true);
 
-        if (orgResponse?.data?.data?.status == "new") {
-          navigate("/app/payment");
-        } else if (orgResponse?.data?.data?.status == "active") {
+        try {
+          const orgResponse = await OrganizationAPI.getOrganizationStatus();
+          const status = orgResponse?.data?.data?.status;
+
+          switch (status) {
+            case "new":
+              navigate("/app/payment");
+              break;
+            case "active":
+              navigate("/app/dashboard");
+              break;
+            default:
+              navigate("/app/dashboard");
+          }
+        } catch (orgError) {
+          console.error("Organization status check failed:", orgError);
           navigate("/app/dashboard");
-        } else {
-          navigate("/app/dashboard");
+        } finally {
+          setOrgLoading(false);
         }
       }
     } catch (error) {
-      console.error("Login or Organization status check failed:", error);
+      console.error("Login failed:", error);
+      setOrgLoading(false);
     }
   };
 
@@ -69,20 +100,23 @@ const LoginPage = () => {
           <div>
             <label
               className="block text-sm font-medium text-white/80 mb-2"
-              htmlFor="email"
+              htmlFor="username"
             >
-              Email
+              Username
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
               onChange={handleChange}
               className="w-full bg-white/5 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
-              placeholder="Enter your email"
+              placeholder="Enter your username"
               required
             />
+            {formErrors.username && (
+              <p className="text-red-400 text-xs mt-1">{formErrors.username}</p>
+            )}
           </div>
           <div>
             <label
@@ -101,14 +135,24 @@ const LoginPage = () => {
               placeholder="Enter your password"
               required
             />
+            {formErrors.password && (
+              <p className="text-red-400 text-xs mt-1">{formErrors.password}</p>
+            )}
           </div>
           {error && <p className="text-red-400 text-sm text-center">{error}</p>}
           <button
             type="submit"
             className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center"
-            disabled={loading}
+            disabled={loading || orgLoading}
           >
-            {loading ? <LoadingSpinner /> : "Sign In"}
+            {loading || orgLoading ? (
+              <div className="flex items-center justify-center gap-2">
+                <LoadingSpinner />
+                <span>{loading ? "Signing in..." : "Loading..."}</span>
+              </div>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
         <p className="text-center text-white/70 mt-4">

@@ -17,7 +17,7 @@ import { store } from "./store/store";
 import { testEnvVars } from "./utils/envTest";
 
 // API utilities
-import { getCsrfToken } from "./services/api";
+// import { getCsrfToken } from "./services/api";
 import { testCsrfSetup } from "./utils/csrfTest";
 
 // Contexts
@@ -106,11 +106,10 @@ function App() {
       try {
         // await getCsrfToken();
         // console.log("CSRF cookie initialized successfully");
-
         // Run CSRF test in development
-        if (process.env.NODE_ENV === "development") {
-          await testCsrfSetup();
-        }
+        // if (process.env.NODE_ENV === "development") {
+        //   await testCsrfSetup();
+        // }
       } catch (error) {
         console.error("Failed to initialize CSRF cookie:", error);
       }

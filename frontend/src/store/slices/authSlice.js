@@ -1,64 +1,68 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { authAPI } from '../../services/api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { authAPI } from "../../services/api";
 
 // Async thunks
 export const login = createAsyncThunk(
-  'auth/login',
+  "auth/login",
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await authAPI.login(credentials);
-      
+
       const { token, user } = response.data.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
       return { token, user };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Login failed');
+      return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   }
 );
 
 export const register = createAsyncThunk(
-  'auth/register',
+  "auth/register",
   async (userData, { rejectWithValue }) => {
     try {
       const response = await authAPI.register(userData);
       const { token, user } = response.data;
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
       return { token, user };
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed');
+      return rejectWithValue(
+        error.response?.data?.message || "Registration failed"
+      );
     }
   }
 );
 
 export const getCurrentUser = createAsyncThunk(
-  'auth/getCurrentUser',
+  "auth/getCurrentUser",
   async (_, { rejectWithValue }) => {
     try {
       const response = await authAPI.getCurrentUser();
       return response.data;
     } catch (error) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      return rejectWithValue(error.response?.data?.message || 'Failed to get user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to get user"
+      );
     }
   }
 );
 
 export const logout = createAsyncThunk(
-  'auth/logout',
+  "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
       await authAPI.logout();
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       return null;
     } catch (error) {
       // Even if logout fails on server, clear local storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       return null;
     }
   }
@@ -68,7 +72,7 @@ export const logout = createAsyncThunk(
 const safeParseJSON = (item) => {
   try {
     const value = localStorage.getItem(item);
-    if (value === null || value === 'undefined' || value === 'null') {
+    if (value === null || value === "undefined" || value === "null") {
       return null;
     }
     return JSON.parse(value);
@@ -81,16 +85,16 @@ const safeParseJSON = (item) => {
 
 // Initial state
 const initialState = {
-  user: safeParseJSON('user'),
-  token: localStorage.getItem('token') || null,
-  isAuthenticated: !!localStorage.getItem('token'),
+  user: safeParseJSON("user"),
+  token: localStorage.getItem("token") || null,
+  isAuthenticated: !!localStorage.getItem("token"),
   loading: false,
   error: null,
 };
 
 // Auth slice
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     clearError: (state) => {
@@ -102,8 +106,8 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.loading = false;
       state.error = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
     },
   },
   extraReducers: (builder) => {

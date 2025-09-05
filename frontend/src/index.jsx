@@ -1,9 +1,9 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
-import './index.css';
-import { getCsrfToken } from './services/api.js';
-import { initializeErrorSuppression } from './utils/errorSuppression.js';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
+// import { getCsrfToken } from './services/api.js';
+import { initializeErrorSuppression } from "./utils/errorSuppression.js";
 import queryClient from "./lib/react-query-client.js";
 import { ToastContainer } from "react-toastify";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -13,7 +13,7 @@ import { Theme } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
 
 // Fetch the CSRF cookie before the app starts
-getCsrfToken();
+// getCsrfToken();
 
 // Initialize Codespaces HMR fixes FIRST (before Vite's HMR client loads)
 if (import.meta.env.DEV) {
