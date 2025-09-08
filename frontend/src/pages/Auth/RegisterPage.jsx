@@ -98,6 +98,7 @@ const RegisterPage = () => {
       password: data.password,
       organization: {
         name: data.organization.name,
+        slug: data.organization.name,
         subscription_status: "new",
       },
     };
