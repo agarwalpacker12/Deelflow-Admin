@@ -14,25 +14,25 @@ const schema = yup.object().shape({
     .matches(/^\+?[0-9]{7,15}$/, "Phone number is not valid")
     .required("Phone number is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
-  role: yup.string().required("Role is required"),
-  level: yup
-    .number()
-    .min(1, "Level must be at least 1")
-    .required("Level is required"),
-  points: yup
-    .number()
-    .min(0, "Points cannot be negative")
-    .required("Points is required"),
-  is_verified: yup.boolean().required("Verification status is required"),
-  is_active: yup.boolean().required("Active status is required"),
-  stripe_customer_id: yup.string().required("Stripe customer ID is required"),
+  // role: yup.string().required("Role is required"),
+  // level: yup
+  //   .number()
+  //   .min(1, "Level must be at least 1")
+  //   .required("Level is required"),
+  // points: yup
+  //   .number()
+  //   .min(0, "Points cannot be negative")
+  //   .required("Points is required"),
+  // is_verified: yup.boolean().required("Verification status is required"),
+  // is_active: yup.boolean().required("Active status is required"),
+  // stripe_customer_id: yup.string().required("Stripe customer ID is required"),
   password: yup
     .string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
   organization: yup.object().shape({
     name: yup.string().required("Organization name is required"),
-    slug: yup.string().required("Organization slug is required"),
+    // slug: yup.string().required("Organization slug is required"),
     subscription_status: yup
       .string()
       .required("Subscription status is required"),
@@ -87,12 +87,25 @@ const RegisterPage = () => {
   // };
 
   const onSubmit = async (data) => {
-    console.log("Form data before sending:", data);
+    const submitData = {
+      email: data.email,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      phone: data.phone,
+      role: "staff",
+      is_verified: false,
+      is_active: true,
+      password: data.password,
+      organization: {
+        name: data.organization.name,
+        subscription_status: "new",
+      },
+    };
 
     setLoading(true);
     setServerError(null);
     try {
-      const response = await authAPI.register(data);
+      const response = await authAPI.register(submitData);
       console.log("Registration response:", response);
       navigate("/login");
     } catch (err) {
@@ -169,7 +182,7 @@ const RegisterPage = () => {
               </p>
             )}
           </div>
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
               Organization Slug
             </label>
@@ -184,7 +197,7 @@ const RegisterPage = () => {
                 {errors.organization.slug.message}
               </p>
             )}
-          </div>
+          </div> */}
           <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
               Phone
@@ -219,7 +232,8 @@ const RegisterPage = () => {
               </p>
             )}
           </div>
-          <div className="grid grid-cols-2 gap-4">
+
+          {/* <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-white/80 mb-2">
                 Role
@@ -261,8 +275,9 @@ const RegisterPage = () => {
                 </p>
               )}
             </div>
-          </div>
-          <div>
+          </div> */}
+
+          {/* <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
               Points
             </label>
@@ -278,8 +293,8 @@ const RegisterPage = () => {
                 {errors.points.message}
               </p>
             )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+          </div> */}
+          {/* <div className="grid grid-cols-2 gap-4">
             <div className="flex items-center">
               <input
                 type="checkbox"
@@ -310,8 +325,8 @@ const RegisterPage = () => {
                 </p>
               )}
             </div>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
               Stripe Customer ID
             </label>
@@ -326,8 +341,8 @@ const RegisterPage = () => {
                 {errors.stripe_customer_id.message}
               </p>
             )}
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
               Subscription Status
             </label>
@@ -353,7 +368,7 @@ const RegisterPage = () => {
                 {errors.organization.subscription_status.message}
               </p>
             )}
-          </div>
+          </div> */}
           <div>
             <label className="block text-sm font-medium text-white/80 mb-2">
               Password
