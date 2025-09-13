@@ -237,7 +237,19 @@ const api = axios.create({
   },
 });
 
-const LoginHeader = axios.create({
+const AllGETHeader = axios.create({
+  baseURL: BASE_URL, // Use base URL without /api prefix
+  // withCredentials: true,
+  // credentials: "include", // 👈 REQUIRED for session cookies
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    "X-Requested-With": "XMLHttpRequest",
+  },
+});
+
+const AllPOSTHeader = axios.create({
   baseURL: BASE_URL, // Use base URL without /api prefix
   // withCredentials: true,
   // credentials: "include", // 👈 REQUIRED for session cookies
@@ -283,8 +295,8 @@ api.interceptors.response.use(
 
 // Auth API - Fixed URLs to match your Django urls.py
 export const authAPI = {
-  login: (credentials) => LoginHeader.post("/login/", credentials), // Matches your URL pattern
-  register: (userData) => LoginHeader.post("/create-user/", userData), // Matches your URL pattern
+  login: (credentials) => AllPOSTHeader.post("/login/", credentials), // Matches your URL pattern
+  register: (userData) => AllPOSTHeader.post("/create-user/", userData), // Matches your URL pattern
   logout: () => api.post("/logout/"),
   getCurrentUser: () => api.get("/user/"),
   getAllUsers: () => api.get("/users/"),
@@ -362,10 +374,11 @@ export const OrganizationAPI = {
 };
 
 export const RbacAPI = {
-  getRoles: () => api.get("/rbac/roles/"),
-  getPermissions: () => api.get("/rbac/permissions/"),
-  UpdatePermission: (id, data) => api.put(`/rbac/roles/${id}/`, data),
-  UpdateRole: (data) => api.put(`/users/${data.id}/roles/`, data),
+  createRole: (data) => AllPOSTHeader.post("/create_role/", data),
+  getRoles: () => AllGETHeader.get("/get_roles/"),
+  getPermissions: () => AllGETHeader.get("/get_permissions/"),
+  UpdatePermission: (id, data) => AllPOSTHeader.put(`/rbac/roles/${id}/`, data),
+  UpdateRole: (data) => AllPOSTHeader.put(`/users/${data.id}/roles/`, data),
 };
 
 export const PaymentAPI = {
@@ -379,6 +392,7 @@ export const PaymentAPI = {
 export const DashboardAPI = {
   getTotalRevenue: () => api.get(`/total-revenue/`),
   getActiveUsers: () => api.get(`/active-users/`),
+  getPropertiesListed: () => api.get(`/properties-listed/`),
   getAiConversations: () => api.get(`/ai-conversations/`),
   getTotalDeals: () => api.get(`/total-deals/`),
   getMonthlyProfit: () => api.get(`/monthly-profit/`),
@@ -389,14 +403,14 @@ export const DashboardAPI = {
   getChartData: () => api.get(`/revenue-user-growth-chart-data/`),
 
   // New AI Performance Metrics endpoints
-  getVoiceAIMetrics: () => api.get(`/voice-calls-count/`),
+  getVoiceAIMetrics: () => api.get(`/voice-ai-calls-count/`),
   getVisionAnalysisMetrics: () => api.get(`/vision-analysis/`),
   getNLPProcessingMetrics: () => api.get(`/nlp-processing/`),
   getBlockchainMetrics: () => api.get(`/blockchain-txns/`),
 
   // New Tenant Management endpoints
   getTenantStats: () => api.get(`/tenant-management/stats/`),
-  getRecentTenantActivity: () => api.get(`/tenant-management/recent-activity/`),
+  getRecentTenantActivity: () => AllPOSTHeader.post(`/recent_activity/`),
 
   // New Opportunity Cost Analysis endpoint
   getOpportunityCostAnalysis: () =>

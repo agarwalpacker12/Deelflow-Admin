@@ -71,22 +71,11 @@ const RegisterPage = () => {
     },
   });
 
-  // const onSubmit = async (data) => {
-  //   setLoading(true);
-  //   setServerError(null);
-  //   try {
-  //     await authAPI.register(data);
-  //     navigate("/login");
-  //   } catch (err) {
-  //     setServerError(
-  //       err.response?.data?.message || "Registration failed. Please try again."
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
   const onSubmit = async (data) => {
+    const createSlug = (name) => {
+      return name.replace(/\s+/g, "_");
+    };
+
     const submitData = {
       email: data.email,
       first_name: data.first_name,
@@ -98,7 +87,7 @@ const RegisterPage = () => {
       password: data.password,
       organization: {
         name: data.organization.name,
-        slug: data.organization.name,
+        slug: createSlug(data.organization.name),
         subscription_status: "new",
       },
     };
