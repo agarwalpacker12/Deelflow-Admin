@@ -1,6 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import AddForm from "./add/AddForm";
+import { RbacAPI } from "../../services/api";
 
 function StaticComponent() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [allRoles, setAllRoles] = useState([]);
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await RbacAPI.getRoles();
+        console.log(response.data.data);
+
+        // Handle the API response format
+        if (response.data.status === "success") {
+          setAllRoles(response.data.data.roles);
+        }
+      } catch (err) {
+        console.error("Error fetching leads:", err);
+      }
+    };
+
+    fetchRoles();
+  }, []);
+
   const stats = [
     {
       value: "12",
@@ -32,6 +55,12 @@ function StaticComponent() {
             Role Management
           </h1>
         </div>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="w-50 px-4 py-2 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-colors flex items-center justify-center gap-2"
+        >
+          Create Role
+        </button>
       </div>
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -61,48 +90,57 @@ function StaticComponent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Super Admin Card */}
-          <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 relative hover:border-red-500/50 transition-all duration-300">
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-600 rounded-t-xl"></div>
 
-            <div className="flex justify-between items-start mb-4">
-              <h3 className="text-white text-xl font-bold">Super Admin</h3>
-              <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-3 py-1 rounded-full font-medium">
-                System Role
-              </span>
-            </div>
+          {allRoles?.map((role) => {
+            return (
+              <>
+                <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 relative hover:border-red-500/50 transition-all duration-300">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-600 rounded-t-xl"></div>
 
-            <p className="text-slate-300 text-sm mb-6 leading-relaxed">
-              Platform-wide administrator with complete system control. Manages
-              all tenants, subscriptions, and platform configuration. No
-              operational capabilities.
-            </p>
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-white text-xl font-bold">
+                      {role?.name}
+                    </h3>
+                    <span className="bg-gradient-to-r from-red-500 to-red-600 text-white text-xs px-3 py-1 rounded-full font-medium">
+                      {role?.label}
+                    </span>
+                  </div>
 
-            <div className="space-y-4">
-              <h4 className="text-white text-sm font-semibold mb-3">
-                Administrative Powers
-              </h4>
-              <div className="flex flex-wrap gap-2">
-                <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
-                  Tenant Management
-                </span>
-                <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
-                  Subscription Control
-                </span>
-                <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
-                  Platform Analytics
-                </span>
-                <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
-                  System Configuration
-                </span>
-                <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
-                  Role Management
-                </span>
-              </div>
-            </div>
-          </div>
+                  <p className="text-slate-300 text-sm mb-6 leading-relaxed">
+                    Platform-wide administrator with complete system control.
+                    Manages all tenants, subscriptions, and platform
+                    configuration. No operational capabilities.
+                  </p>
+
+                  {/* <div className="space-y-4">
+                    <h4 className="text-white text-sm font-semibold mb-3">
+                      Administrative Powers
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
+                        Tenant Management
+                      </span>
+                      <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
+                        Subscription Control
+                      </span>
+                      <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
+                        Platform Analytics
+                      </span>
+                      <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
+                        System Configuration
+                      </span>
+                      <span className="bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 text-xs px-3 py-1 rounded-full">
+                        Role Management
+                      </span>
+                    </div>
+                  </div> */}
+                </div>
+              </>
+            );
+          })}
 
           {/* Organization Admin Card */}
-          <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 relative hover:border-purple-500/50 transition-all duration-300">
+          {/* <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 relative hover:border-purple-500/50 transition-all duration-300">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-purple-600 rounded-t-xl"></div>
 
             <div className="flex justify-between items-start mb-4">
@@ -158,10 +196,10 @@ function StaticComponent() {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Organization Member Card */}
-          <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 relative hover:border-blue-500/50 transition-all duration-300">
+          {/* <div className="bg-white/5 backdrop-blur-md rounded-xl p-6 border border-white/10 relative hover:border-blue-500/50 transition-all duration-300">
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600 rounded-t-xl"></div>
 
             <div className="flex justify-between items-start mb-4">
@@ -200,9 +238,16 @@ function StaticComponent() {
                 </span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <AddForm setIsModalOpen={setIsModalOpen} />
+        </div>
+      )}
     </>
   );
 }

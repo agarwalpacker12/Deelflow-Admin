@@ -349,6 +349,8 @@ export const campaignsAPI = {
   updateCampaign: (id, data) => api.put(`/campaigns/${id}/`, data),
   deleteCampaign: (id) => api.delete(`/campaigns/${id}/`),
   getRecipients: (id) => api.get(`/campaigns/${id}/recipients/`),
+  getActiveCampaigns: () => AllGETHeader.get("/active_campaign_summary/"),
+  getLeadConversionFunnel: () => AllGETHeader.get("/lead_conversion_funnel/"),
 };
 
 export const propertySaveAPI = {
