@@ -85,7 +85,7 @@ function AddCampaign() {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 group-hover:text-purple-700">
-                  Fill with AI Assistant
+                  AI Assistant
                 </h3>
                 <p className="text-sm text-gray-600">
                   Let AI help you generate campaign content and suggestions
@@ -105,7 +105,7 @@ function AddCampaign() {
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 group-hover:text-indigo-700">
-                  Fill Manually
+                  Manually
                 </h3>
                 <p className="text-sm text-gray-600">
                   Fill out the form fields yourself with custom content
